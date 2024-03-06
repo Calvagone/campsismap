@@ -1,0 +1,13 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^npp_plugin$
+^\.github$
+^data-raw$
+^README.Rmd$
+^_pkgdown.yml$
+^pkgdown$
+^path_to_model_folder$
+^LICENSE\.md$
+^cran-comments\.md$
+^docs$
+^CRAN-SUBMISSION$
