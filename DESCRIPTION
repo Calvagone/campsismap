@@ -39,4 +39,5 @@ RoxygenNote: 7.2.3
 Collate:
     'global.R'
     'campsismap_model.R'
+    'likelihood_formula.R'
     'map_estimation.R'

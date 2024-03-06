@@ -12,7 +12,8 @@ setClass(
   "campsismap_model",
   representation(
     model="campsis_model",
-    omega="matrix"
+    omega="matrix",
+    variable="character"
   )
 )
 
@@ -42,5 +43,5 @@ CampsismapModel <- function(model, variable) {
   model@parameters@list <- model@parameters@list %>%
     purrr::discard(~is(.x, "double_array_parameter"))
   
-  return(new("campsismap_model", model=model, omega=omega))
+  return(new("campsismap_model", model=model, omega=omega, variable=variable))
 }
