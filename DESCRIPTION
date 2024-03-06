@@ -38,3 +38,5 @@ LazyData: true
 RoxygenNote: 7.2.3
 Collate:
     'global.R'
+    'campsismap_model.R'
+    'map_estimation.R'
