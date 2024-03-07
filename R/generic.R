@@ -40,6 +40,28 @@ setGeneric("computeSd", function(object, x, ...) {
 })
 
 #_______________________________________________________________________________
+#----                            estimate                                   ----
+#_______________________________________________________________________________
+
+#' Estimate.
+#' 
+#' @param model Campsismap model
+#' @param dataset predicted values, numeric vector
+#' @param etas initial etas vector, default will be all etas 0
+#' @param ... extra arguments
+#' @return estimated etas, numeric vector
+#' @export
+#' @rdname estimate
+estimate <- function(model, dataset, etas, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("estimate", function(model, dataset, etas=NULL, ...) {
+  if (is.null(etas)) etas <- numeric()
+  standardGeneric("estimate")
+})
+
+#_______________________________________________________________________________
 #----                           quickPlot                                   ----
 #_______________________________________________________________________________
 
