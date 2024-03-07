@@ -6,15 +6,15 @@
 #' Compute standard deviation of error model.
 #' 
 #' @param object error model
-#' @param ipred individual predicted values
+#' @param x predicted values, numeric vector
 #' @param ... extra arguments
 #' @return the standard deviation
 #' @export
 #' @rdname computeSd
-computeSd <- function(object, ipred, ...) {
+computeSd <- function(object, x, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("computeSd", function(object, ipred, ...) {
+setGeneric("computeSd", function(object, x, ...) {
   standardGeneric("computeSd")
 })

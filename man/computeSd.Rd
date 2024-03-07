@@ -3,16 +3,19 @@
 \name{computeSd}
 \alias{computeSd}
 \alias{computeSd,proportional_error_model,numeric-method}
+\alias{computeSd,combined_error_model,numeric-method}
 \title{Compute standard deviation of error model.}
 \usage{
-computeSd(object, ipred, ...)
+computeSd(object, x, ...)
 
-\S4method{computeSd}{proportional_error_model,numeric}(object, ipred)
+\S4method{computeSd}{proportional_error_model,numeric}(object, x)
+
+\S4method{computeSd}{combined_error_model,numeric}(object, x)
 }
 \arguments{
 \item{object}{error model}
 
-\item{ipred}{individual predicted values}
+\item{x}{predicted values, numeric vector}
 
 \item{...}{extra arguments}
 }
