@@ -13,5 +13,7 @@ Campsismap model class.
 \item{\code{model}}{Campsis model ready for estimation}
 
 \item{\code{omega}}{pre-computed OMEGA matrix}
+
+\item{\code{eta_names}}{ETA names in model}
 }}
 

@@ -12,6 +12,6 @@ Combined error model class.
 \describe{
 \item{\code{prop}}{standard deviation of proportional error, numeric}
 
-\item{\code{add}}{additive error, same unit as observed variable, numeric}
+\item{\code{add}}{standard deviation of additive error, same unit as observed variable, numeric}
 }}
 

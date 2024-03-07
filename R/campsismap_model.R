@@ -7,12 +7,14 @@
 #' 
 #' @slot model Campsis model ready for estimation
 #' @slot omega pre-computed OMEGA matrix
+#' @slot eta_names ETA names in model
 #' @export
 setClass(
   "campsismap_model",
   representation(
     model="campsis_model",
     omega="matrix",
+    eta_names="character",
     variable="character"
   )
 )
@@ -24,7 +26,14 @@ setClass(
 #' @return a Campsismap mode
 #' @export
 CampsismapModel <- function(model, variable) {
+  # Derive OMEGA matrix
   omega <- rxodeMatrix(model)
+  
+  # Store ETA names once for all and delete names in OMEGA matrix
+  eta_names <- colnames(omega)
+  colnames(omega) <- NULL
+  rownames(omega) <- NULL
+
   concEquation <- model %>%
     find(Equation(variable))
   if (is.null(concEquation)) {
@@ -43,5 +52,5 @@ CampsismapModel <- function(model, variable) {
   model@parameters@list <- model@parameters@list %>%
     purrr::discard(~is(.x, "double_array_parameter"))
   
-  return(new("campsismap_model", model=model, omega=omega, variable=variable))
+  return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable))
 }

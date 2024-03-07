@@ -9,7 +9,7 @@ CombinedErrorModel(prop, add)
 \arguments{
 \item{prop}{standard deviation of proportional error, numeric}
 
-\item{add}{additive error, same unit as observed variable, numeric}
+\item{add}{standard deviation of additive error, same unit as observed variable, numeric}
 }
 \value{
 an error model

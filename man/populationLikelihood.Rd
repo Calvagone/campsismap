@@ -9,7 +9,7 @@ populationLikelihood(model, etas)
 \arguments{
 \item{model}{Campsismap model}
 
-\item{etas}{numeric vector}
+\item{etas}{unnamed numeric vector}
 }
 \value{
 population likelihood
