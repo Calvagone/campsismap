@@ -73,7 +73,7 @@ setMethod("add", signature = c("campsismap_model", "error_model"), definition = 
 #_______________________________________________________________________________
 
 #' @rdname quickPlot
-setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric"), function(model, dataset, etas) {
+setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logical"), function(model, dataset, etas, pop) {
   # If etas not provided, they are all 0
   if (length(etas)==0) {
     etas <- rep(0, length(model@eta_names))
@@ -89,16 +89,26 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric"), func
   
   # Simulate
   results <- individualPrediction(model=model, dataset=dataset, etas=etas)
+  if (pop) {
+    resultsPop <- individualPrediction(model=model, dataset=dataset, etas=rep(0, length(model@eta_names)))
+  }
   
   # Retrieve DV
   dv <- results %>%
     dplyr::filter(DV > 0)
   
-  plot <- spaghettiPlot(results %>% dplyr::mutate(ID=1), output=model@variable)
-  if (nrow(dv) > 0) {
+  plot <- ggplot2::ggplot(data=results, mapping=ggplot2::aes(x=TIME, y=.data[[model@variable]])) +
+    ggplot2::geom_line(linewidth=1, alpha=0.6, color="#B90E1E")
+  
+  if (pop) {
     plot <- plot +
-      ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="blue")
+      ggplot2::geom_line(data=resultsPop, linewidth=1, alpha=0.6, color="#6196B4")
   }
   
-  return(plot)
+  if (nrow(dv) > 0) {
+    plot <- plot +
+      ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="black")
+  }
+  
+  return(plot + ggplot2::theme_bw())
 })

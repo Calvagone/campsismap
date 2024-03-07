@@ -70,15 +70,20 @@ setGeneric("estimate", function(model, dataset, etas=NULL, ...) {
 #' @param model Campsismap or Campsis model
 #' @param dataset Campsis dataset
 #' @param etas individual parameters
+#' @param pop add population reference
 #' @param ... extra arguments
 #' @return a ggplot2 object
 #' @export
 #' @rdname quickPlot
-quickPlot <- function(model, dataset, etas, ...) {
+quickPlot <- function(model, dataset, etas, pop, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("quickPlot", function(model, dataset, etas=NULL, ...) {
-  if (is.null(etas)) etas <- numeric()
+setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, ...) {
+  if (is.null(pop)) pop <- TRUE
+  if (is.null(etas)) {
+    pop <- FALSE
+    etas <- numeric()
+  } 
   standardGeneric("quickPlot")
 })
