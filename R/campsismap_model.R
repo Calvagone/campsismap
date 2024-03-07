@@ -54,3 +54,34 @@ CampsismapModel <- function(model, variable) {
   
   return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable))
 }
+
+#_______________________________________________________________________________
+#----                           quickPlot                                   ----
+#_______________________________________________________________________________
+
+#' @rdname quickPlot
+setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric"), function(model, dataset, etas) {
+  
+  # Add simulation times to the dataset
+  times <- getObservationTimes(dataset)
+  if (length(times)==0) times=0
+  maxTime <- max(times) + 24
+  simulatedTimes <- seq(0, maxTime, length.out=1000)
+  dataset <- dataset %>%
+    add(Observations(simulatedTimes))
+  
+  # Simulate
+  results <- individualPrediction(model=model, dataset=dataset, etas=etas)
+  
+  # Retrieve DV
+  dv <- results %>%
+    dplyr::filter(DV > 0)
+  
+  plot <- spaghettiPlot(results %>% dplyr::mutate(ID=1), output=model@variable)
+  if (nrow(dv) > 0) {
+    plot <- plot +
+      ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="blue")
+  }
+  
+  return(plot)
+})

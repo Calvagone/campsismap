@@ -38,8 +38,11 @@ LazyData: true
 RoxygenNote: 7.2.3
 Collate:
     'global.R'
+    'utilities.R'
     'generic.R'
     'error_model.R'
+    'dataset.R'
     'campsismap_model.R'
+    'prediction.R'
     'likelihood_formula.R'
     'map_estimation.R'
