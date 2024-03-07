@@ -13,6 +13,7 @@ test_that("Method estimate works as expected", {
     addDV(tibble(TIME=20, DV=10))
   
   res <- model %>% estimate(dataset=dataset)
+  expect_equal(as.numeric(res$par) %>% round(3), c(-0.022, -0.140, -0.392))
   
   quickPlot(model, dataset, etas=res$par)
   
