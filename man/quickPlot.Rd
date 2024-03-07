@@ -5,7 +5,7 @@
 \alias{quickPlot,campsismap_model,dataset,numeric-method}
 \title{Quickly visualise the individual predictions with regard to the observed data.}
 \usage{
-quickPlot(model, dataset, etas, ...)
+quickPlot(model, dataset, etas = NULL, ...)
 
 \S4method{quickPlot}{campsismap_model,dataset,numeric}(model, dataset, etas)
 }

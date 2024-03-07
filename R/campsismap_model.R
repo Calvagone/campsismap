@@ -61,6 +61,10 @@ CampsismapModel <- function(model, variable) {
 
 #' @rdname quickPlot
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric"), function(model, dataset, etas) {
+  # If etas not provided, they are all 0
+  if (length(etas)==0) {
+    etas <- rep(0, length(model@eta_names))
+  }
   
   # Add simulation times to the dataset
   times <- getObservationTimes(dataset)

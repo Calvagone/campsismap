@@ -56,6 +56,7 @@ quickPlot <- function(model, dataset, etas, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("quickPlot", function(model, dataset, etas, ...) {
+setGeneric("quickPlot", function(model, dataset, etas=NULL, ...) {
+  if (is.null(etas)) etas <- numeric()
   standardGeneric("quickPlot")
 })
