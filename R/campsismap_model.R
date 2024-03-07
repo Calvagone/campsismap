@@ -8,6 +8,8 @@
 #' @slot model Campsis model ready for estimation
 #' @slot omega pre-computed OMEGA matrix
 #' @slot eta_names ETA names in model
+#' @slot variable variable name representing the predictions in model
+#' @slot error error model
 #' @export
 setClass(
   "campsismap_model",
@@ -15,8 +17,10 @@ setClass(
     model="campsis_model",
     omega="matrix",
     eta_names="character",
-    variable="character"
-  )
+    variable="character",
+    error="error_model"
+  ),
+  prototype=prototype(error=UndefinedErrorModel())
 )
 
 #' Create a new Campsismap model.
@@ -54,6 +58,15 @@ CampsismapModel <- function(model, variable) {
   
   return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable))
 }
+
+#_______________________________________________________________________________
+#----                           add                                   ----
+#_______________________________________________________________________________
+
+setMethod("add", signature = c("campsismap_model", "error_model"), definition = function(object, x) {
+  object@error <- x 
+  return(object)
+})
 
 #_______________________________________________________________________________
 #----                           quickPlot                                   ----

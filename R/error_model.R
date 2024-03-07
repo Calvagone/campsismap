@@ -15,6 +15,29 @@ setClass(
 )
 
 #_______________________________________________________________________________
+#----                     undefined_error_model class                       ----
+#_______________________________________________________________________________
+
+#' Undefined error model class.
+#' 
+#' @export
+setClass(
+  "undefined_error_model",
+  representation(
+  ),
+  contains="error_model",
+  prototype=prototype(fun=function(x) {stop("undefined error model")})
+)
+
+#' Undefined error model.
+#' 
+#' @return error model
+#' @export
+UndefinedErrorModel <- function() {
+  return(new("undefined_error_model"))
+}
+
+#_______________________________________________________________________________
 #----                    proportional_error_model class                     ----
 #_______________________________________________________________________________
 
@@ -33,7 +56,7 @@ setClass(
 #' Proportional error model.
 #' 
 #' @param prop standard deviation of proportional error, numeric
-#' @return an error model
+#' @return error model
 #' @export
 ProportionalErrorModel <- function(prop) {
   fun <- function(x, prop) {
@@ -69,7 +92,7 @@ setClass(
 #' 
 #' @param prop standard deviation of proportional error, numeric
 #' @param add standard deviation of additive error, same unit as observed variable, numeric
-#' @return an error model
+#' @return error model
 #' @export
 CombinedErrorModel <- function(prop, add) {
   fun <- function(x, prop, add) {

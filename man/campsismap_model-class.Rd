@@ -15,5 +15,9 @@ Campsismap model class.
 \item{\code{omega}}{pre-computed OMEGA matrix}
 
 \item{\code{eta_names}}{ETA names in model}
+
+\item{\code{variable}}{variable name representing the predictions in model}
+
+\item{\code{error}}{error model}
 }}
 

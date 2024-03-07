@@ -12,7 +12,7 @@ CombinedErrorModel(prop, add)
 \item{add}{standard deviation of additive error, same unit as observed variable, numeric}
 }
 \value{
-an error model
+error model
 }
 \description{
 Combined error model.

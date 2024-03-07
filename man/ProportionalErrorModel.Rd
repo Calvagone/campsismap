@@ -10,7 +10,7 @@ ProportionalErrorModel(prop)
 \item{prop}{standard deviation of proportional error, numeric}
 }
 \value{
-an error model
+error model
 }
 \description{
 Proportional error model.

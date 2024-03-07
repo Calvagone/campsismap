@@ -18,7 +18,22 @@ populationLikelihood <- function(model, etas) {
 #' @return population likelihood
 #' @export
 individualLikelihood <- function(model, dataset, etas) {
-
-
-  return(NULL)
+  # Retrieve error model
+  error <- model@error
+  if (all.equal(error, UndefinedErrorModel())) {
+    stop("No error model configured. Please add one.")
+  }
+  
+  # Simulate
+  results <- individualPrediction(model=model, dataset=dataset, etas=etas)
+  
+  # Compute likelihood based on error model
+  if (nrow(results) > 0) {
+    ipred <- results[, model@variable]
+    dv <- results$DV
+    sd <- error %>% computeSd(x=ipred)
+    return(dnorm(x=ipred, mean=dv, sd=sd, log=TRUE))
+  } else {
+    return(0)
+  }
 }
