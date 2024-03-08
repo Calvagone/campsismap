@@ -33,7 +33,7 @@ individualLikelihood <- function(model, dataset, samples, etas) {
     assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6), msg="times in dv and results do not match")
     
     sd <- model@error %>% computeSd(x=ipred)
-    return(dnorm(x=ipred, mean=dv, sd=sd, log=TRUE))
+    return(sum(dnorm(x=ipred, mean=dv, sd=sd, log=TRUE)))
   } else {
     return(0)
   }
