@@ -10,7 +10,8 @@ setClass(
   "model_cache",
   representation(
     mod="ANY",
-    eta_names="character"
+    eta_names="character",
+    variable="character"
   )
 )
 
@@ -24,6 +25,7 @@ setClass(
 setClass(
   "rxode2_model_cache",
   representation(
+    thetas="numeric"
   ),
   contains="model_cache"
 )
@@ -33,7 +35,7 @@ Rxode2ModelCache <- function(model, variable, eta_names, settings) {
   rxmod <- config$engineModel
   mod <- rxode2::rxode2(paste0(rxmod@code, collapse="\n"))
   
-  retValue <- new("rxode2_model_cache", mod=mod, eta_names=eta_names) %>%
+  retValue <- new("rxode2_model_cache", mod=mod, eta_names=eta_names, variable=variable) %>%
     setupModel(model=model, settings=settings)
   return(retValue)
 }
@@ -59,7 +61,7 @@ MrgsolveModelCache <- function(model, variable, eta_names, settings) {
   mrgmodHash <- digest::sha1(mrgmodCode)
   mod <- mrgsolve::mcode_cache(model=paste0("mod_", mrgmodHash), code=mrgmodCode, quiet=TRUE)
   
-  retValue <- new("mrgsolve_model_cache", mod=mod, eta_names=eta_names) %>%
+  retValue <- new("mrgsolve_model_cache", mod=mod, eta_names=eta_names, variable=variable) %>%
     setupModel(model=model, settings=settings)
   return(retValue)
 }
@@ -70,6 +72,7 @@ MrgsolveModelCache <- function(model, variable, eta_names, settings) {
 
 #' @rdname setupModel
 setMethod("setupModel", signature("rxode2_model_cache", "campsis_model", "simulation_settings"), function(object, model, settings, ...) {
+  object@thetas <- rxodeParams(model)
   return(object)
 })
 
@@ -105,11 +108,16 @@ setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "numeric", 
   mod <- object@mod
   solver <- settings@solver
   nocb <- settings@nocb@enable
+  keep <- object@variable
+  
+  names(etas) <- object@eta_names
+  params <- object@thetas %>%
+    append(etas)
   
   results <- rxode2::rxSolve(object=mod, params=params, omega=FALSE, sigma=NULL, events=dataset, returnType="tibble",
                          atol=solver@atol, rtol=solver@rtol, hmax=solver@hmax, maxsteps=solver@maxsteps, method=solver@method,
-                         keep=keep, inits=NULL, covsInterpolation=ifelse(nocb, "nocb", "locf"), addDosing=FALSE, addCov=FALSE, cores=1)
-
+                         keep=keep, inits=NULL, covsInterpolation=ifelse(nocb, "nocb", "locf"), addDosing=FALSE, addCov=FALSE, cores=1) %>%
+    dplyr::rename(TIME=time)
   return(results)
 })
 
