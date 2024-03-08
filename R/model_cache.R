@@ -2,10 +2,9 @@
 #----                        model_cache class                              ----
 #_______________________________________________________________________________
 
-#' Error model class.
+#' Model cache class.
 #' 
 #' @slot mod rxode2 or mrgsolve model (in cache)
-#' @slot settings Campsis settings
 #' @export
 setClass(
   "model_cache",
@@ -14,11 +13,57 @@ setClass(
   )
 )
 
-commonConfiguration <- function(model, settings) {
-  # Extra argument declare (for mrgsolve only)
-  user_declare <- settings@declare@variables
-  declare <- unique(settings@declare@variables)  
-                      
+#_______________________________________________________________________________
+#----                     rxode2_model_cache class                          ----
+#_______________________________________________________________________________
+
+#' Rxode2 model cache class.
+#' 
+#' @export
+setClass(
+  "rxode2_model_cache",
+  representation(
+  ),
+  contains="model_cache"
+)
+
+Rxode2ModelCache <- function(model, variable, eta_names) {
+  config <- commonConfiguration(model, variable, eta_names)
+  rxmod <- config$engineModel
+  mod <- rxode2::rxode2(paste0(rxmod@code, collapse="\n"))
+  return(new("rxode2_model_cache", mod=mod))
+}
+
+#_______________________________________________________________________________
+#----                   mrgsolve_model_cache class                          ----
+#_______________________________________________________________________________
+
+#' Mrgsolve model cache class.
+#' 
+#' @export
+setClass(
+  "mrgsolve_model_cache",
+  representation(
+  ),
+  contains="model_cache"
+)
+
+MrgsolveModelCache <- function(model, variable, eta_names) {
+  common <- commonConfiguration(model, variable, eta_names)
+  mrgmod <- config$engineModel
+  mrgmodCode <- mrgmod %>% toString()
+  mrgmodHash <- digest::sha1(mrgmodCode)
+  mod <- mrgsolve::mcode_cache(model=paste0("mod_", mrgmodHash), code=mrgmodCode, quiet=TRUE)
+  return(new("mrgsolve_model_cache", mod=mod))
+}
+
+
+#_______________________________________________________________________________
+#----                             Utilities                                 ----
+#_______________________________________________________________________________
+
+
+commonConfiguration <- function(model, variable, eta_names) {
   # Export to RxODE / rxode2
   if (is(dest, "rxode_engine")) {
     engineModel <- model %>% export(dest="RxODE")
@@ -35,19 +80,7 @@ commonConfiguration <- function(model, settings) {
       return(parameter)
     })
     
-    # Set ETA's as extra parameters in mrgsolve
-    etaNames <- (model@parameters %>% select("omega"))@list %>%
-      purrr::keep(~isDiag(.x)) %>%
-      purrr::map_chr(~getNameInModel(.x))
-    
-    # Extra care to additional outputs which need to be explicitly declared with mrgsolve 
-    outvars_ <- outvars[!(outvars %in% dropOthers())]
-    outvars_ <- unique(c(outvars_, "ARM", "EVENT_RELATED"))
-    if (dosing) {
-      # These variables are not output by default in mrgsolve when dosing is TRUE
-      outvars_ <- unique(c(outvars_, "EVID", "CMT", "AMT"))
-    }
-    engineModel <- structuralModel %>% export(dest="mrgsolve", outvars=outvars_, extra_params=c(etaNames, declare))
+    engineModel <- structuralModel %>% export(dest="mrgsolve", outvars=variable, extra_params=c(eta_names))
     
     # Disable IIV in mrgsolve model
     engineModel@omega <- character(0) # IIV managed by CAMPSIS
@@ -56,6 +89,6 @@ commonConfiguration <- function(model, settings) {
   # Compartment names
   cmtNames <- model@compartments@list %>% purrr::map_chr(~.x %>% toString())
   
-  return(list(declare=declare, engineModel=engineModel, cmtNames=cmtNames))
+  return(list(engineModel=engineModel, cmtNames=cmtNames))
 }
 

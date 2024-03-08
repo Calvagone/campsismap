@@ -42,6 +42,7 @@ Collate:
     'generic.R'
     'error_model.R'
     'dataset.R'
+    'model_cache.R'
     'campsismap_model.R'
     'prediction.R'
     'likelihood_formula.R'
