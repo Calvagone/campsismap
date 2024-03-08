@@ -28,11 +28,14 @@ setClass(
   contains="model_cache"
 )
 
-Rxode2ModelCache <- function(model, variable, eta_names) {
+Rxode2ModelCache <- function(model, variable, eta_names, settings) {
   config <- commonConfiguration(model, variable, eta_names, dest=new("rxode_engine"))
   rxmod <- config$engineModel
   mod <- rxode2::rxode2(paste0(rxmod@code, collapse="\n"))
-  return(new("rxode2_model_cache", mod=mod, eta_names=eta_names))
+  
+  retValue <- new("rxode2_model_cache", mod=mod, eta_names=eta_names) %>%
+    setupModel(settings=settings)
+  return(retValue)
 }
 
 #_______________________________________________________________________________
@@ -49,13 +52,16 @@ setClass(
   contains="model_cache"
 )
 
-MrgsolveModelCache <- function(model, variable, eta_names) {
+MrgsolveModelCache <- function(model, variable, eta_names, settings) {
   config <- commonConfiguration(model, variable, eta_names, dest=new("mrgsolve_engine"))
   mrgmod <- config$engineModel
   mrgmodCode <- mrgmod %>% campsismod::toString()
   mrgmodHash <- digest::sha1(mrgmodCode)
   mod <- mrgsolve::mcode_cache(model=paste0("mod_", mrgmodHash), code=mrgmodCode, quiet=TRUE)
-  return(new("mrgsolve_model_cache", mod=mod, eta_names=eta_names))
+  
+  retValue <- new("mrgsolve_model_cache", mod=mod, eta_names=eta_names) %>%
+    setupModel(settings=settings)
+  return(retValue)
 }
 
 #_______________________________________________________________________________
@@ -95,7 +101,7 @@ setMethod("setupModel", signature("mrgsolve_model_cache", "simulation_settings")
 #_______________________________________________________________________________
 
 #' @rdname simulateModel
-setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "simulation_settings"), function(object, dataset, etas, settings, ...) {
+setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "numeric", "simulation_settings"), function(object, dataset, etas, settings, ...) {
   mod <- object@mod
   solver <- settings@solver
   nocb <- settings@nocb@enable
@@ -108,7 +114,7 @@ setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "simulation
 })
 
 #' @rdname simulateModel
-setMethod("simulateModel", signature("mrgsolve_model_cache", "tbl_df", "simulation_settings"), function(object, dataset, etas, settings, ...) {
+setMethod("simulateModel", signature("mrgsolve_model_cache", "tbl_df", "numeric", "simulation_settings"), function(object, dataset, etas, settings, ...) {
   
   nocb <- settings@nocb@enable
   

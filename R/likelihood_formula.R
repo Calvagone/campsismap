@@ -13,7 +13,7 @@ populationLikelihood <- function(model, etas) {
 #' Individual likelihood (how far the individual concentrations deviate from the observations, weighted by the error model).
 #' 
 #' @param model Campsismap model
-#' @param dataset Campsis dataset
+#' @param dataset exported dataset
 #' @param etas unnamed numeric vector
 #' @return population likelihood
 #' @export
