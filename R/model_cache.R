@@ -117,6 +117,10 @@ setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "numeric", 
 setMethod("simulateModel", signature("mrgsolve_model_cache", "tbl_df", "numeric", "simulation_settings"), function(object, dataset, etas, settings, ...) {
   
   nocb <- settings@nocb@enable
+  names(etas) <- object@eta_names
+  
+  object@mod <- object@mod %>%
+    mrgsolve::update(param=etas)
   
   results <- object@mod %>%
     mrgsolve::data_set(data=dataset) %>%

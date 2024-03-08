@@ -35,8 +35,8 @@ individualLikelihood <- function(model, dataset, samples, etas) {
     dvTimes <- samples$TIME
     
     # Make sure times match...
-    assertthat::are_equal(length(dv)==nrow(results))
-    assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6))
+    assertthat::assert_that(length(dv)==nrow(results), msg="dv and results do not have the same number of observations")
+    assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6), msg="times in dv and results do not match")
     
     sd <- error %>% computeSd(x=ipred)
     return(dnorm(x=ipred, mean=dv, sd=sd, log=TRUE))

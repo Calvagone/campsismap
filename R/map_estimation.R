@@ -12,7 +12,7 @@ setMethod("estimate", signature("campsismap_model", "dataset", "numeric"), funct
   }
   
   datasetTbl <- dataset %>%
-    export(dest=dest)
+    export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
   
   samples <- dataset %>%
     getDV()

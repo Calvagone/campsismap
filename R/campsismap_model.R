@@ -20,7 +20,8 @@ setClass(
     variable="character",
     error="error_model",
     model_cache="model_cache",
-    settings="simulation_settings"
+    settings="simulation_settings",
+    dest="simulation_engine"
   ),
   prototype=prototype(error=UndefinedErrorModel())
 )
@@ -59,18 +60,20 @@ CampsismapModel <- function(model, variable, dest="mrgsolve") {
   model@parameters@list <- model@parameters@list %>%
     purrr::discard(~is(.x, "double_array_parameter"))
   
-  # Settings TO DO
-  settings <- Settings()
+  # Settings
+  settings <- preprocessSettings(Settings(), dest=dest)
   
   if (dest=="mrgsolve") {
+    dest_ <- new("mrgsolve_engine")
     model_cache <- MrgsolveModelCache(model=model, variable=variable, eta_names=eta_names, settings=settings)
   } else if (dest=="rxode2") {
+    dest_ <- new("rxode_engine")
     model_cache <- Rxode2ModelCache(model=model, variable=variable, eta_names=eta_names, settings=settings)
   } else {
     stop("Engine not supported")
   }
   
-  return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable, model_cache=model_cache, settings=settings))
+  return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable, model_cache=model_cache, settings=settings, dest=dest_))
 }
 
 #_______________________________________________________________________________
