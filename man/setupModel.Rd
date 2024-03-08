@@ -2,18 +2,20 @@
 % Please edit documentation in R/generic.R, R/model_cache.R
 \name{setupModel}
 \alias{setupModel}
-\alias{setupModel,rxode2_model_cache,simulation_settings-method}
-\alias{setupModel,mrgsolve_model_cache,simulation_settings-method}
+\alias{setupModel,rxode2_model_cache,campsis_model,simulation_settings-method}
+\alias{setupModel,mrgsolve_model_cache,campsis_model,simulation_settings-method}
 \title{Setup model (once before the estimation and after the model compilation).}
 \usage{
-setupModel(object, settings, ...)
+setupModel(object, model, settings, ...)
 
-\S4method{setupModel}{rxode2_model_cache,simulation_settings}(object, settings, ...)
+\S4method{setupModel}{rxode2_model_cache,campsis_model,simulation_settings}(object, model, settings, ...)
 
-\S4method{setupModel}{mrgsolve_model_cache,simulation_settings}(object, settings, ...)
+\S4method{setupModel}{mrgsolve_model_cache,campsis_model,simulation_settings}(object, model, settings, ...)
 }
 \arguments{
 \item{object}{model cache}
+
+\item{model}{original model}
 
 \item{settings}{simulation settings}
 

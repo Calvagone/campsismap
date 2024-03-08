@@ -9,12 +9,12 @@ individualPrediction(model, dataset, etas)
 \arguments{
 \item{model}{Campsismap model}
 
-\item{dataset}{Campsis dataset}
+\item{dataset}{exported Campsis dataset}
 
 \item{etas}{unnamed numeric vector}
 }
 \value{
-a dataframe with 3 columns: TIME, <VARIABLE>, DV
+a dataframe with 2 columns: TIME, <VARIABLE>
 }
 \description{
 Individual predictions calculation.

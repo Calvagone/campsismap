@@ -2,20 +2,22 @@
 % Please edit documentation in R/generic.R, R/model_cache.R
 \name{simulateModel}
 \alias{simulateModel}
-\alias{simulateModel,rxode2_model_cache,tbl_df,simulation_settings-method}
-\alias{simulateModel,mrgsolve_model_cache,tbl_df,simulation_settings-method}
+\alias{simulateModel,rxode2_model_cache,tbl_df,numeric,simulation_settings-method}
+\alias{simulateModel,mrgsolve_model_cache,tbl_df,numeric,simulation_settings-method}
 \title{Simulate model.}
 \usage{
-simulateModel(object, dataset, settings, ...)
+simulateModel(object, dataset, etas, settings, ...)
 
-\S4method{simulateModel}{rxode2_model_cache,tbl_df,simulation_settings}(object, dataset, etas, settings, ...)
+\S4method{simulateModel}{rxode2_model_cache,tbl_df,numeric,simulation_settings}(object, dataset, etas, settings, ...)
 
-\S4method{simulateModel}{mrgsolve_model_cache,tbl_df,simulation_settings}(object, dataset, etas, settings, ...)
+\S4method{simulateModel}{mrgsolve_model_cache,tbl_df,numeric,simulation_settings}(object, dataset, etas, settings, ...)
 }
 \arguments{
 \item{object}{model cache}
 
 \item{dataset}{dataset}
+
+\item{etas}{individual parameters to simulate}
 
 \item{settings}{simulation settings}
 

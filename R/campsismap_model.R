@@ -100,16 +100,18 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
   simulatedTimes <- seq(0, maxTime, length.out=1000)
   dataset <- dataset %>%
     add(Observations(simulatedTimes))
+  datasetTbl <- dataset %>%
+    export(dest="RxODE")
   
   # Simulate
-  results <- individualPrediction(model=model, dataset=dataset, etas=etas)
+  results <- individualPrediction(model=model, dataset=datasetTbl, etas=etas)
   if (pop) {
-    resultsPop <- individualPrediction(model=model, dataset=dataset, etas=rep(0, length(model@eta_names)))
+    resultsPop <- individualPrediction(model=model, dataset=datasetTbl, etas=rep(0, length(model@eta_names)))
   }
   
   # Retrieve DV
-  dv <- results %>%
-    dplyr::filter(DV > 0)
+  dv <- dataset %>%
+    getDV()
   
   plot <- ggplot2::ggplot(data=results, mapping=ggplot2::aes(x=TIME, y=.data[[model@variable]])) +
     ggplot2::geom_line(linewidth=1, alpha=0.6, color="#B90E1E")

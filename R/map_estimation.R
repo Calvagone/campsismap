@@ -14,13 +14,16 @@ setMethod("estimate", signature("campsismap_model", "dataset", "numeric"), funct
   datasetTbl <- dataset %>%
     export(dest=dest)
   
-  likelihoodFun <- function(par, model, dataset) {
+  samples <- dataset %>%
+    getDV()
+  
+  likelihoodFun <- function(par, model, dataset, samples) {
     popLL <- populationLikelihood(model=model, etas=par)
-    indLL <- individualLikelihood(model=model, dataset=dataset, etas=par)
+    indLL <- individualLikelihood(model=model, dataset=dataset, samples=samples, etas=par)
     return(-2*(popLL + indLL))
   }
   
-  retValue <- optimx::optimr(par=etas, fn=likelihoodFun, hessian=FALSE, method="L-BFGS-B", model=model, dataset=datasetTbl)
+  retValue <- optimx::optimr(par=etas, fn=likelihoodFun, hessian=FALSE, method="L-BFGS-B", model=model, dataset=datasetTbl, samples=samples)
   return(retValue)
 })
 

@@ -62,6 +62,25 @@ setGeneric("estimate", function(model, dataset, etas=NULL, ...) {
 })
 
 #_______________________________________________________________________________
+#----                              getDV                                    ----
+#_______________________________________________________________________________
+
+#' Get information related to the dependent variable (DV), i.e. add the observed samples.
+#' 
+#' @param object generic object
+#' @param ... extra arguments
+#' @return tibble with the samples (TIME and DV)
+#' @export
+#' @rdname getDV
+getDV <- function(object, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("getDV", function(object, ...) {
+  standardGeneric("getDV")
+})
+
+#_______________________________________________________________________________
 #----                           quickPlot                                   ----
 #_______________________________________________________________________________
 
@@ -95,16 +114,17 @@ setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, ...) {
 #' Setup model (once before the estimation and after the model compilation).
 #' 
 #' @param object model cache
+#' @param model original model
 #' @param settings simulation settings
 #' @param ... extra arguments
 #' @return updated model
 #' @export
 #' @rdname setupModel
-setupModel <- function(object, settings, ...) {
+setupModel <- function(object, model, settings, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("setupModel", function(object, settings, ...) {
+setGeneric("setupModel", function(object, model, settings, ...) {
   standardGeneric("setupModel")
 })
 
@@ -116,15 +136,16 @@ setGeneric("setupModel", function(object, settings, ...) {
 #' 
 #' @param object model cache
 #' @param dataset dataset
+#' @param etas individual parameters to simulate
 #' @param settings simulation settings
 #' @param ... extra arguments
 #' @return updated model
 #' @export
 #' @rdname simulateModel
-simulateModel <- function(object, dataset, settings, ...) {
+simulateModel <- function(object, dataset, etas, settings, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("simulateModel", function(object, dataset, settings, ...) {
+setGeneric("simulateModel", function(object, dataset, etas, settings, ...) {
   standardGeneric("simulateModel")
 })

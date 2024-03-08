@@ -34,7 +34,7 @@ Rxode2ModelCache <- function(model, variable, eta_names, settings) {
   mod <- rxode2::rxode2(paste0(rxmod@code, collapse="\n"))
   
   retValue <- new("rxode2_model_cache", mod=mod, eta_names=eta_names) %>%
-    setupModel(settings=settings)
+    setupModel(model=model, settings=settings)
   return(retValue)
 }
 
@@ -60,7 +60,7 @@ MrgsolveModelCache <- function(model, variable, eta_names, settings) {
   mod <- mrgsolve::mcode_cache(model=paste0("mod_", mrgmodHash), code=mrgmodCode, quiet=TRUE)
   
   retValue <- new("mrgsolve_model_cache", mod=mod, eta_names=eta_names) %>%
-    setupModel(settings=settings)
+    setupModel(model=model, settings=settings)
   return(retValue)
 }
 
@@ -69,16 +69,16 @@ MrgsolveModelCache <- function(model, variable, eta_names, settings) {
 #_______________________________________________________________________________
 
 #' @rdname setupModel
-setMethod("setupModel", signature("rxode2_model_cache", "simulation_settings"), function(object, settings, ...) {
+setMethod("setupModel", signature("rxode2_model_cache", "campsis_model", "simulation_settings"), function(object, model, settings, ...) {
   return(object)
 })
 
 #' @rdname setupModel
-setMethod("setupModel", signature("mrgsolve_model_cache", "simulation_settings"), function(object, settings, ...) {
+setMethod("setupModel", signature("mrgsolve_model_cache", "campsis_model", "simulation_settings"), function(object, model, settings, ...) {
   mod <- object@mod
   
   # Retrieve THETA's
-  thetas <- model@parameters %>% select("theta")
+  thetas <- model@parameters %>% campsismod::select("theta")
   thetaParams <- thetas@list %>%
     purrr::set_names(thetas@list %>% purrr::map_chr(~.x %>% getNameInModel)) %>%
     purrr::map(~.x@value)

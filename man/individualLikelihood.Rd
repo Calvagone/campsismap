@@ -4,12 +4,14 @@
 \alias{individualLikelihood}
 \title{Individual likelihood (how far the individual concentrations deviate from the observations, weighted by the error model).}
 \usage{
-individualLikelihood(model, dataset, etas)
+individualLikelihood(model, dataset, samples, etas)
 }
 \arguments{
 \item{model}{Campsismap model}
 
-\item{dataset}{Campsis dataset}
+\item{dataset}{exported dataset}
+
+\item{samples}{individual samples}
 
 \item{etas}{unnamed numeric vector}
 }

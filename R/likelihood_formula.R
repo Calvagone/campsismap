@@ -14,10 +14,11 @@ populationLikelihood <- function(model, etas) {
 #' 
 #' @param model Campsismap model
 #' @param dataset exported dataset
+#' @param samples individual samples
 #' @param etas unnamed numeric vector
 #' @return population likelihood
 #' @export
-individualLikelihood <- function(model, dataset, etas) {
+individualLikelihood <- function(model, dataset, samples, etas) {
   # Retrieve error model
   error <- model@error
   if (is(error, class(UndefinedErrorModel()))) {
@@ -25,15 +26,23 @@ individualLikelihood <- function(model, dataset, etas) {
   }
 
   # Simulate
-  results <- individualPrediction(model=model, dataset=dataset, etas=etas)
-  
-  # Compute likelihood based on error model
-  if (nrow(results) > 0) {
+  if (length(samples) > 0) {
+    results <- individualPrediction(model=model, dataset=dataset, etas=etas)
+    
     ipred <- results %>% dplyr::pull(model@variable)
-    dv <- results %>% dplyr::pull(DV)
+    ipredTimes <- results$TIME
+    dv <- samples$DV
+    dvTimes <- samples$TIME
+    
+    # Make sure times match...
+    assertthat::are_equal(length(dv)==nrow(results))
+    assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6))
+    
     sd <- error %>% computeSd(x=ipred)
     return(dnorm(x=ipred, mean=dv, sd=sd, log=TRUE))
   } else {
     return(0)
   }
 }
+
+
