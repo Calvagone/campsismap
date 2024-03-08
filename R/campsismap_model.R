@@ -18,7 +18,8 @@ setClass(
     omega="matrix",
     eta_names="character",
     variable="character",
-    error="error_model"
+    error="error_model",
+    model_cache="model_cache"
   ),
   prototype=prototype(error=UndefinedErrorModel())
 )
@@ -27,9 +28,10 @@ setClass(
 #' 
 #' @param model Campsis model
 #' @param variable variable of the concentration in model
+#' @param dest destination engine, 'mrgsolve' or 'rxode2'
 #' @return a Campsismap mode
 #' @export
-CampsismapModel <- function(model, variable) {
+CampsismapModel <- function(model, variable, dest="mrgsolve") {
   # Derive OMEGA matrix
   omega <- rxodeMatrix(model)
   
@@ -56,7 +58,15 @@ CampsismapModel <- function(model, variable) {
   model@parameters@list <- model@parameters@list %>%
     purrr::discard(~is(.x, "double_array_parameter"))
   
-  return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable))
+  if (dest=="mrgsolve") {
+    model_cache <- MrgsolveModelCache(model=model, variable=variable, eta_names=eta_names)
+  } else if (dest=="rxode2") {
+    model_cache <- Rxode2ModelCache(model=model, variable=variable, eta_names=eta_names)
+  } else {
+    stop("Engine not supported")
+  }
+  
+  return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable, model_cache=model_cache))
 }
 
 #_______________________________________________________________________________

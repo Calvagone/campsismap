@@ -87,3 +87,44 @@ setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, ...) {
   } 
   standardGeneric("quickPlot")
 })
+
+#_______________________________________________________________________________
+#----                           setupModel                                  ----
+#_______________________________________________________________________________
+
+#' Setup model (once before the estimation and after the model compilation).
+#' 
+#' @param object model cache
+#' @param settings simulation settings
+#' @param ... extra arguments
+#' @return updated model
+#' @export
+#' @rdname setupModel
+setupModel <- function(object, settings, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("setupModel", function(object, settings, ...) {
+  standardGeneric("setupModel")
+})
+
+#_______________________________________________________________________________
+#----                           simulateModel                               ----
+#_______________________________________________________________________________
+
+#' Simulate model.
+#' 
+#' @param object model cache
+#' @param dataset dataset
+#' @param settings simulation settings
+#' @param ... extra arguments
+#' @return updated model
+#' @export
+#' @rdname simulateModel
+simulateModel <- function(object, dataset, settings, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("simulateModel", function(object, dataset, settings, ...) {
+  standardGeneric("simulateModel")
+})

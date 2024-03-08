@@ -9,7 +9,8 @@
 setClass(
   "model_cache",
   representation(
-    mod="ANY"
+    mod="ANY",
+    eta_names="character"
   )
 )
 
@@ -28,10 +29,10 @@ setClass(
 )
 
 Rxode2ModelCache <- function(model, variable, eta_names) {
-  config <- commonConfiguration(model, variable, eta_names)
+  config <- commonConfiguration(model, variable, eta_names, dest=new("rxode_engine"))
   rxmod <- config$engineModel
   mod <- rxode2::rxode2(paste0(rxmod@code, collapse="\n"))
-  return(new("rxode2_model_cache", mod=mod))
+  return(new("rxode2_model_cache", mod=mod, eta_names=eta_names))
 }
 
 #_______________________________________________________________________________
@@ -49,13 +50,75 @@ setClass(
 )
 
 MrgsolveModelCache <- function(model, variable, eta_names) {
-  common <- commonConfiguration(model, variable, eta_names)
+  config <- commonConfiguration(model, variable, eta_names, dest=new("mrgsolve_engine"))
   mrgmod <- config$engineModel
-  mrgmodCode <- mrgmod %>% toString()
+  mrgmodCode <- mrgmod %>% campsismod::toString()
   mrgmodHash <- digest::sha1(mrgmodCode)
   mod <- mrgsolve::mcode_cache(model=paste0("mod_", mrgmodHash), code=mrgmodCode, quiet=TRUE)
-  return(new("mrgsolve_model_cache", mod=mod))
+  return(new("mrgsolve_model_cache", mod=mod, eta_names=eta_names))
 }
+
+#_______________________________________________________________________________
+#----                           setupModel                                  ----
+#_______________________________________________________________________________
+
+#' @rdname setupModel
+setMethod("setupModel", signature("rxode2_model_cache", "simulation_settings"), function(object, settings, ...) {
+  return(object)
+})
+
+#' @rdname setupModel
+setMethod("setupModel", signature("mrgsolve_model_cache", "simulation_settings"), function(object, settings, ...) {
+  mod <- object@mod
+  
+  # Retrieve THETA's
+  thetas <- model@parameters %>% select("theta")
+  thetaParams <- thetas@list %>%
+    purrr::set_names(thetas@list %>% purrr::map_chr(~.x %>% getNameInModel)) %>%
+    purrr::map(~.x@value)
+  
+  # Apply simulation settings once for all
+  solver <- settings@solver
+  mod <- mod %>% mrgsolve::update(atol=solver@atol, rtol=solver@rtol, hmax=solver@hmax, maxsteps=solver@maxsteps)
+  
+  # Update thetas once for all
+  if (length(thetaParams) > 0) {
+    mod <- mod %>% mrgsolve::update(param=thetaParams)
+  }
+  
+  object@mod <- mod
+  return(object)
+})
+
+#_______________________________________________________________________________
+#----                           simulateModel                               ----
+#_______________________________________________________________________________
+
+#' @rdname simulateModel
+setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "simulation_settings"), function(object, dataset, etas, settings, ...) {
+  mod <- object@mod
+  solver <- settings@solver
+  nocb <- settings@nocb@enable
+  
+  results <- rxode2::rxSolve(object=mod, params=params, omega=FALSE, sigma=NULL, events=dataset, returnType="tibble",
+                         atol=solver@atol, rtol=solver@rtol, hmax=solver@hmax, maxsteps=solver@maxsteps, method=solver@method,
+                         keep=keep, inits=NULL, covsInterpolation=ifelse(nocb, "nocb", "locf"), addDosing=FALSE, addCov=FALSE, cores=1)
+
+  return(results)
+})
+
+#' @rdname simulateModel
+setMethod("simulateModel", signature("mrgsolve_model_cache", "tbl_df", "simulation_settings"), function(object, dataset, etas, settings, ...) {
+  
+  nocb <- settings@nocb@enable
+  
+  results <- object@mod %>%
+    mrgsolve::data_set(data=dataset) %>%
+    mrgsolve::mrgsim(obsonly=TRUE, output="df", nocb=nocb) %>%
+    tibble::as_tibble()
+  
+  return(results)
+})
 
 
 #_______________________________________________________________________________
@@ -63,7 +126,7 @@ MrgsolveModelCache <- function(model, variable, eta_names) {
 #_______________________________________________________________________________
 
 
-commonConfiguration <- function(model, variable, eta_names) {
+commonConfiguration <- function(model, variable, eta_names, dest) {
   # Export to RxODE / rxode2
   if (is(dest, "rxode_engine")) {
     engineModel <- model %>% export(dest="RxODE")
@@ -80,14 +143,14 @@ commonConfiguration <- function(model, variable, eta_names) {
       return(parameter)
     })
     
-    engineModel <- structuralModel %>% export(dest="mrgsolve", outvars=variable, extra_params=c(eta_names))
+    engineModel <- structuralModel %>% export(dest="mrgsolve", outvars=variable, extra_params=eta_names)
     
     # Disable IIV in mrgsolve model
     engineModel@omega <- character(0) # IIV managed by CAMPSIS
   }
   
   # Compartment names
-  cmtNames <- model@compartments@list %>% purrr::map_chr(~.x %>% toString())
+  cmtNames <- model@compartments@list %>% purrr::map_chr(~.x %>% campsismod::toString())
   
   return(list(engineModel=engineModel, cmtNames=cmtNames))
 }
