@@ -17,6 +17,11 @@ setMethod("estimate", signature("campsismap_model", "dataset", "numeric"), funct
   samples <- dataset %>%
     getDV()
   
+  # Check error model
+  if (is(model@error, class(UndefinedErrorModel()))) {
+    stop("No error model configured. Please add one.")
+  }
+  
   likelihoodFun <- function(par, model, dataset, samples) {
     popLL <- populationLikelihood(model=model, etas=par)
     indLL <- individualLikelihood(model=model, dataset=dataset, samples=samples, etas=par)
@@ -26,4 +31,3 @@ setMethod("estimate", signature("campsismap_model", "dataset", "numeric"), funct
   retValue <- optimx::optimr(par=etas, fn=likelihoodFun, hessian=FALSE, method="L-BFGS-B", model=model, dataset=datasetTbl, samples=samples)
   return(retValue)
 })
-

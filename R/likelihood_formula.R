@@ -19,15 +19,9 @@ populationLikelihood <- function(model, etas) {
 #' @return population likelihood
 #' @export
 individualLikelihood <- function(model, dataset, samples, etas) {
-  # Retrieve error model
-  error <- model@error
-  if (is(error, class(UndefinedErrorModel()))) {
-    stop("No error model configured. Please add one.")
-  }
-
   # Simulate
   if (length(samples) > 0) {
-    results <- individualPrediction(model=model, dataset=dataset, etas=etas)
+    results <- simulateModel(object=model@model_cache, dataset=dataset, etas=etas, settings=model@settings)
     
     ipred <- results %>% dplyr::pull(model@variable)
     ipredTimes <- results$TIME
@@ -38,7 +32,7 @@ individualLikelihood <- function(model, dataset, samples, etas) {
     assertthat::assert_that(length(dv)==nrow(results), msg="dv and results do not have the same number of observations")
     assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6), msg="times in dv and results do not match")
     
-    sd <- error %>% computeSd(x=ipred)
+    sd <- model@error %>% computeSd(x=ipred)
     return(dnorm(x=ipred, mean=dv, sd=sd, log=TRUE))
   } else {
     return(0)

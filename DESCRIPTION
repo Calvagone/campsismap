@@ -44,6 +44,7 @@ Collate:
     'dataset.R'
     'model_cache.R'
     'campsismap_model.R'
-    'prediction.R'
     'likelihood_formula.R'
     'map_estimation.R'
+    'quick_plot.R'
+    

@@ -146,6 +146,8 @@ simulateModel <- function(object, dataset, etas, settings, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("simulateModel", function(object, dataset, etas, settings, ...) {
+setGeneric("simulateModel", function(object, dataset, etas=NULL, settings=NULL, ...) {
+  if (is.null(etas)) etas <- numeric()
+  if (is.null(settings) && is(object, "campsismap_model")) settings <- object@settings
   standardGeneric("simulateModel")
 })

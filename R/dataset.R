@@ -31,10 +31,17 @@ addDVDelegate <- function(object, x) {
 
 #' @rdname getDV
 setMethod("getDV", signature("dataset"), function(object) {
-  observations <- dataset@arms@list[[1]]@protocol@observations
+  observations <- object@arms@list[[1]]@protocol@observations
   retValue <- observations@list %>%
-    purrr::map_df(~tibble::tibble(TIME=.x@times, DV=.x@dv)) %>%
-    dplyr::filter(!is.na(DV))
+    purrr::map_df(.f=function(x) {
+      times <- x@times
+      dv <- x@dv
+      if (length(dv) > 0) {
+        return(tibble::tibble(TIME=times, DV=dv))
+      } else {
+        return(tibble::tibble(TIME=numeric(), DV=numeric()))
+      }
+    })
   return(retValue)
 })
 

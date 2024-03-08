@@ -117,7 +117,8 @@ setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "numeric", 
   results <- rxode2::rxSolve(object=mod, params=params, omega=FALSE, sigma=NULL, events=dataset, returnType="tibble",
                          atol=solver@atol, rtol=solver@rtol, hmax=solver@hmax, maxsteps=solver@maxsteps, method=solver@method,
                          keep=keep, inits=NULL, covsInterpolation=ifelse(nocb, "nocb", "locf"), addDosing=FALSE, addCov=FALSE, cores=1) %>%
-    dplyr::rename(TIME=time)
+    dplyr::rename(TIME=time) %>%
+    dplyr::select(dplyr::all_of(c("TIME", object@variable)))
   return(results)
 })
 
@@ -133,11 +134,11 @@ setMethod("simulateModel", signature("mrgsolve_model_cache", "tbl_df", "numeric"
   results <- object@mod %>%
     mrgsolve::data_set(data=dataset) %>%
     mrgsolve::mrgsim(obsonly=TRUE, output="df", nocb=nocb) %>%
-    tibble::as_tibble()
+    tibble::as_tibble()%>%
+    dplyr::select(dplyr::all_of(c("TIME", object@variable)))
   
   return(results)
 })
-
 
 #_______________________________________________________________________________
 #----                             Utilities                                 ----
