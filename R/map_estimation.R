@@ -6,21 +6,25 @@
 #' @rdname estimate
 #' @importFrom optimx optimr
 setMethod("estimate", signature("campsismap_model", "dataset", "numeric"), function(model, dataset, etas, ...) {
-  # If etas not provided, they are all 0
-  if (length(etas)==0) {
-    etas <- rep(0, length(model@eta_names))
-  }
-  
-  datasetTbl <- dataset %>%
-    export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
-  
-  samples <- dataset %>%
-    getDV()
   
   # Check error model
   if (is(model@error, class(UndefinedErrorModel()))) {
     stop("No error model configured. Please add one.")
   }
+  
+  # Check model is ready
+  checkModelReady(model)
+  
+  # If etas not provided, they are all 0
+  if (length(etas)==0) {
+    etas <- rep(0, length(model@eta_names))
+  }
+
+  datasetTbl <- dataset %>%
+    export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
+  
+  samples <- dataset %>%
+    getDV()
   
   likelihoodFun <- function(par, model, dataset, samples) {
     popLL <- populationLikelihood(model=model, etas=par)

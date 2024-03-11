@@ -5,6 +5,13 @@
 
 #' @rdname quickPlot
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logical"), function(model, dataset, etas, pop) {
+  
+  # Check model is ready
+  if (!checkModelReady(model, raise_error=FALSE)) {
+    model <- model %>%
+      setup(dest="mrgsolve")
+  }
+  
   # If etas not provided, they are all 0
   if (length(etas)==0) {
     etas <- rep(0, length(model@eta_names))

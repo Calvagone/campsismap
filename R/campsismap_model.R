@@ -30,10 +30,9 @@ setClass(
 #' 
 #' @param model Campsis model
 #' @param variable variable of the concentration in model
-#' @param dest destination engine, 'mrgsolve' or 'rxode2'
 #' @return a Campsismap mode
 #' @export
-CampsismapModel <- function(model, variable, dest="mrgsolve") {
+CampsismapModel <- function(model, variable) {
   # Derive OMEGA matrix
   omega <- rxodeMatrix(model)
   
@@ -59,21 +58,8 @@ CampsismapModel <- function(model, variable, dest="mrgsolve") {
   # Discard omegas and sigmas
   model@parameters@list <- model@parameters@list %>%
     purrr::discard(~is(.x, "double_array_parameter"))
-  
-  # Settings
-  settings <- preprocessSettings(Settings(), dest=dest)
-  
-  if (dest=="mrgsolve") {
-    dest_ <- new("mrgsolve_engine")
-    model_cache <- MrgsolveModelCache(model=model, variable=variable, eta_names=eta_names, settings=settings)
-  } else if (dest=="rxode2") {
-    dest_ <- new("rxode_engine")
-    model_cache <- Rxode2ModelCache(model=model, variable=variable, eta_names=eta_names, settings=settings)
-  } else {
-    stop("Engine not supported")
-  }
-  
-  return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable, model_cache=model_cache, settings=settings, dest=dest_))
+
+  return(new("campsismap_model", model=model, omega=omega, eta_names=eta_names, variable=variable))
 }
 
 #_______________________________________________________________________________
@@ -82,6 +68,33 @@ CampsismapModel <- function(model, variable, dest="mrgsolve") {
 
 setMethod("add", signature = c("campsismap_model", "error_model"), definition = function(object, x) {
   object@error <- x 
+  return(object)
+})
+
+#_______________________________________________________________________________
+#----                             setup                                     ----
+#_______________________________________________________________________________
+
+#' @rdname setup
+setMethod("setup", signature=c("campsismap_model", "character", "simulation_settings"), definition = function(object, dest, settings) {
+  
+  # Settings
+  settings <- preprocessSettings(Settings(), dest=dest)
+  
+  if (dest=="mrgsolve") {
+    dest_ <- new("mrgsolve_engine")
+    model_cache <- MrgsolveModelCache(model=object@model, variable=object@variable, eta_names=object@eta_names, settings=settings)
+  } else if (dest=="rxode2") {
+    dest_ <- new("rxode_engine")
+    model_cache <- Rxode2ModelCache(model=object@model, variable=object@variable, eta_names=object@eta_names, settings=settings)
+  } else {
+    stop("Engine not supported")
+  }
+  
+  object@dest <- dest_
+  object@model_cache <- model_cache
+  object@settings <- settings
+  
   return(object)
 })
 
@@ -96,4 +109,16 @@ setMethod("simulateModel", signature("campsismap_model", "dataset", "numeric", "
   
   return(simulateModel(object=object@model_cache, dataset=datasetTbl, etas=etas, settings=settings, ...))
 })
+
+
+checkModelReady <- function(object, raise_error=TRUE) {
+  if (is.null(object@model_cache@mod)) {
+    if (raise_error) {
+      stop("Please setup your model first. See ?setup.")
+    } else {
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
 

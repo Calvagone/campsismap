@@ -129,6 +129,28 @@ setGeneric("initCache", function(object, model, settings, ...) {
 })
 
 #_______________________________________________________________________________
+#----                             setup                                     ----
+#_______________________________________________________________________________
+
+#' Setup campsismap object by caching the model.
+#' 
+#' @param object campsismap object
+#' @param dest destination engine
+#' @param settings simulation settings
+#' @param ... extra arguments
+#' @return updated object
+#' @export
+#' @rdname setup
+setup <- function(object, dest, settings, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("setup", function(object, dest, settings=NULL, ...) {
+  if (is.null(settings)) settings <- Settings()
+  standardGeneric("setup")
+})
+
+#_______________________________________________________________________________
 #----                           simulateModel                               ----
 #_______________________________________________________________________________
 

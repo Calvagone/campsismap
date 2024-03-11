@@ -4,14 +4,12 @@
 \alias{CampsismapModel}
 \title{Create a new Campsismap model.}
 \usage{
-CampsismapModel(model, variable, dest = "mrgsolve")
+CampsismapModel(model, variable)
 }
 \arguments{
 \item{model}{Campsis model}
 
 \item{variable}{variable of the concentration in model}
-
-\item{dest}{destination engine, 'mrgsolve' or 'rxode2'}
 }
 \value{
 a Campsismap mode

@@ -12,11 +12,16 @@ test_that(getTestName("Method simulateModel works as expected"), {
     add(Bolus(time=0, amount=1000)) %>%
     addDV(tibble(TIME=20, DV=10))
   
-  prediction <- expression(model %>% simulateModel(dataset=dataset, etas=c(0,0,-0.4)))
-  test <- expression(
-    expect_equal(results$CONC %>% round(3), c(8.821)),
+  env <- environment()
+  prediction <- expression(
+    model %>%
+      campsismap::setup(dest=destEngine) %>%
+      simulateModel(dataset=dataset, etas=c(0,0,-0.4))
   )
-  
+  test <- expression(
+    expect_equal(results$CONC %>% round(3), c(8.821))
+  )
+
   campsismapTest(prediction, test, env=environment())
   
   quickPlot(model, dataset)

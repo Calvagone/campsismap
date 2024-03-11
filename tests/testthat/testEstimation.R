@@ -7,14 +7,18 @@ source(paste0("", "testUtils.R"))
 
 test_that(getTestName("Method estimate works as expected when 1 sample is provided"), {
   
-  model <- CampsismapModel(model=model_suite$testing$pk$'1cpt_fo', "CONC", dest="mrgsolve") %>%
+  model <- CampsismapModel(model=model_suite$testing$pk$'1cpt_fo', "CONC") %>%
     add(ProportionalErrorModel(0.1))
   
   dataset <- Dataset() %>%
     add(Bolus(time=0, amount=1000)) %>%
     addDV(tibble(TIME=20, DV=10))
   
-  estimation <- expression(model %>% estimate(dataset=dataset))
+  model <- model %>% setup(dest="rxode2") 
+  
+  model %>% estimate(dataset=dataset)
+  
+  estimation <- expression()
   test <- expression(
     expect_equal(as.numeric(results$par) %>% round(3), c(-0.022, -0.140, -0.392)),
     quickPlot(model, dataset, etas=results$par)
