@@ -100,11 +100,11 @@ setMethod("initCache", signature("mrgsolve_model_cache", "campsis_model", "simul
 })
 
 #_______________________________________________________________________________
-#----                           simulateModel                               ----
+#----                              predict                                  ----
 #_______________________________________________________________________________
 
-#' @rdname simulateModel
-setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "numeric", "simulation_settings"), function(object, dataset, etas, settings, ...) {
+#' @rdname predict
+setMethod("predict", signature("rxode2_model_cache", "tbl_df", "numeric", "simulation_settings"), function(object, dataset, etas, settings, ...) {
   mod <- object@mod
   solver <- settings@solver
   nocb <- settings@nocb@enable
@@ -122,8 +122,8 @@ setMethod("simulateModel", signature("rxode2_model_cache", "tbl_df", "numeric", 
   return(results)
 })
 
-#' @rdname simulateModel
-setMethod("simulateModel", signature("mrgsolve_model_cache", "tbl_df", "numeric", "simulation_settings"), function(object, dataset, etas, settings, ...) {
+#' @rdname predict
+setMethod("predict", signature("mrgsolve_model_cache", "tbl_df", "numeric", "simulation_settings"), function(object, dataset, etas, settings, ...) {
   
   nocb <- settings@nocb@enable
   names(etas) <- object@eta_names

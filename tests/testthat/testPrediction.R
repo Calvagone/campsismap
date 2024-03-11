@@ -4,7 +4,7 @@ library(tibble)
 context("Test the calculation of individual predictions")
 source(paste0("", "testUtils.R"))
 
-test_that(getTestName("Method simulateModel works as expected"), {
+test_that(getTestName("Method predict works as expected"), {
   
   model <- CampsismapModel(model=model_suite$testing$pk$'1cpt_fo', "CONC")
   
@@ -15,8 +15,8 @@ test_that(getTestName("Method simulateModel works as expected"), {
   env <- environment()
   prediction <- expression(
     model %>%
-      campsismap::setup(dest=destEngine) %>%
-      simulateModel(dataset=dataset, etas=c(0,0,-0.4))
+      setup(dest=destEngine) %>%
+      predict(dataset=dataset, etas=c(0,0,-0.4))
   )
   test <- expression(
     expect_equal(results$CONC %>% round(3), c(8.821))

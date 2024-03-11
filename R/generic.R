@@ -151,7 +151,7 @@ setGeneric("setup", function(object, dest, settings=NULL, ...) {
 })
 
 #_______________________________________________________________________________
-#----                           simulateModel                               ----
+#----                              predict                                  ----
 #_______________________________________________________________________________
 
 #' Simulate model.
@@ -163,13 +163,13 @@ setGeneric("setup", function(object, dest, settings=NULL, ...) {
 #' @param ... extra arguments
 #' @return updated model
 #' @export
-#' @rdname simulateModel
-simulateModel <- function(object, dataset, etas, settings, ...) {
+#' @rdname predict
+predict <- function(object, dataset, etas, settings, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("simulateModel", function(object, dataset, etas=NULL, settings=NULL, ...) {
+setGeneric("predict", function(object, dataset, etas=NULL, settings=NULL, ...) {
   if (is.null(etas)) etas <- numeric()
   if (is.null(settings) && is(object, "campsismap_model")) settings <- object@settings
-  standardGeneric("simulateModel")
+  standardGeneric("predict")
 })

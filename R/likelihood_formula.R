@@ -21,7 +21,7 @@ populationLikelihood <- function(model, etas) {
 individualLikelihood <- function(model, dataset, samples, etas) {
   # Simulate
   if (length(samples) > 0) {
-    results <- simulateModel(object=model@model_cache, dataset=dataset, etas=etas, settings=model@settings)
+    results <- predict(object=model@model_cache, dataset=dataset, etas=etas, settings=model@settings)
     
     ipred <- results %>% dplyr::pull(model@variable)
     ipredTimes <- results$TIME

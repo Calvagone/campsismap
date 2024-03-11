@@ -30,9 +30,9 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
     getDV()
   
   # Simulate
-  results <- simulateModel(object=model, dataset=dataset, etas=etas)
+  results <- predict(object=model, dataset=dataset, etas=etas)
   if (pop) {
-    resultsPop <- simulateModel(object=model, dataset=dataset, etas=rep(0, length(model@eta_names)))
+    resultsPop <- predict(object=model, dataset=dataset, etas=rep(0, length(model@eta_names)))
   }
 
   plot <- ggplot2::ggplot(data=results, mapping=ggplot2::aes(x=TIME, y=.data[[model@variable]])) +
