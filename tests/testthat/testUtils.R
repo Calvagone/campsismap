@@ -34,3 +34,12 @@ campsismapTest <- function(x, test, env) {
 getTestName <- function(name) {
   return(paste0(name, " (", paste0(testEngines, collapse="/"), ")"))
 }
+
+getMapbayrEstimates <- function(results) {
+  opt.value <- results$opt.value
+  if (nrow(opt.value) > 1) {
+    stop("1 individual/row expected")
+  }
+  etaNames <- names(results$arg.optim$par)
+  return(opt.value %>% dplyr::select(dplyr::all_of(etaNames)) %>% as.numeric())
+}

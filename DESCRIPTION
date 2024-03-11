@@ -25,6 +25,7 @@ Imports:
 Suggests: 
     devtools,
     knitr,
+    mapbayr,
     pkgdown,
     rmarkdown,
     roxygen2,
