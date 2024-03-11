@@ -2,8 +2,9 @@ library(testthat)
 library(tibble)
 
 context("Test the calculation of individual predictions")
+source(paste0("", "testUtils.R"))
 
-test_that("Method individualPrediction works as expected", {
+test_that(getTestName("Method simulateModel works as expected"), {
   
   model <- CampsismapModel(model=model_suite$testing$pk$'1cpt_fo', "CONC")
   
@@ -11,7 +12,12 @@ test_that("Method individualPrediction works as expected", {
     add(Bolus(time=0, amount=1000)) %>%
     addDV(tibble(TIME=20, DV=10))
   
-  results <- model %>% simulateModel(dataset=dataset, etas=c(0,0,-0.4))
+  prediction <- expression(model %>% simulateModel(dataset=dataset, etas=c(0,0,-0.4)))
+  test <- expression(
+    expect_equal(results$CONC %>% round(3), c(8.821)),
+  )
+  
+  campsismapTest(prediction, test, env=environment())
   
   quickPlot(model, dataset)
   quickPlot(model, dataset, etas=c(0,0,-0.4))
