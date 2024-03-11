@@ -27,7 +27,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
 
   # Retrieve DV
   dv <- dataset %>%
-    getDV()
+    getSamples()
   
   # Simulate
   results <- predict(object=model, dataset=dataset, etas=etas)

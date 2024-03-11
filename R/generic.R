@@ -1,22 +1,22 @@
 
 #_______________________________________________________________________________
-#----                              addDV                                    ----
+#----                           addSamples                                  ----
 #_______________________________________________________________________________
 
-#' Add information related to the dependent variable (DV), i.e. add the observed samples.
+#' Add the observed samples.
 #' 
 #' @param object generic object
 #' @param x data frame with 2 columns: TIME and DV
 #' @param ... extra arguments
 #' @return updated object
 #' @export
-#' @rdname addDV
-addDV <- function(object, x, ...) {
+#' @rdname addSamples
+addSamples <- function(object, x, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("addDV", function(object, x, ...) {
-  standardGeneric("addDV")
+setGeneric("addSamples", function(object, x, ...) {
+  standardGeneric("addSamples")
 })
 
 #_______________________________________________________________________________
@@ -62,22 +62,22 @@ setGeneric("estimate", function(model, dataset, etas=NULL, ...) {
 })
 
 #_______________________________________________________________________________
-#----                              getDV                                    ----
+#----                           getSamples                                  ----
 #_______________________________________________________________________________
 
-#' Get information related to the dependent variable (DV), i.e. add the observed samples.
+#' Get the observed samples.
 #' 
 #' @param object generic object
 #' @param ... extra arguments
 #' @return tibble with the samples (TIME and DV)
 #' @export
-#' @rdname getDV
-getDV <- function(object, ...) {
+#' @rdname getSamples
+getSamples <- function(object, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("getDV", function(object, ...) {
-  standardGeneric("getDV")
+setGeneric("getSamples", function(object, ...) {
+  standardGeneric("getSamples")
 })
 
 #_______________________________________________________________________________
@@ -154,9 +154,9 @@ setGeneric("setup", function(object, dest, settings=NULL, ...) {
 #----                              predict                                  ----
 #_______________________________________________________________________________
 
-#' Simulate model.
+#' Predict.
 #' 
-#' @param object model cache
+#' @param object campsismap object or model cache
 #' @param dataset dataset
 #' @param etas individual parameters to simulate
 #' @param settings simulation settings

@@ -10,7 +10,7 @@ test_that(getTestName("Method predict works as expected"), {
   
   dataset <- Dataset() %>%
     add(Bolus(time=0, amount=1000)) %>%
-    addDV(tibble(TIME=20, DV=10))
+    addSamples(tibble(TIME=20, DV=10))
   
   env <- environment()
   prediction <- expression(

@@ -1,19 +1,19 @@
 
 #_______________________________________________________________________________
-#----                              addDV                                    ----
+#----                           addSamples                                  ----
 #_______________________________________________________________________________
 
-#' @rdname addDV
-setMethod("addDV", signature("dataset", "tbl_df"), function(object, x) {
-  return(addDVDelegate(object, x))
+#' @rdname addSamples
+setMethod("addSamples", signature("dataset", "tbl_df"), function(object, x) {
+  return(addSamplesDelegate(object, x))
 })
 
-#' @rdname addDV
-setMethod("addDV", signature("dataset", "data.frame"), function(object, x) {
-  return(addDVDelegate(object, x))
+#' @rdname addSamples
+setMethod("addSamples", signature("dataset", "data.frame"), function(object, x) {
+  return(addSamplesDelegate(object, x))
 })
 
-addDVDelegate <- function(object, x) {
+addSamplesDelegate <- function(object, x) {
   assertthat::assert_that(all(c("TIME", "DV") %in% colnames(x)), msg="x must contain 2 columns: TIME and DV")
   
   obs <- Observations(times=x$TIME)
@@ -26,11 +26,11 @@ addDVDelegate <- function(object, x) {
 }
 
 #_______________________________________________________________________________
-#----                              getDV                                    ----
+#----                           getSamples                                  ----
 #_______________________________________________________________________________
 
-#' @rdname getDV
-setMethod("getDV", signature("dataset"), function(object) {
+#' @rdname getSamples
+setMethod("getSamples", signature("dataset"), function(object) {
   observations <- object@arms@list[[1]]@protocol@observations
   retValue <- observations@list %>%
     purrr::map_df(.f=function(x) {

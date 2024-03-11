@@ -24,7 +24,7 @@ setMethod("estimate", signature("campsismap_model", "dataset", "numeric"), funct
     export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
   
   samples <- dataset %>%
-    getDV()
+    getSamples()
   
   likelihoodFun <- function(par, model, dataset, samples) {
     popLL <- populationLikelihood(model=model, etas=par)

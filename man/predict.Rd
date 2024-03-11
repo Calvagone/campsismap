@@ -6,7 +6,7 @@
 \alias{predict,rxode2_model_cache,tbl_df,numeric,simulation_settings-method}
 \alias{predict,mrgsolve_model_cache,tbl_df,numeric,simulation_settings-method}
 \alias{predict,campsismap_model,dataset,numeric,simulation_settings-method}
-\title{Simulate model.}
+\title{Predict.}
 \usage{
 predict(object, dataset, etas = NULL, settings = NULL, ...)
 
@@ -17,7 +17,7 @@ predict(object, dataset, etas = NULL, settings = NULL, ...)
 \S4method{predict}{campsismap_model,dataset,numeric,simulation_settings}(object, dataset, etas = NULL, settings = NULL, ...)
 }
 \arguments{
-\item{object}{model cache}
+\item{object}{campsismap object or model cache}
 
 \item{dataset}{dataset}
 
@@ -31,5 +31,5 @@ predict(object, dataset, etas = NULL, settings = NULL, ...)
 updated model
 }
 \description{
-Simulate model.
+Predict.
 }

@@ -12,7 +12,7 @@ test_that(getTestName("Method estimate works as expected when 1 sample is provid
   
   dataset <- Dataset() %>%
     add(Bolus(time=0, amount=1000)) %>%
-    addDV(tibble(TIME=20, DV=10))
+    addSamples(tibble(TIME=20, DV=10))
   
   estimation <- expression(model %>% setup(dest=destEngine) %>% estimate(dataset=dataset))
   test <- expression(
@@ -30,7 +30,7 @@ test_that(getTestName("Method estimate works as expected when 2 samples are prov
   
   dataset <- Dataset() %>%
     add(Bolus(time=0, amount=1000)) %>%
-    addDV(tibble(TIME=c(20,30), DV=c(10,14)))
+    addSamples(tibble(TIME=c(20,30), DV=c(10,14)))
   
   estimation <- expression(model %>% setup(dest=destEngine) %>% estimate(dataset=dataset))
   test <- expression(
