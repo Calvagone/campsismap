@@ -36,7 +36,7 @@ Rxode2ModelCache <- function(model, variable, eta_names, settings) {
   mod <- rxode2::rxode2(paste0(rxmod@code, collapse="\n"))
   
   retValue <- new("rxode2_model_cache", mod=mod, eta_names=eta_names, variable=variable) %>%
-    setupModel(model=model, settings=settings)
+    initCache(model=model, settings=settings)
   return(retValue)
 }
 
@@ -62,22 +62,22 @@ MrgsolveModelCache <- function(model, variable, eta_names, settings) {
   mod <- mrgsolve::mcode_cache(model=paste0("mod_", mrgmodHash), code=mrgmodCode, quiet=TRUE)
   
   retValue <- new("mrgsolve_model_cache", mod=mod, eta_names=eta_names, variable=variable) %>%
-    setupModel(model=model, settings=settings)
+    initCache(model=model, settings=settings)
   return(retValue)
 }
 
 #_______________________________________________________________________________
-#----                           setupModel                                  ----
+#----                           initCache                                  ----
 #_______________________________________________________________________________
 
-#' @rdname setupModel
-setMethod("setupModel", signature("rxode2_model_cache", "campsis_model", "simulation_settings"), function(object, model, settings, ...) {
+#' @rdname initCache
+setMethod("initCache", signature("rxode2_model_cache", "campsis_model", "simulation_settings"), function(object, model, settings, ...) {
   object@thetas <- rxodeParams(model)
   return(object)
 })
 
-#' @rdname setupModel
-setMethod("setupModel", signature("mrgsolve_model_cache", "campsis_model", "simulation_settings"), function(object, model, settings, ...) {
+#' @rdname initCache
+setMethod("initCache", signature("mrgsolve_model_cache", "campsis_model", "simulation_settings"), function(object, model, settings, ...) {
   mod <- object@mod
   
   # Retrieve THETA's

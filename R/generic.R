@@ -108,10 +108,10 @@ setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, ...) {
 })
 
 #_______________________________________________________________________________
-#----                           setupModel                                  ----
+#----                           initCache                                  ----
 #_______________________________________________________________________________
 
-#' Setup model (once before the estimation and after the model compilation).
+#' Init the model cache.
 #' 
 #' @param object model cache
 #' @param model original model
@@ -119,13 +119,13 @@ setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, ...) {
 #' @param ... extra arguments
 #' @return updated model
 #' @export
-#' @rdname setupModel
-setupModel <- function(object, model, settings, ...) {
+#' @rdname initCache
+initCache <- function(object, model, settings, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("setupModel", function(object, model, settings, ...) {
-  standardGeneric("setupModel")
+setGeneric("initCache", function(object, model, settings, ...) {
+  standardGeneric("initCache")
 })
 
 #_______________________________________________________________________________
