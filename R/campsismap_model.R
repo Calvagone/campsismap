@@ -79,7 +79,7 @@ setMethod("add", signature = c("campsismap_model", "error_model"), definition = 
 setMethod("setup", signature=c("campsismap_model", "character", "simulation_settings"), definition = function(object, dest, settings) {
   
   # Settings
-  settings <- preprocessSettings(Settings(), dest=dest)
+  settings <- preprocessSettings(settings, dest=dest)
   
   if (dest=="mrgsolve") {
     dest_ <- new("mrgsolve_engine")

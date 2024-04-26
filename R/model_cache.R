@@ -55,7 +55,7 @@ setClass(
 )
 
 MrgsolveModelCache <- function(model, variable, eta_names, settings) {
-  config <- commonConfiguration(model, variable, eta_names, dest=new("mrgsolve_engine"))
+  config <- commonConfiguration(model, variable, eta_names, dest=new("mrgsolve_engine"), declare=settings@declare@variables)
   mrgmod <- config$engineModel
   mrgmodCode <- mrgmod %>% campsismod::toString()
   mrgmodHash <- digest::sha1(mrgmodCode)
@@ -145,7 +145,7 @@ setMethod("predict", signature("mrgsolve_model_cache", "tbl_df", "numeric", "sim
 #_______________________________________________________________________________
 
 
-commonConfiguration <- function(model, variable, eta_names, dest) {
+commonConfiguration <- function(model, variable, eta_names, dest, declare=NULL) {
   # Export to RxODE / rxode2
   if (is(dest, "rxode_engine")) {
     engineModel <- model %>% export(dest="RxODE")
@@ -162,7 +162,7 @@ commonConfiguration <- function(model, variable, eta_names, dest) {
       return(parameter)
     })
     
-    engineModel <- structuralModel %>% export(dest="mrgsolve", outvars=variable, extra_params=eta_names)
+    engineModel <- structuralModel %>% export(dest="mrgsolve", outvars=variable, extra_params=c(eta_names, declare))
     
     # Disable IIV in mrgsolve model
     engineModel@omega <- character(0) # IIV managed by CAMPSIS
