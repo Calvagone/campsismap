@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 
 #' @rdname quickPlot
-setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logical"), function(model, dataset, etas, pop) {
+setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logical"), function(model, dataset, etas, pop, suggestedYLim=NULL) {
   
   # Check model is ready
   if (!checkModelReady(model, raise_error=FALSE)) {
@@ -38,14 +38,38 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
   plot <- ggplot2::ggplot(data=results, mapping=ggplot2::aes(x=TIME, y=.data[[model@variable]])) +
     ggplot2::geom_line(linewidth=1, alpha=0.6, color="#B90E1E")
   
+  # Take max
+  maxYValue <- max(results[[model@variable]])
+  
   if (pop) {
     plot <- plot +
       ggplot2::geom_line(data=resultsPop, linewidth=1, alpha=0.6, color="#6196B4")
+    
+    # Update max value
+    maxYValuePop <- max(resultsPop[[model@variable]])
+    if (maxYValue < maxYValuePop) {
+      maxYValue <- maxYValuePop
+    }
   }
   
   if (nrow(dv) > 0) {
     plot <- plot +
       ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="black")
+    
+    # Update max value
+    maxYValueDV <- max(dv$DV)
+    if (maxYValue < maxYValueDV) {
+      maxYValue <- maxYValueDV
+    }
+  }
+
+  # Use suggested Y limit  
+  if (!is.null(suggestedYLim)) {
+    if (maxYValue > suggestedYLim) {
+      suggestedYLim <- maxYValue
+    }
+    plot <- plot + 
+      ggplot2::ylim(limits=c(0, suggestedYLim))
   }
   
   return(plot + ggplot2::theme_bw())
