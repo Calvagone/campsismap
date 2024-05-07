@@ -110,6 +110,10 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
   return(object)
 })
 
+#' Get the reference date time.
+#' 
+#' @param table table content
+#' @export
 getReferenceDateTime <- function(table) {
   if (nrow(table) > 0) {
     dateTime0 <- toDateTime(date=table[1, ]$Date, time=table[1, ]$Time)

@@ -9,10 +9,19 @@ setClass(
   contains="datetime_table_editor"
 )
 
-DosingTableEditor <- function(tableReact=NULL, ns=shiny::NS("dosing_table"), fun=NULL) {
+#' Dosing table editor.
+#' 
+#' @param tableReact reactive table
+#' @param ns shiny namespace
+#' @param fun conversion function (table -> anything)
+#' @param initialDose first dose in table, only if tableReact is NULL
+#' @param initialTime first dose time in table, only if tableReact is NULL
+#' @export
+DosingTableEditor <- function(tableReact=NULL, ns=shiny::NS("dosing_table"), fun=NULL,
+                              initialDose=100, initialTime="08:00") {
   editor <- new("dosing_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Dose"))
   if (is.null(tableReact)) {
-    tableReact <- reactiveVal(editor %>% getInitialTable(init_dose=100, init_time="08:00"))
+    tableReact <- reactiveVal(editor %>% getInitialTable(init_dose=initialDose, init_time=initialTime))
     editor@tableReact <- tableReact
   }
   return(editor)
