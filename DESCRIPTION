@@ -15,11 +15,15 @@ Depends:
 Imports: 
     assertthat,
     dplyr,
+    DT,
+    lubridate,
     magrittr,
     methods,
     plyr,
     purrr,
     readr,
+    RJSONIO,
+    shinyTime,
     tibble,
     utils
 Suggests: 
@@ -48,4 +52,11 @@ Collate:
     'likelihood_formula.R'
     'map_estimation.R'
     'quick_plot.R'
+    'shiny_generic.R'
+    'shiny_input.R'
+    'shiny_inputs.R'
+    'shiny_datetime_table_editor.R'
+    'shiny_dosing_table_editor.R'
+    'shiny_observations_table_editor.R'
+    
     
