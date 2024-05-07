@@ -81,6 +81,25 @@ setGeneric("getSamples", function(object, ...) {
 })
 
 #_______________________________________________________________________________
+#----                       getSimulationTimes                              ----
+#_______________________________________________________________________________
+
+#' Get the simulation times (by opposition to the samples).
+#' 
+#' @param object generic object
+#' @param ... extra arguments
+#' @return a numeric vector with the simulation times
+#' @export
+#' @rdname getSimulationTimes
+getSimulationTimes <- function(object, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("getSimulationTimes", function(object, ...) {
+  standardGeneric("getSimulationTimes")
+})
+
+#_______________________________________________________________________________
 #----                           quickPlot                                   ----
 #_______________________________________________________________________________
 

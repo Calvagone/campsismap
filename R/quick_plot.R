@@ -18,17 +18,24 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
   }
   
   # Add simulation times to the dataset
-  times <- getObservationTimes(dataset)
-  if (length(times)==0) times=0
-  maxTime <- max(times) + 24
-  simulatedTimes <- seq(0, maxTime, length.out=1000)
-  dataset <- dataset %>%
-    add(Observations(simulatedTimes))
-
-  # Retrieve DV
+  times <- getSimulationTimes(dataset)
   dv <- dataset %>%
     getSamples()
-  
+  if (length(times)==0) {
+    if (nrow(dv)==0) {
+      maxTime <- 0
+    } else {
+      maxTime <- max(dv$TIME)
+    }
+    maxTime <- maxTime + 24
+    simulatedTimes <- seq(0, maxTime, length.out=1000)
+    dataset <- dataset %>%
+      add(Observations(simulatedTimes))
+  } else {
+    # Don't do anything
+    # Simulation times are provided
+  }
+
   # Simulate
   results <- predict(object=model, dataset=dataset, etas=etas)
   if (pop) {

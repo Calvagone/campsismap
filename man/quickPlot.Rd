@@ -7,7 +7,7 @@
 \usage{
 quickPlot(model, dataset, etas = NULL, pop = NULL, ...)
 
-\S4method{quickPlot}{campsismap_model,dataset,numeric,logical}(model, dataset, etas, pop)
+\S4method{quickPlot}{campsismap_model,dataset,numeric,logical}(model, dataset, etas, pop, suggestedYLim = NULL)
 }
 \arguments{
 \item{model}{Campsismap or Campsis model}

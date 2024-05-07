@@ -45,6 +45,23 @@ setMethod("getSamples", signature("dataset"), function(object) {
   return(retValue)
 })
 
-getObservationTimes <- function(dataset) {
-  return(dataset@arms@list[[1]]@protocol@observations %>% getTimes())
-}
+#_______________________________________________________________________________
+#----                           getSimulationTimes                          ----
+#_______________________________________________________________________________
+
+#' @rdname getSimulationTimes
+setMethod("getSimulationTimes", signature("dataset"), function(object) {
+  observations <- object@arms@list[[1]]@protocol@observations
+  retValue <- observations@list %>%
+    purrr::map(.f=function(x) {
+      times <- x@times
+      dv <- x@dv
+      if (length(dv) == 0) {
+        return(times)
+      } else {
+        return(numeric())
+      }
+    }) %>%
+    purrr::flatten_dbl()
+  return(retValue)
+})
