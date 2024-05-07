@@ -24,6 +24,8 @@ DosingTableEditor <- function(tableReact=NULL, ns=shiny::NS("dosing_table"), fun
     tableReact <- reactiveVal(editor %>% getInitialTable(init_dose=initialDose, init_time=initialTime))
     editor@tableReact <- tableReact
   }
+  editor@default_time <- initialTime
+  editor@default_value <- initialDose
   return(editor)
 }
 

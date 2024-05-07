@@ -9,8 +9,12 @@ setClass(
     extra_variables="character",
     ns="function",
     fun="function",
-    outputs="list"
-  )
+    outputs="list",
+    default_ii="numeric",
+    default_time="character",
+    default_value="numeric"
+  ),
+  prototype=prototype(default_ii=24, default_time="08:00", default_value=100) # 24 hours by default
 )
 
 #_______________________________________________________________________________
@@ -127,12 +131,24 @@ getRowAsTibble <- function(object, input) {
   ns <- object@ns
   retValue <- tibble::tibble(
     Date=as.character(input[[getDateTimeDialogDateId(ns)]]),
-    Time=strftime(input[[getDateTimeDialogTimeId(ns)]], "%R"),
+    Time=posixToTimeStr(input[[getDateTimeDialogTimeId(ns)]]),
   )
   for (variable in object@extra_variables) {
     retValue[[variable]] <- input[[getDateTimeDialogVariableId(ns, variable)]]
   }
   return(retValue)
+}
+
+posixToDateStr <- function(x) {
+  return(strftime(x, "%Y-%m-%d"))
+}
+
+posixToTimeStr <- function(x, seconds=FALSE) {
+  if (seconds) {
+    return(strftime(x, "%H:%M:%S"))
+  } else {
+    return(strftime(x, "%H:%M"))
+  }
 }
 
 #' @importFrom shinyTime timeInput
@@ -151,8 +167,22 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
     okButtonId <- getDateTimeDialogEditConfirmButtonId(ns)
   }
   if (is.null(data)) {
-    date <- Sys.Date()
-    time <- "08:00:00"
+    if (isTRUE(add)) {
+      table <- object@tableReact()
+      if (nrow(table) > 0) {
+        lastRow <- table[nrow(table),]
+        suggestedDateTime <- toDateTime(date=lastRow$Date, time=lastRow$Time) + 
+          lubridate::hours(object@default_ii)
+        date <- posixToDateStr(suggestedDateTime)
+        time <- posixToTimeStr(suggestedDateTime, seconds=TRUE)
+      } else {
+        date <- posixToDateStr(Sys.Date())
+        time <- paste0(object@default_time, ":00")
+      }
+    } else {
+      date <- posixToDateStr(Sys.Date())
+      time <- paste0(object@default_time, ":00")
+    }
   } else {
     date <- data$Date
     time <- paste0(data$Time, ":00")
@@ -163,8 +193,18 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
   for (index in seq_along(extraVariables)) {
     variable <- extraVariables[index]
    if (is.null(data)) {
-      value <- 0
+     # Add mode
+     table <- object@tableReact()
+     if (nrow(table) > 0) {
+       # Reuse value from last row
+       lastRow <- table[nrow(table),]
+       value <- lastRow[[variable]]
+     } else {
+       # Use default value
+       value <- object@default_value
+     }
     } else {
+      # Edit mode
       value <- data[[variable]]
     }
     uiElements[[index]] <- numericInput(inputId=getDateTimeDialogVariableId(ns, variable), label=paste0(variable, ":"), value=value)

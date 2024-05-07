@@ -24,6 +24,8 @@ ObservationsTableEditor <- function(tableReact=NULL, ns=shiny::NS("observations_
     tableReact <- reactiveVal(editor %>% getInitialTable(init_obs=initialObs, init_time=initialTime))
     editor@tableReact <- tableReact
   }
+  editor@default_time <- initialTime
+  editor@default_value <- initialObs
   return(editor)
 }
 
