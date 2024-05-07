@@ -42,42 +42,6 @@ setGeneric("getDialog", function(object, failed, errorMessage=NULL, code) {
 })
 
 #_______________________________________________________________________________
-#----                             getLabel                                  ----
-#_______________________________________________________________________________
-
-#' Get label.
-#'
-#' @param object generic object
-#' @return label, character
-#' @export
-#' @rdname getLabel
-getLabel <- function(object) {
-  stop("No default function is provided")
-}
-
-setGeneric("getLabel", function(object) {
-  standardGeneric("getLabel")
-})
-
-#_______________________________________________________________________________
-#----                           getMenuItem                                 ----
-#_______________________________________________________________________________
-
-#' Get menu item.
-#'
-#' @param object generic object
-#' @return menu item (shiny component)
-#' @export
-#' @rdname getMenuItem
-getMenuItem <- function(object) {
-  stop("No default function is provided")
-}
-
-setGeneric("getMenuItem", function(object) {
-  standardGeneric("getMenuItem")
-})
-
-#_______________________________________________________________________________
 #----                                server                                 ----
 #_______________________________________________________________________________
 
@@ -97,24 +61,6 @@ server <- function(object, input, output, session, ...) {
 
 setGeneric("server", function(object, input, output, session, ...) {
   standardGeneric("server")
-})
-
-#_______________________________________________________________________________
-#----                           serverFunction                              ----
-#_______________________________________________________________________________
-
-#' Get shiny server function.
-#'
-#' @param object generic object
-#' @return a server function for shiny
-#' @export
-#' @rdname serverFunction
-serverFunction <- function(object) {
-  stop("No default function is provided")
-}
-
-setGeneric("serverFunction", function(object) {
-  standardGeneric("serverFunction")
 })
 
 #_______________________________________________________________________________
