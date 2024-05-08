@@ -118,7 +118,11 @@ plotToPOSIXct <- function(plot, timeref) {
 #' @return max value in all data layers
 #' @export
 maxValueInPlot <- function(plot, variable) {
-  maxValue1 <- max(plot$data[, variable])
+  if (variable %in% colnames(plot$data)) {
+    maxValue1 <- max(plot$data[, variable])
+  } else {
+    maxValue1 <- NULL
+  }
   maxValue2 <- plot$layers %>% purrr::map(.f=function(layer) {
     if (variable %in% colnames(layer$data)) {
       return(max(layer$data[, variable]))
