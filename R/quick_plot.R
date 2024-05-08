@@ -4,8 +4,8 @@
 #_______________________________________________________________________________
 
 #' @rdname quickPlot
-setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logical"), function(model, dataset, etas, pop, suggestedYLim=NULL) {
-  
+setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logical", "plot_options"), function(model, dataset, etas, pop, options) {
+
   # Check model is ready
   if (!checkModelReady(model, raise_error=FALSE)) {
     model <- model %>%
@@ -42,6 +42,22 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
     resultsPop <- predict(object=model, dataset=dataset, etas=rep(0, length(model@eta_names)))
   }
 
+  # Time reference
+  timeref <- options@timeref
+  
+  if (!is.na(timeref)) {
+    results <- results %>%
+      dplyr::mutate(TIME=timeref + lubridate::dhours(TIME))
+    if (pop) {
+      resultsPop <- resultsPop %>%
+        dplyr::mutate(TIME=timeref + lubridate::dhours(TIME))
+    }
+    if (nrow(dv) > 0) {
+      dv <- dv %>%
+        dplyr::mutate(TIME=timeref + lubridate::dhours(TIME))
+    }
+  }
+  
   plot <- ggplot2::ggplot(data=results, mapping=ggplot2::aes(x=TIME, y=.data[[model@variable]])) +
     ggplot2::geom_line(linewidth=1, alpha=0.6, color="#B90E1E")
   
@@ -70,8 +86,10 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
     }
   }
 
-  # Use suggested Y limit  
-  if (!is.null(suggestedYLim)) {
+  # Use suggested Y limit
+  suggestedYLim <- options@ylim
+  
+  if (!is.na(suggestedYLim)) {
     if (maxYValue > suggestedYLim) {
       suggestedYLim <- maxYValue
     }
@@ -79,5 +97,27 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
       ggplot2::ylim(limits=c(0, suggestedYLim))
   }
   
+  # Datetime label
+  if (!is.na(timeref)) {
+    timelabel <- options@timelabel
+    breaksInterval <- options@minor_breaks_interval
+
+    # Set locale to English
+    invisible(Sys.setlocale("LC_ALL", "English.utf8"))
+    
+    initTime <- toDateTime(date=as.character(as.Date(timeref)), time="00:00")
+    maxTime <- timeref + lubridate::dhours(max(dataset %>% getSimulationTimes()))
+    intervalDuration <- (lubridate::interval(initTime, maxTime) %>% as.numeric())/3600
+    noOfBreaks <- intervalDuration/breaksInterval
+    minor_breaks <- seq_len(noOfBreaks) %>%
+      purrr::map_dbl(~initTime + lubridate::dhours(.x*breaksInterval)) %>%
+      as.POSIXct()
+
+    plot <- plot +
+      ggplot2::scale_x_datetime(date_breaks="1 day", minor_breaks=minor_breaks, date_labels=timelabel)
+  }
+
   return(plot + ggplot2::theme_bw())
 })
+
+

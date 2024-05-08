@@ -2,12 +2,12 @@
 % Please edit documentation in R/generic.R, R/quick_plot.R
 \name{quickPlot}
 \alias{quickPlot}
-\alias{quickPlot,campsismap_model,dataset,numeric,logical-method}
+\alias{quickPlot,campsismap_model,dataset,numeric,logical,plot_options-method}
 \title{Quickly visualise the individual predictions with regard to the observed data.}
 \usage{
-quickPlot(model, dataset, etas = NULL, pop = NULL, ...)
+quickPlot(model, dataset, etas = NULL, pop = NULL, options = NULL, ...)
 
-\S4method{quickPlot}{campsismap_model,dataset,numeric,logical}(model, dataset, etas, pop, suggestedYLim = NULL)
+\S4method{quickPlot}{campsismap_model,dataset,numeric,logical,plot_options}(model, dataset, etas, pop, options)
 }
 \arguments{
 \item{model}{Campsismap or Campsis model}
@@ -17,6 +17,8 @@ quickPlot(model, dataset, etas = NULL, pop = NULL, ...)
 \item{etas}{individual parameters}
 
 \item{pop}{add population reference}
+
+\item{options}{plot options}
 
 \item{...}{extra arguments}
 }

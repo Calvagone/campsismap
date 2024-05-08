@@ -109,19 +109,24 @@ setGeneric("getSimulationTimes", function(object, ...) {
 #' @param dataset Campsis dataset
 #' @param etas individual parameters
 #' @param pop add population reference
+#' @param options plot options
 #' @param ... extra arguments
 #' @return a ggplot2 object
 #' @export
 #' @rdname quickPlot
-quickPlot <- function(model, dataset, etas, pop, ...) {
+quickPlot <- function(model, dataset, etas, pop, options, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, ...) {
+setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, options=NULL, ...) {
   if (is.null(pop)) pop <- TRUE
   if (is.null(etas)) {
     pop <- FALSE
     etas <- numeric()
+  }
+  if (is.null(options)) {
+    pop <- FALSE
+    options <- PlotOptions()
   } 
   standardGeneric("quickPlot")
 })

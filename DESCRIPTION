@@ -51,6 +51,7 @@ Collate:
     'campsismap_model.R'
     'likelihood_formula.R'
     'map_estimation.R'
+    'plot_options.R'
     'quick_plot.R'
     'shiny_generic.R'
     'shiny_input.R'

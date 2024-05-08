@@ -172,7 +172,7 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
       if (nrow(table) > 0) {
         lastRow <- table[nrow(table),]
         suggestedDateTime <- toDateTime(date=lastRow$Date, time=lastRow$Time) + 
-          lubridate::hours(object@default_ii)
+          lubridate::dhours(object@default_ii)
         date <- posixToDateStr(suggestedDateTime)
         time <- posixToTimeStr(suggestedDateTime, seconds=TRUE)
       } else {
