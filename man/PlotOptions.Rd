@@ -4,14 +4,24 @@
 \alias{PlotOptions}
 \title{Plot options.}
 \usage{
-PlotOptions(ylim = NULL, timeref = NULL, timelabel = "\%b \%d\\n\%H:\%M")
+PlotOptions(
+  ylim = NULL,
+  timeref = NULL,
+  date_labels = "\%b \%d",
+  date_breaks = "1 day",
+  minor_breaks_interval = 6
+)
 }
 \arguments{
 \item{ylim}{suggested Y-axis limit}
 
 \item{timeref}{POSIXct time corresponding to TIME=0 in simulation}
 
-\item{timelabel}{label of datetime on X-axis}
+\item{date_labels}{label of datetime on X-axis}
+
+\item{date_breaks}{data breaks, e.g. '1 day'}
+
+\item{minor_breaks_interval}{minor breaks interval in hours}
 }
 \value{
 an object

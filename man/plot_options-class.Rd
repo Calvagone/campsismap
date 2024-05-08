@@ -13,5 +13,11 @@ Plot options class.
 \item{\code{ylim}}{suggested Y-axis limit}
 
 \item{\code{timeref}}{POSIXct time corresponding to TIME=0}
+
+\item{\code{date_labels}}{label of datetime on X-axis}
+
+\item{\code{date_breaks}}{data breaks, e.g. '1 day'}
+
+\item{\code{minor_breaks_interval}}{minor breaks interval in hours}
 }}
 
