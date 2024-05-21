@@ -295,6 +295,48 @@ setGeneric("getInitialTable", function(object, ...) {
 })
 
 #_______________________________________________________________________________
+#----                                 load                                  ----
+#_______________________________________________________________________________
+
+
+#' @importFrom readr read_csv
+setMethod("load", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
+  table <- 
+    tryCatch(
+      {
+        return(readr::read_csv(file=file))
+      },
+      error=function(cond) {
+        print("Error reading the table")
+        print(cond$message)
+        return(NULL)
+      })
+  if (is.null(table)) {
+    tableReact <- reactiveVal(table)
+    object@tableReact <- tableReact
+  }
+  return(table)
+})
+
+#_______________________________________________________________________________
+#----                                write                                 ----
+#_______________________________________________________________________________
+
+#' @importFrom readr write_csv
+setMethod("write", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
+  table <- object@tableReact()
+  tryCatch(
+    {
+      readr::write_csv(x=table, file=file)
+    },
+    error=function(cond) {
+      print("Error saving the table")
+      print(cond$message)
+    }
+  )
+})
+
+#_______________________________________________________________________________
 #----                            utilities                                  ----
 #_______________________________________________________________________________
 

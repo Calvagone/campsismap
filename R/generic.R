@@ -153,6 +153,25 @@ setGeneric("initCache", function(object, model, settings, ...) {
 })
 
 #_______________________________________________________________________________
+#----                                 read                                  ----
+#_______________________________________________________________________________
+
+#' Generic load method to load data from a file or a folder.
+#' 
+#' @param object object to load with something 
+#' @param file path to the file or folder to be read
+#' @param ... extra arguments
+#' @return the loaded object
+#' @export
+load <- function(object, file, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("load", function(object, file, ...) {
+  standardGeneric("load")
+})
+
+#_______________________________________________________________________________
 #----                             setup                                     ----
 #_______________________________________________________________________________
 
