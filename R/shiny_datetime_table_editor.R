@@ -299,23 +299,20 @@ setGeneric("getInitialTable", function(object, ...) {
 #_______________________________________________________________________________
 
 
-#' @importFrom readr read_csv
+#' @importFrom readr cols read_csv
 setMethod("load", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
   table <- 
     tryCatch(
-      {
-        return(readr::read_csv(file=file))
-      },
+      readr::read_csv(file=file, col_types=readr::cols(.default="n", Date="c", Time="c")),
       error=function(cond) {
         print("Error reading the table")
         print(cond$message)
         return(NULL)
       })
-  if (is.null(table)) {
-    tableReact <- reactiveVal(table)
-    object@tableReact <- tableReact
+  if (!is.null(table)) {
+    object@tableReact(table)
   }
-  return(table)
+  return(TRUE)
 })
 
 #_______________________________________________________________________________
@@ -334,6 +331,7 @@ setMethod("write", signature=c("datetime_table_editor", "character"), definition
       print(cond$message)
     }
   )
+  return(TRUE)
 })
 
 #_______________________________________________________________________________
