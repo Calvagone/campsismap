@@ -11,7 +11,7 @@ setClass(
     id="character",
     value="ANY",
     transient="logical",
-    ns="character" # Namespace, string form
+    ns="function"
   ),
   contains="pmx_element"
 )
@@ -22,10 +22,11 @@ setClass(
 #' @param id input identifier
 #' @param value input default value
 #' @param transient transient input (i.e. not persisted)
+#' @param ns namespace
 #' @return a shiny input
 #' @export
-shinyInput <- function(id, value, transient=FALSE) {
-  return(new("shiny_input", id=id, value=value, transient=transient))
+shinyInput <- function(id, value, transient=FALSE, ns=function(x){x}) {
+  return(new("shiny_input", id=id, value=value, transient=transient, ns=ns))
 }
 
 #_______________________________________________________________________________

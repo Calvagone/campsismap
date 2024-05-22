@@ -4,7 +4,14 @@
 \alias{shinyInput}
 \title{Create a new shiny input.}
 \usage{
-shinyInput(id, value, transient = FALSE)
+shinyInput(
+  id,
+  value,
+  transient = FALSE,
+  ns = function(x) {
+     x
+ }
+)
 }
 \arguments{
 \item{id}{input identifier}
@@ -12,6 +19,8 @@ shinyInput(id, value, transient = FALSE)
 \item{value}{input default value}
 
 \item{transient}{transient input (i.e. not persisted)}
+
+\item{ns}{namespace}
 }
 \value{
 a shiny input
