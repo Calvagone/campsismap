@@ -94,7 +94,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
 
   tableOutputReact <- reactiveVal(list())
 
-  observeEvent(tableReact(), {
+  observeEvent(list(tableReact(), dateTime0React()), {
     table <- tableReact()
     if (nrow(table) > 0) {
       dateTime0 <- dateTime0React()
@@ -108,7 +108,6 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
   })
 
   # Outputs
-  object@outputs$tableReact <- tableReact
   object@outputs$tableOutputReact <- tableOutputReact
 
   return(object)
