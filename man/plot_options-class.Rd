@@ -19,5 +19,9 @@ Plot options class.
 \item{\code{date_breaks}}{data breaks, e.g. '1 day'}
 
 \item{\code{minor_breaks_interval}}{minor breaks interval in hours}
+
+\item{\code{show_legend}}{show a legend}
+
+\item{\code{legend_title}}{legend title}
 }}
 

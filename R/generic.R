@@ -125,7 +125,6 @@ setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, options=NU
     etas <- numeric()
   }
   if (is.null(options)) {
-    pop <- FALSE
     options <- PlotOptions()
   } 
   standardGeneric("quickPlot")

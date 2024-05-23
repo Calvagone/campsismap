@@ -9,6 +9,8 @@
 #' @slot date_labels label of datetime on X-axis
 #' @slot date_breaks data breaks, e.g. '1 day'
 #' @slot minor_breaks_interval minor breaks interval in hours
+#' @slot show_legend show a legend
+#' @slot legend_title legend title
 #' @export
 setClass(
   "plot_options",
@@ -17,7 +19,9 @@ setClass(
     timeref="POSIXct",
     date_labels="character",
     date_breaks="character", # E.g. '1 day'
-    minor_breaks_interval="integer" # E.g. 6
+    minor_breaks_interval="integer", # E.g. 6
+    show_legend="logical",
+    legend_title="character"
   )
 )
 
@@ -28,9 +32,11 @@ setClass(
 #' @param date_labels label of datetime on X-axis
 #' @param date_breaks data breaks, e.g. '1 day'
 #' @param minor_breaks_interval minor breaks interval in hours
+#' @param show_legend show a legend
+#' @param legend_title legend title
 #' @return an object
 #' @export
-PlotOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day", minor_breaks_interval=6) {
+PlotOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day", minor_breaks_interval=6, show_legend=FALSE, legend_title="Legend") {
   if (is.null(ylim)) {
     ylim <- NA
   }
@@ -38,7 +44,8 @@ PlotOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_break
     timeref <- NA
   }
   return(new("plot_options", ylim=as.numeric(ylim), timeref=as.POSIXct(timeref), date_labels=date_labels,
-             date_breaks=date_breaks, minor_breaks_interval=as.integer(minor_breaks_interval)))
+             date_breaks=date_breaks, minor_breaks_interval=as.integer(minor_breaks_interval),
+             show_legend=show_legend, legend_title=legend_title))
 }
 
 #_______________________________________________________________________________
@@ -75,6 +82,11 @@ setMethod("add", signature = c("ANY", "plot_options"), definition = function(obj
       ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels)
   }
   
+  if (!options@show_legend) {
+    plot <- plot +
+      ggplot2::guides(color="none")
+  }
+
   return(plot)
 })
 

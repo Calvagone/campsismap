@@ -43,13 +43,18 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logi
   }
 
   plot <- ggplot2::ggplot(data=results, mapping=ggplot2::aes(x=TIME, y=.data[[model@variable]])) +
-    ggplot2::geom_line(linewidth=1, alpha=0.6, color="#B90E1E")
+    ggplot2::geom_line(mapping=ggplot2::aes(color="Individual fit"), linewidth=1, alpha=0.6)
 
   if (pop) {
     plot <- plot +
-      ggplot2::geom_line(data=resultsPop, linewidth=1, alpha=0.6, color="#6196B4")
+      ggplot2::geom_line(mapping=ggplot2::aes(color="Typical profile"), data=resultsPop, linewidth=1, alpha=0.6)
   }
   
+  # Scale color manual to add a defaut legend
+  plot <- plot +
+    ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"="#B90E1E", "Typical profile"="#6196B4"))
+  
+  # Add the observations
   if (nrow(dv) > 0) {
     plot <- plot +
       ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="black")

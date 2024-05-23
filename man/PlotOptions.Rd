@@ -9,7 +9,9 @@ PlotOptions(
   timeref = NULL,
   date_labels = "\%b \%d",
   date_breaks = "1 day",
-  minor_breaks_interval = 6
+  minor_breaks_interval = 6,
+  show_legend = FALSE,
+  legend_title = "Legend"
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ PlotOptions(
 \item{date_breaks}{data breaks, e.g. '1 day'}
 
 \item{minor_breaks_interval}{minor breaks interval in hours}
+
+\item{show_legend}{show a legend}
+
+\item{legend_title}{legend title}
 }
 \value{
 an object
