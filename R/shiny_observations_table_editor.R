@@ -14,18 +14,18 @@ setClass(
 #' @param tableReact reactive table
 #' @param ns shiny namespace
 #' @param fun conversion function (table -> anything)
-#' @param initialObs first observation in table, only if tableReact is NULL
-#' @param initialTime first observation time in table, only if tableReact is NULL
+#' @param defaultObs first observation in table, only if tableReact is NULL
+#' @param defaultTime first observation time in table, only if tableReact is NULL
 #' @export
 ObservationsTableEditor <- function(tableReact=NULL, ns=shiny::NS("observations_table"), fun=NULL,
-                                    initialObs=100, initialTime="12:00") {
+                                    defaultObs=100, defaultTime="06:00") {
   editor <- new("observations_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Observation"))
   if (is.null(tableReact)) {
-    tableReact <- reactiveVal(editor %>% getInitialTable(init_obs=initialObs, init_time=initialTime))
+    tableReact <- reactiveVal(editor %>% getInitialTable())
     editor@tableReact <- tableReact
   }
-  editor@default_time <- initialTime
-  editor@default_value <- initialObs
+  editor@default_time <- defaultTime
+  editor@default_value <- defaultObs
   return(editor)
 }
 
@@ -34,10 +34,7 @@ ObservationsTableEditor <- function(tableReact=NULL, ns=shiny::NS("observations_
 #_______________________________________________________________________________
 
 #' @rdname getInitialTable
-setMethod("getInitialTable", signature=c("observations_table_editor"), definition=function(object, init_obs, init_time) {
-  dates <- c(Sys.Date())
-  times <- c(init_time)
-  observations <- c(init_obs)
-  tibble <- tibble::tibble(Date=dates, Time=times, Observation=observations)
+setMethod("getInitialTable", signature=c("observations_table_editor"), definition=function(object) {
+  tibble <- tibble::tibble(Date=character(), Time=character(), Observation=numeric())
   return(tibble)
 })

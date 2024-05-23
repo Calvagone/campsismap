@@ -8,8 +8,8 @@ ObservationsTableEditor(
   tableReact = NULL,
   ns = shiny::NS("observations_table"),
   fun = NULL,
-  initialObs = 100,
-  initialTime = "12:00"
+  defaultObs = 100,
+  defaultTime = "06:00"
 )
 }
 \arguments{
@@ -19,9 +19,9 @@ ObservationsTableEditor(
 
 \item{fun}{conversion function (table -> anything)}
 
-\item{initialObs}{first observation in table, only if tableReact is NULL}
+\item{defaultObs}{first observation in table, only if tableReact is NULL}
 
-\item{initialTime}{first observation time in table, only if tableReact is NULL}
+\item{defaultTime}{first observation time in table, only if tableReact is NULL}
 }
 \description{
 Observations table editor.

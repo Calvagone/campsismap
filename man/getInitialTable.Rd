@@ -11,7 +11,7 @@ getInitialTable(object, ...)
 
 \S4method{getInitialTable}{dosing_table_editor}(object, init_dose, init_time)
 
-\S4method{getInitialTable}{observations_table_editor}(object, init_obs, init_time)
+\S4method{getInitialTable}{observations_table_editor}(object)
 }
 \arguments{
 \item{object}{generic object}
