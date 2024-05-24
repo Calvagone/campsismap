@@ -5,6 +5,8 @@
 #' Model cache class.
 #' 
 #' @slot mod rxode2 or mrgsolve model (in cache)
+#' @slot eta_names ETA names in model
+#' @slot variable variable name representing the predictions in model
 #' @export
 setClass(
   "model_cache",
@@ -54,6 +56,7 @@ setClass(
   contains="model_cache"
 )
 
+#' @importFrom digest sha1
 MrgsolveModelCache <- function(model, variable, eta_names, settings) {
   config <- commonConfiguration(model, variable, eta_names, dest=new("mrgsolve_engine"), declare=settings@declare@variables)
   mrgmod <- config$engineModel

@@ -20,6 +20,8 @@ server(object, input, output, session, ...)
 \item{session}{shiny session}
 
 \item{...}{extra arguments}
+
+\item{dateTime0React}{reference datetime}
 }
 \value{
 this is up to the implementation

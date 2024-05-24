@@ -9,7 +9,7 @@ minorBreaksCustom(limits, breaksInterval)
 \arguments{
 \item{limits}{limits, vector of 2 POSIXct values}
 
-\item{ii}{minor breaks interval, in hours}
+\item{breaksInterval}{minor breaks interval, in hours}
 }
 \description{
 Custom minor breaks based on limits.

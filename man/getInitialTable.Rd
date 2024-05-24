@@ -17,6 +17,10 @@ getInitialTable(object, ...)
 \item{object}{generic object}
 
 \item{...}{extra arguments}
+
+\item{init_dose}{initial dose in table}
+
+\item{init_time}{initial time in table}
 }
 \value{
 initial table, tibble

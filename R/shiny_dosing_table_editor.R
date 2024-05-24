@@ -33,6 +33,8 @@ DosingTableEditor <- function(tableReact=NULL, ns=shiny::NS("dosing_table"), fun
 #----                                getInitialTable                                  ----
 #_______________________________________________________________________________
 
+#' @param init_dose initial dose in table
+#' @param init_time initial time in table
 #' @rdname getInitialTable
 setMethod("getInitialTable", signature=c("dosing_table_editor"), definition=function(object, init_dose, init_time) {
   dates <- c(Sys.Date())

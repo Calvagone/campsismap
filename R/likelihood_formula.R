@@ -4,6 +4,7 @@
 #' @param model Campsismap model
 #' @param etas unnamed numeric vector
 #' @return population likelihood
+#' @importFrom mvtnorm dmvnorm
 #' @export
 populationLikelihood <- function(model, etas) {
   retValue <- mvtnorm::dmvnorm(x=etas, mean=rep(0, length(etas)), sigma=model@omega, log=TRUE)

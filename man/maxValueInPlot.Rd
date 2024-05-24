@@ -8,6 +8,8 @@ maxValueInPlot(plot, variable)
 }
 \arguments{
 \item{plot}{ggplot2 plot}
+
+\item{variable}{variable of interest}
 }
 \value{
 max value in all data layers

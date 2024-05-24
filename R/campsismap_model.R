@@ -10,6 +10,9 @@
 #' @slot eta_names ETA names in model
 #' @slot variable variable name representing the predictions in model
 #' @slot error error model
+#' @slot model_cache model cache
+#' @slot settings simulation settings
+#' @slot dest destination engine
 #' @export
 setClass(
   "campsismap_model",

@@ -11,5 +11,9 @@ Model cache class.
 
 \describe{
 \item{\code{mod}}{rxode2 or mrgsolve model (in cache)}
+
+\item{\code{eta_names}}{ETA names in model}
+
+\item{\code{variable}}{variable name representing the predictions in model}
 }}
 

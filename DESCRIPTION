@@ -4,37 +4,44 @@ Title: Maximum a posteriori bayesian estimation with Campsis
 Version: 0.1.0
 Authors@R: 
     person("Nicolas", "Luyckx", , "nicolas.luyckx@calvagone.com", role = c("aut", "cre"))
-Description: TO DO
+Description: Performs maximum a posteriori bayesian estimation of
+    individual pharmacokinetic parameters from a model defined in Campsis.
+    Similarly to Campsis, the simulation engine (mrgsolve or rxode2) used
+    in the estimation can be chosen at the user's request.
 License: GPL (>= 3)
 URL: https://github.com/Calvagone/campsismap, https://calvagone.github.io/
 BugReports: https://github.com/Calvagone/campsismap/issues
 Depends: 
-    R (>= 4.0.0),
-	campsis,
-	campsismod
+    campsis,
+    campsismod,
+    R (>= 4.0.0)
 Imports: 
     assertthat,
+    digest,
     dplyr,
     DT,
     lubridate,
-    magrittr,
     methods,
+    mvtnorm,
     optimx,
-    plyr,
     purrr,
     readr,
+    rlang,
     RJSONIO,
+    shiny,
     shinyTime,
-    tibble,
-    utils
+    tibble
 Suggests: 
     devtools,
     knitr,
     mapbayr,
+    mrgsolve,
     pkgdown,
     rmarkdown,
     roxygen2,
+    rxode2,
     testthat,
+    tictoc,
     xfun
 VignetteBuilder: 
     knitr
@@ -60,5 +67,3 @@ Collate:
     'shiny_datetime_table_editor.R'
     'shiny_dosing_table_editor.R'
     'shiny_observations_table_editor.R'
-    
-    

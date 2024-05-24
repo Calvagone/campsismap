@@ -94,7 +94,7 @@ setMethod("add", signature = c("ANY", "plot_options"), definition = function(obj
 #' Custom minor breaks based on limits.
 #' 
 #' @param limits limits, vector of 2 POSIXct values
-#' @param ii minor breaks interval, in hours
+#' @param breaksInterval minor breaks interval, in hours
 #' @importFrom lubridate dhours interval
 #' @export
 minorBreaksCustom <- function(limits, breaksInterval) {
@@ -127,6 +127,7 @@ plotToPOSIXct <- function(plot, timeref) {
 #' Automatically get the max value from the plot.
 #' 
 #' @param plot ggplot2 plot
+#' @param variable variable of interest
 #' @return max value in all data layers
 #' @export
 maxValueInPlot <- function(plot, variable) {
@@ -145,7 +146,7 @@ maxValueInPlot <- function(plot, variable) {
   }) %>% purrr::discard(~is.null(.x)) %>%
     purrr::flatten_dbl() %>%
     max()
-  maxValue <- max(c(maxValue1, maxValue2))
+  maxValue <- suppressWarnings(max(c(maxValue1, maxValue2)))
   return(maxValue)
 }
 

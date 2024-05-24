@@ -19,5 +19,11 @@ Campsismap model class.
 \item{\code{variable}}{variable name representing the predictions in model}
 
 \item{\code{error}}{error model}
+
+\item{\code{model_cache}}{model cache}
+
+\item{\code{settings}}{simulation settings}
+
+\item{\code{dest}}{destination engine}
 }}
 

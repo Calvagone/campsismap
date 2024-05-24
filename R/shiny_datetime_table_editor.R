@@ -43,6 +43,7 @@ setMethod("getUI", signature=c("datetime_table_editor"), definition=function(obj
 #_______________________________________________________________________________
 
 
+#' @param dateTime0React reference datetime
 #' @rdname server
 #' @importFrom DT datatable renderDT
 setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), definition=function(object, input, output, session, dateTime0React) {
@@ -262,6 +263,7 @@ toCampsis <- function(table, fun, dateTime0) {
   return(retValue)
 }
 
+#' @importFrom rlang as_function is_formula
 preprocessFun <- function(fun=NULL) {
   if (is.null(fun)) {
     fun <- ~.x
@@ -299,6 +301,7 @@ setGeneric("getInitialTable", function(object, ...) {
 
 
 #' @importFrom readr cols read_csv
+#' @rdname load
 setMethod("load", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
   table <- 
     tryCatch(
