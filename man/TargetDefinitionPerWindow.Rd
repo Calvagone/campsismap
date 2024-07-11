@@ -4,7 +4,7 @@
 \alias{TargetDefinitionPerWindow}
 \title{Target definition per window.
 TIME VALUE
-0    X   Target of X from 0 to 24
+0    X   Target of X from 0 to 24 (0 or negative value must be provided)
 24   Y   Target of Y from 24 to Inf, etc.}
 \usage{
 TargetDefinitionPerWindow(table)
@@ -15,6 +15,6 @@ TargetDefinitionPerWindow(table)
 \description{
 Target definition per window.
 TIME VALUE
-0    X   Target of X from 0 to 24
+0    X   Target of X from 0 to 24 (0 or negative value must be provided)
 24   Y   Target of Y from 24 to Inf, etc.
 }

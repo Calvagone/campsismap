@@ -30,7 +30,7 @@ setClass(
 
 #' Target definition per window.
 #' TIME VALUE
-#' 0    X   Target of X from 0 to 24
+#' 0    X   Target of X from 0 to 24 (0 or negative value must be provided)
 #' 24   Y   Target of Y from 24 to Inf, etc.
 #' 
 #' @param table data frame with TIME and VALUE columns

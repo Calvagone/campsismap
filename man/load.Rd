@@ -7,7 +7,13 @@
 \usage{
 load(object, file, ...)
 
-read.datetimecsv(file, datetime = TRUE, sort = TRUE)
+read.datetimecsv(
+  file,
+  dateTime = TRUE,
+  sort = TRUE,
+  relative = FALSE,
+  dateTime0 = NULL
+)
 }
 \arguments{
 \item{object}{object to load with something}
@@ -16,9 +22,13 @@ read.datetimecsv(file, datetime = TRUE, sort = TRUE)
 
 \item{...}{extra arguments}
 
-\item{datetime}{if TRUE, the 'Date' and 'Time' columns will be converted into 'Datetime'}
+\item{dateTime}{if TRUE, the 'Date' and 'Time' columns will be converted into 'Datetime'}
 
 \item{sort}{by default, rows will be sorted (only if datetime is TRUE)}
+
+\item{relative}{Datetime replaced by relative TIME column (based on provided dateTime0)}
+
+\item{dateTime0}{reference date if relative argument is used, otherwise first datetime found in table is used as reference datetime}
 }
 \value{
 the loaded object
