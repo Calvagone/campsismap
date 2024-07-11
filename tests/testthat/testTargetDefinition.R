@@ -39,5 +39,10 @@ test_that(getTestName("Target definition per window can be converted to an effec
   target <- data$target
   dosing <- data$dosing
   
+  rules <- Rules(TroughTimeRule(ii=12, use_next_dose=TRUE))
+  targetWindow <- TargetDefinitionPerWindow(target %>% rename(VALUE=Target))
+  targetEffective <- targetWindow %>% export(TargetDefinitionEffective(), dosing=dosing, rules=rules)
   
+  expect_equal(length(targetEffective), nrow(dosing))
+  expect_equal(targetEffective, TargetDefinitionEffective(tibble(TIME=seq(12,96,by=12), VALUE=c(50,50,60,60,70,70,70,70))))
 })

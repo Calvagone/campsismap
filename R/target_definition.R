@@ -93,18 +93,36 @@ TargetDefinitionEffective <- function(table=data.frame(TIME=numeric(0), VALUE=nu
   return(new("target_definition_effective", table=table))
 }
 
+annotateDosing <- function(dosing) {
+  dosingTimes <- dosing$TIME
+  if (any(duplicated(dosingTimes))) {
+    stop("Some dosing times are duplicated")
+  }
+  
+  # Sort by TIME
+  dosing <- dosing %>%
+    dplyr::arrange(TIME)
+  
+  # Add DOSENO column
+  dosing <- dosing %>% 
+    dplyr::mutate(DOSENO=seq_len(dplyr::n()))
+  
+  # Add DOSENO column
+  dosing <- dosing %>% 
+    dplyr::relocate(DOSENO, TIME)
+  
+  return(dosing)
+}
+
 #_______________________________________________________________________________
 #----                               export                                  ----
 #_______________________________________________________________________________
 
 setMethod("export", signature=c("target_definition_per_window", "target_definition_per_dose"), definition=function(object, dest, dosing) {
-  dosingTimes <- dosing$TIME
-  if (any(duplicated(dosingTimes))) {
-    stop("Some dosing times are duplicated")
-  }
+  dosing <- annotateDosing(dosing)
   table <- object@table
   
-  updatedTable <- purrr::map2_df(.x=seq_along(dosingTimes), .y=dosingTimes, .f=function(doseno, time) {
+  updatedTable <- purrr::map2_df(.x=dosing$DOSENO, .y=dosing$TIME, .f=function(doseno, time) {
     tmp <- table %>%
       dplyr::mutate(CONDITION=time >= .data$TIME) %>%
       dplyr::filter(CONDITION)
@@ -115,10 +133,46 @@ setMethod("export", signature=c("target_definition_per_window", "target_definiti
   return(dest)
 })
 
-setMethod("export", signature=c("target_definition_per_window", "target_definition_effective"), definition=function(object, dest, dosing) {
+setMethod("export", signature=c("target_definition_per_window", "target_definition_effective"), definition=function(object, dest, dosing, rules=NULL) {
   targetDose <- object %>% export(dest=TargetDefinitionPerDose(), dosing=dosing)
   
+  if (is.null(rules)) {
+    rules <- Rules()
+  }
   
+  troughTimeRule <- rules@list %>% purrr::detect(~(.x %>% getName())==(TroughTimeRule() %>% getName()))
+  if (is.null(troughTimeRule)) {
+    troughTimeRule <- TroughTimeRule() # Default
+    warning("No rule detected for the definition of the trough time")
+  }
+  
+  ii <- troughTimeRule@ii
+  useNextDose <- troughTimeRule@use_next_dose
+  
+  dosing <- annotateDosing(dosing)
+
+  table <- targetDose@table %>%
+    dplyr::left_join(dosing, by="DOSENO")
+  
+  totalRows <- nrow(table)
+  updatedTable <- tibble::tibble(TIME=numeric(0), VALUE=numeric(0))
+  
+  for (rowIndex in seq_len(totalRows)) {
+    row <- table[rowIndex, ]
+    lastRow <- rowIndex==totalRows
+    if (lastRow) {
+      item <- tibble::tibble(TIME=row$TIME + ii, VALUE=row$VALUE)
+    } else {
+      if (useNextDose) {
+        nextRow <- table[rowIndex + 1, ]
+        item <- tibble::tibble(TIME=nextRow$TIME, VALUE=row$VALUE)
+      } else {
+        item <- tibble::tibble(TIME=row$TIME + ii, VALUE=row$VALUE)
+      }
+    }
+    updatedTable <- dplyr::bind_rows(updatedTable, item)
+  }
+
   dest@table <- updatedTable
   return(dest)
 })
