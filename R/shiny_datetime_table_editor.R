@@ -300,12 +300,10 @@ setGeneric("getInitialTable", function(object, ...) {
 #_______________________________________________________________________________
 
 
-#' @importFrom readr cols read_csv
-#' @rdname load
+
 setMethod("load", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
-  table <- 
-    tryCatch(
-      readr::read_csv(file=file, col_types=readr::cols(.default="n", Date="c", Time="c")),
+  table <- tryCatch(
+    read.datetimecsv(file=file),
       error=function(cond) {
         print("Error reading the table")
         print(cond$message)
@@ -316,6 +314,18 @@ setMethod("load", signature=c("datetime_table_editor", "character"), definition=
   }
   return(TRUE)
 })
+
+#' Read 'Datetime' csv file.
+#' This csv file must contain at least a column 'Date' and a column 'Time'.
+#' 
+#' @param file path to csv file
+#' @importFrom readr cols read_csv
+#' @rdname load
+#' @export
+read.datetimecsv <- function(file) {
+  table <- readr::read_csv(file=file, col_types=readr::cols(.default="n", Date="c", Time="c"))
+  return(table)
+}
 
 #_______________________________________________________________________________
 #----                                write                                 ----

@@ -2,17 +2,17 @@
 % Please edit documentation in R/generic.R, R/shiny_datetime_table_editor.R
 \name{load}
 \alias{load}
-\alias{load,datetime_table_editor,character-method}
+\alias{read.datetimecsv}
 \title{Generic load method to load data from a file or a folder.}
 \usage{
 load(object, file, ...)
 
-\S4method{load}{datetime_table_editor,character}(object, file, ...)
+read.datetimecsv(file)
 }
 \arguments{
 \item{object}{object to load with something}
 
-\item{file}{path to the file or folder to be read}
+\item{file}{path to csv file}
 
 \item{...}{extra arguments}
 }
@@ -21,4 +21,7 @@ the loaded object
 }
 \description{
 Generic load method to load data from a file or a folder.
+
+Read 'Datetime' csv file.
+This csv file must contain at least a column 'Date' and a column 'Time'.
 }
