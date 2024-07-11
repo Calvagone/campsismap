@@ -29,3 +29,12 @@ preprocessSettings <- function(settings, dest) {
   
   return(settings)
 }
+
+#' Test equality between two S4 objects.
+#' 
+#' @param x first object
+#' @param y second object
+#' @export
+s4Eq <- function(x, y) {
+  return(isTRUE(all.equal(x, y)))
+}

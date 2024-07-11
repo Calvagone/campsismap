@@ -133,8 +133,8 @@ setMethod("export", signature=c("target_definition_per_window", "target_definiti
   return(dest)
 })
 
-setMethod("export", signature=c("target_definition_per_window", "target_definition_effective"), definition=function(object, dest, dosing, rules=NULL) {
-  targetDose <- object %>% export(dest=TargetDefinitionPerDose(), dosing=dosing)
+setMethod("export", signature=c("target_definition_per_dose", "target_definition_effective"), definition=function(object, dest, dosing, rules=NULL) {
+  targetDose <- object
   
   if (is.null(rules)) {
     rules <- Rules()
@@ -150,7 +150,7 @@ setMethod("export", signature=c("target_definition_per_window", "target_definiti
   useNextDose <- troughTimeRule@use_next_dose
   
   dosing <- annotateDosing(dosing)
-
+  
   table <- targetDose@table %>%
     dplyr::left_join(dosing, by="DOSENO")
   
@@ -172,9 +172,14 @@ setMethod("export", signature=c("target_definition_per_window", "target_definiti
     }
     updatedTable <- dplyr::bind_rows(updatedTable, item)
   }
-
+  
   dest@table <- updatedTable
   return(dest)
+})
+
+setMethod("export", signature=c("target_definition_per_window", "target_definition_effective"), definition=function(object, dest, dosing, rules=NULL) {
+  targetDose <- object %>% export(dest=TargetDefinitionPerDose(), dosing=dosing)
+  return(targetDose %>% export(dest=dest, dosing=dosing, rules=rules))
 })
 
 #_______________________________________________________________________________
