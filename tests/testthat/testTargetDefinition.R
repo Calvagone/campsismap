@@ -1,15 +1,16 @@
 library(testthat)
 library(tibble)
 library(tictoc)
+library(dplyr)
 
-context("Test the estimation of individual parameters")
+context("Test the target definition objects")
 source(paste0("C:/prj/campsismap/tests/testthat/", "testUtils.R"))
 
 getUsecaseFile <- function(usecase, file) {
   return(file.path(testFolder, "usecases", usecase, file))
 }
 
-test_that(getTestName("Method estimate works as expected when 1 sample is provided"), {
+test_that(getTestName("Target definition per window can be converted to target definition per dose"), {
   
   usecase <- "usecase1"
   
@@ -18,5 +19,9 @@ test_that(getTestName("Method estimate works as expected when 1 sample is provid
   obs <- read.datetimecsv(getUsecaseFile(usecase, "observations.csv"), relative=TRUE, dateTime0=dateTime0)
   target <- read.datetimecsv(getUsecaseFile(usecase, "target.csv"), relative=TRUE, dateTime0=dateTime0)
   
-  campsismapTest(estimation, test, env=environment())
+  targetWindow <- TargetDefinitionPerWindow(target %>% rename(VALUE=Target))
+  targetDose <- targetWindow %>% export(TargetDefinitionPerDose(), dosing=dosing)
+  
+  expect_equal(length(targetDose), nrow(dosing))
+  expect_equal(targetDose, TargetDefinitionPerDose(tibble(DOSENO=1:8, VALUE=c(50,50,60,60,70,70,70,70))))
 })

@@ -35,7 +35,7 @@ setClass(
 #' 
 #' @param table data frame with TIME and VALUE columns
 #' @export
-TargetDefinitionPerWindow <- function(table) {
+TargetDefinitionPerWindow <- function(table=data.frame(TIME=numeric(0), VALUE=numeric(0))) {
   return(new("target_definition_per_window", table=table))
 }
 
@@ -62,7 +62,7 @@ setClass(
 #' 
 #' @param table data frame with DOSENO and VALUE columns
 #' @export
-TargetDefinitionPerDose <- function(table) {
+TargetDefinitionPerDose <- function(table=data.frame(DOSENO=integer(0), VALUE=numeric(0))) {
   return(new("target_definition_per_dose", table=table))
 }
 
@@ -89,6 +89,41 @@ setClass(
 #' 
 #' @param table data frame with (effective) TIME and VALUE columns
 #' @export
-TargetDefinitionEffective <- function(table) {
+TargetDefinitionEffective <- function(table=data.frame(TIME=numeric(0), VALUE=numeric(0))) {
   return(new("target_definition_effective", table=table))
 }
+
+#_______________________________________________________________________________
+#----                               export                                  ----
+#_______________________________________________________________________________
+
+setMethod("export", signature=c("target_definition_per_window", "target_definition_per_dose"), definition=function(object, dest, dosing) {
+  dosingTimes <- dosing$TIME
+  if (any(duplicated(dosingTimes))) {
+    stop("Some dosing times are duplicated")
+  }
+  table <- object@table
+  
+  updatedTable <- purrr::map2_df(.x=seq_along(dosingTimes), .y=dosingTimes, .f=function(doseno, time) {
+    tmp <- table %>%
+      dplyr::mutate(CONDITION=time >= .data$TIME) %>%
+      dplyr::filter(CONDITION)
+    return(tibble::tibble(DOSENO=doseno, VALUE=tmp$VALUE[length(tmp$VALUE)]))
+  })
+  
+  dest@table <- updatedTable
+  return(dest)
+})
+
+#_______________________________________________________________________________
+#----                             length                                    ----
+#_______________________________________________________________________________
+
+#' Return the number of rows contained in the target definition.
+#' 
+#' @param x target definition
+#' @return a number
+setMethod("length", signature=c("target_definition"), definition=function(x) {
+  return(nrow(x@table))
+})
+

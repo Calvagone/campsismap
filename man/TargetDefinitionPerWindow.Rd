@@ -7,7 +7,9 @@ TIME VALUE
 0    X   Target of X from 0 to 24 (0 or negative value must be provided)
 24   Y   Target of Y from 24 to Inf, etc.}
 \usage{
-TargetDefinitionPerWindow(table)
+TargetDefinitionPerWindow(
+  table = data.frame(TIME = numeric(0), VALUE = numeric(0))
+)
 }
 \arguments{
 \item{table}{data frame with TIME and VALUE columns}

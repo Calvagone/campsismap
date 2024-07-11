@@ -4,7 +4,9 @@
 \alias{TargetDefinitionEffective}
 \title{Target definition (effective).}
 \usage{
-TargetDefinitionEffective(table)
+TargetDefinitionEffective(
+  table = data.frame(TIME = numeric(0), VALUE = numeric(0))
+)
 }
 \arguments{
 \item{table}{data frame with (effective) TIME and VALUE columns}

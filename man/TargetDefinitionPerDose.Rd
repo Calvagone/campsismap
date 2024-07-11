@@ -4,7 +4,9 @@
 \alias{TargetDefinitionPerDose}
 \title{Target definition per dose.}
 \usage{
-TargetDefinitionPerDose(table)
+TargetDefinitionPerDose(
+  table = data.frame(DOSENO = integer(0), VALUE = numeric(0))
+)
 }
 \arguments{
 \item{table}{data frame with DOSENO and VALUE columns}
