@@ -2,9 +2,9 @@
 # setwd("C:/prj/campsismap/")
 # roxygen2::roxygenise()
 # setwd("C:/prj/campsismap/tests/")
-# testFolder <<- "C:/prj/campsismap/tests/testthat/"
+# testFolder <- "C:/prj/campsismap/tests/testthat/"
 
-testFolder <- ""
+testFolder <- "C:/prj/campsismap/tests/testthat/"
 overwriteNonRegressionFiles <- FALSE
 testEngines <- c("rxode2", "mrgsolve")
 

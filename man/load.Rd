@@ -7,7 +7,7 @@
 \usage{
 load(object, file, ...)
 
-read.datetimecsv(file)
+read.datetimecsv(file, datetime = TRUE, sort = TRUE)
 }
 \arguments{
 \item{object}{object to load with something}
@@ -15,6 +15,10 @@ read.datetimecsv(file)
 \item{file}{path to csv file}
 
 \item{...}{extra arguments}
+
+\item{datetime}{if TRUE, the 'Date' and 'Time' columns will be converted into 'Datetime'}
+
+\item{sort}{by default, rows will be sorted (only if datetime is TRUE)}
 }
 \value{
 the loaded object
@@ -24,4 +28,6 @@ Generic load method to load data from a file or a folder.
 
 Read 'Datetime' csv file.
 This csv file must contain at least a column 'Date' and a column 'Time'.
+Date column must be formatted as 'ymd'.
+Time column must be formatted as 'hm'.
 }

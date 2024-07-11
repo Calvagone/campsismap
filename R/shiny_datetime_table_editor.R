@@ -77,7 +77,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
   observeEvent(input[[getDateTimeDialogAddConfirmButtonId(ns)]], {
     table <- rbind(tableReact(), getRowAsTibble(object, input))
     table <- table %>%
-      toDateTimeTable() %>%
+      toDateTimeTable(preserve_columns=TRUE) %>%
       dplyr::select(-Datetime)
     tableReact(table)
     removeModal()
@@ -87,7 +87,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
     index <- input[[paste0(getDateTimeTableOutputId(ns), "_rows_selected")]]
     table <- rbind(tableReact()[-index, ], getRowAsTibble(object, input))
     table <- table %>%
-      toDateTimeTable() %>%
+      toDateTimeTable(preserve_columns=TRUE) %>%
       dplyr::select(-Datetime)
     tableReact(table)
     removeModal()
@@ -219,13 +219,21 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
   return(dialog)
 }
 
-toDateTimeTable <- function(table, sort=TRUE) {
+toDateTimeTable <- function(table, sort=TRUE, preserve_columns=FALSE) {
   table <- table %>%
     dplyr::mutate(Datetime=toDateTime(date=.data$Date, time=.data$Time))
+  
+  table <- table %>%
+    dplyr::relocate(Datetime)
 
   if (sort) {
     table <- table %>%
       dplyr::arrange(Datetime)
+  }
+  
+  if (!preserve_columns) {
+    table <- table %>%
+      dplyr::select(-dplyr::any_of(c("Date", "Time")))
   }
 
   return(table)
@@ -246,7 +254,7 @@ toRelativeTimeTable <- function(table, dateTime0) {
     dplyr::mutate(Datetime0=dateTime0) %>%
     dplyr::mutate(TIME=(lubridate::interval(Datetime0, Datetime, tzone=Sys.timezone()) %>%
                           lubridate::as.duration() %>% as.numeric())/3600) %>%
-    dplyr::select(-dplyr::any_of(c("Date", "Time", "Datetime0")))
+    dplyr::select(-dplyr::any_of(c("Datetime0")))
 
   return(table)
 }
@@ -303,7 +311,7 @@ setGeneric("getInitialTable", function(object, ...) {
 
 setMethod("load", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
   table <- tryCatch(
-    read.datetimecsv(file=file),
+    read.datetimecsv(file=file, datetime=FALSE),
       error=function(cond) {
         print("Error reading the table")
         print(cond$message)
@@ -317,13 +325,21 @@ setMethod("load", signature=c("datetime_table_editor", "character"), definition=
 
 #' Read 'Datetime' csv file.
 #' This csv file must contain at least a column 'Date' and a column 'Time'.
-#' 
+#' Date column must be formatted as 'ymd'.
+#' Time column must be formatted as 'hm'.
 #' @param file path to csv file
+#' @param datetime if TRUE, the 'Date' and 'Time' columns will be converted into 'Datetime'
+#' @param sort by default, rows will be sorted (only if datetime is TRUE)
 #' @importFrom readr cols read_csv
 #' @rdname load
 #' @export
-read.datetimecsv <- function(file) {
+read.datetimecsv <- function(file, datetime=TRUE, sort=TRUE) {
   table <- readr::read_csv(file=file, col_types=readr::cols(.default="n", Date="c", Time="c"))
+  
+  if (datetime) {
+    table <- toDateTimeTable(table=table, sort=sort)
+  }
+  
   return(table)
 }
 
