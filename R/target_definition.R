@@ -115,6 +115,14 @@ setMethod("export", signature=c("target_definition_per_window", "target_definiti
   return(dest)
 })
 
+setMethod("export", signature=c("target_definition_per_window", "target_definition_effective"), definition=function(object, dest, dosing) {
+  targetDose <- object %>% export(dest=TargetDefinitionPerDose(), dosing=dosing)
+  
+  
+  dest@table <- updatedTable
+  return(dest)
+})
+
 #_______________________________________________________________________________
 #----                             length                                    ----
 #_______________________________________________________________________________
