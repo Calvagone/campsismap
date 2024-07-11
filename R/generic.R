@@ -215,3 +215,30 @@ setGeneric("predict", function(object, dataset, etas=NULL, settings=NULL, ...) {
   if (is.null(settings) && is(object, "campsismap_model")) settings <- object@settings
   standardGeneric("predict")
 })
+
+#_______________________________________________________________________________
+#----                             recommend                                 ----
+#_______________________________________________________________________________
+
+#' Recommend.
+#' 
+#' @param object campsismap object or model cache
+#' @param dataset dataset
+#' @param etas individual parameters to simulate
+#' @param target target definition
+#' @param now defines what the future or the past is, POSIXct date
+#' @param settings simulation settings
+#' @param ... extra arguments
+#' @return recommendations
+#' @export
+#' @rdname recommend
+recommend <- function(object, dataset, etas, target, now, settings, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("recommend", function(object, dataset, etas=NULL, target=NULL, now=NULL, settings=NULL, ...) {
+  if (is.null(etas)) etas <- numeric()
+  if (is.null(settings) && is(object, "campsismap_model")) settings <- object@settings
+  if (is.null(now)) now <- Sys.time()
+  standardGeneric("recommend")
+})
