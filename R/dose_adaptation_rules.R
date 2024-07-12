@@ -1,17 +1,17 @@
 #_______________________________________________________________________________
-#----                     target_definition_rules class                     ----
+#----                      dose_adaptation_rules class                      ----
 #_______________________________________________________________________________
 
 #' 
-#' Target definition rules class.
+#' Dose adaptation rules class.
 #' 
 #' @export
 setClass(
-  "target_definition_rules",
+  "dose_adaptation_rules",
   representation(
   ),
   contains = "pmx_list",
-  prototype = prototype(type="target_definition_rule")
+  prototype = prototype(type="dose_adaptation_rule")
 )
 
 #' Create a 'Rules' object.
@@ -20,7 +20,7 @@ setClass(
 #' @export
 Rules <- function(...) {
   extraArgs <- list(...)
-  retValue <- new("target_definition_rules") %>%
+  retValue <- new("dose_adaptation_rules") %>%
     add(extraArgs)
   return(retValue)
 }

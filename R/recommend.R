@@ -4,8 +4,8 @@
 
 #' @rdname recommend
 #' @importFrom optimx optimr
-setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "target_definition", "numeric", "simulation_settings"),
-          function(object, dataset, etas, target, now, settings, ...) {
+setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "target_definition", "numeric", "dose_adaptation_rules", "simulation_settings"),
+          function(object, dataset, etas, target, now, rules, settings, ...) {
   
   model <- object
 
@@ -28,9 +28,7 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
   dosing <- datasetTbl %>% 
     dplyr::filter(EVID==1) %>%
     dplyr::select(TIME, AMT)
-  
-  rules <- Rules(TroughTimeRule(ii=12, use_next_dose=TRUE))
-  
+
   targetPerDose <- target %>%
     export(dest=TargetDefinitionPerDose(), dosing=dosing)
   

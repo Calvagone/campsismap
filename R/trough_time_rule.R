@@ -1,18 +1,4 @@
 #_______________________________________________________________________________
-#----                   target_definition_rule class                        ----
-#_______________________________________________________________________________
-
-#' Target definition rule class.
-#' 
-#' @export
-setClass(
-  "target_definition_rule",
-  representation(
-  ),
-  contains="pmx_element"
-)
-
-#_______________________________________________________________________________
 #----                        trough_time_rule class                         ----
 #_______________________________________________________________________________
 
@@ -25,7 +11,7 @@ setClass(
     ii = "numeric",
     use_next_dose = "logical"
   ),
-  contains="target_definition_rule"
+  contains="dose_adaptation_rule"
 )
 
 #' Rule to identity when the trough time is.
@@ -44,4 +30,3 @@ TroughTimeRule <- function(ii=24, use_next_dose=TRUE) {
 setMethod("getName", signature=c("trough_time_rule"), definition=function(x) {
   return("Trough time rule")
 })
-

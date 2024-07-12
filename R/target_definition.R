@@ -143,7 +143,7 @@ setMethod("export", signature=c("target_definition_per_dose", "target_definition
   troughTimeRule <- rules@list %>% purrr::detect(~(.x %>% getName())==(TroughTimeRule() %>% getName()))
   if (is.null(troughTimeRule)) {
     troughTimeRule <- TroughTimeRule() # Default
-    warning("No rule detected for the definition of the trough time")
+    warning("No rule detected for the definition of the trough time. Default rule will apply.")
   }
   
   ii <- troughTimeRule@ii

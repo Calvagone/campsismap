@@ -227,17 +227,19 @@ setGeneric("predict", function(object, dataset, etas=NULL, settings=NULL, ...) {
 #' @param etas individual parameters to simulate
 #' @param target target definition
 #' @param now defines what the future or the past is, default is 0 (all doses adapted)
+#' @param rules dose adaptation rules
 #' @param settings simulation settings
 #' @param ... extra arguments
 #' @return recommendations
 #' @export
 #' @rdname recommend
-recommend <- function(object, dataset, etas, target, now, settings, ...) {
+recommend <- function(object, dataset, etas, target, now, rules, settings, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("recommend", function(object, dataset, etas=NULL, target=NULL, now=NULL, settings=NULL, ...) {
+setGeneric("recommend", function(object, dataset, etas=NULL, target=NULL, now=NULL, rules=NULL, settings=NULL, ...) {
   if (is.null(etas)) etas <- numeric()
+  if (is.null(rules)) rules <- Rules()
   if (is.null(settings) && is(object, "campsismap_model")) settings <- object@settings
   if (is.null(now)) now <- as.numeric(0)
   standardGeneric("recommend")
