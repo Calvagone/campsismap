@@ -19,11 +19,12 @@ test_that(getTestName("Test basic recommendation"), {
   dataset <- Dataset() %>%
     add(Bolus(time=0, amount=4000)) %>% # Fixed loading dose
     add(Bolus(time=12, amount=2000))    # Dose to adapt
-  
-  target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=50)) # Target is 50 from 0 to infinite
-  
+
   mapModel <- CampsismapModel(model=model, "CONC") %>%
     campsismap::setup(dest="mrgsolve")
+  
+  # Test 1: basic recommendation
+  target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=50)) # Target is 50 from 0 to infinite
   
   dataset_ <- mapModel %>%
     recommend(dataset=dataset, target=target, now=10, rules=getRules()) %>%
@@ -37,4 +38,21 @@ test_that(getTestName("Test basic recommendation"), {
     ggplot2::geom_vline(xintercept=24, color="red", linetype="dotted") +
     ggplot2::geom_hline(yintercept=target@table$VALUE, color="red", linetype="dotted")
   
+  # Test 2: negative recommendation is not possible, 0 is returned
+  target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=5)) 
+  
+  dataset_ <- mapModel %>%
+    recommend(dataset=dataset, target=target, now=10, rules=getRules()) %>%
+    add(Observations(seq(0,100,by=0.1)))
+  
+  expect_equal(dataset_ %>% retrieveDoseAmount(2), 0)
+  
+  results <- simulate(model=model %>% disable("IIV"), dataset=dataset_)
+  
+  spaghettiPlot(results, "CONC") +
+    ggplot2::geom_vline(xintercept=24, color="red", linetype="dotted") +
+    ggplot2::geom_hline(yintercept=target@table$VALUE, color="red", linetype="dotted")
+  
+  conc <- results %>% filter(TIME==24) %>% pull(CONC)
+  expect_equal(conc %>% round(), 19)
 })
