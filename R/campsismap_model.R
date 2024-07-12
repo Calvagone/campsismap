@@ -112,16 +112,3 @@ setMethod("predict", signature("campsismap_model", "dataset", "numeric", "simula
   
   return(predict(object=object@model_cache, dataset=datasetTbl, etas=etas, settings=settings, ...))
 })
-
-
-checkModelReady <- function(object, raise_error=TRUE) {
-  if (is.null(object@model_cache@mod)) {
-    if (raise_error) {
-      stop("Please setup your model first. See ?setup.")
-    } else {
-      return(FALSE)
-    }
-  }
-  return(TRUE)
-}
-

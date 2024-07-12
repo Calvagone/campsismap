@@ -8,19 +8,10 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
           function(object, dataset, etas, target, now, rules, settings, ...) {
   
   model <- object
-
-  # Check error model
-  if (is(model@error, class(UndefinedErrorModel()))) {
-    stop("No error model configured. Please add one.")
-  }
   
-  # Check model is ready
-  checkModelReady(model)
-  
-  # If etas not provided, they are all 0
-  if (length(etas)==0) {
-    etas <- rep(0, length(model@eta_names))
-  }
+  # Check inputs
+  checkModelReady(model, check_error_model=FALSE)
+  etas <- initialiseEtaVector(etas, model=model)
   
   datasetTbl <- dataset %>%
     export(dest=model@dest, seed=1, model=NULL, settings=model@settings)

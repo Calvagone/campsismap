@@ -7,7 +7,7 @@
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "logical", "plot_options"), function(model, dataset, etas, pop, options) {
 
   # Check model is ready
-  if (!checkModelReady(model, raise_error=FALSE)) {
+  if (!checkModelReady(model, check_error_model=FALSE, raise_error=FALSE)) {
     model <- model %>%
       setup(dest="mrgsolve")
   }
