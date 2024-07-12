@@ -65,3 +65,19 @@ setMethod("getSimulationTimes", signature("dataset"), function(object) {
     purrr::flatten_dbl()
   return(retValue)
 })
+
+#_______________________________________________________________________________
+#----                       updateDoseAmount                                ----
+#_______________________________________________________________________________
+
+#' @rdname updateDoseAmount
+setMethod("updateDoseAmount", signature("dataset", "numeric", "integer"), function(object, amount, dose_number) {
+  object@arms@list[[1]]@protocol@treatment@list <- object@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::map(.f=function(admin) {
+      if (admin@dose_number==dose_number) {
+        admin@amount <- amount
+      }
+      return(admin)
+    })
+  return(object)
+})

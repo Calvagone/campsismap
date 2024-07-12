@@ -8,8 +8,7 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
           function(object, dataset, etas, target, now, settings, ...) {
   
   model <- object
-  browser()
-  
+
   # Check error model
   if (is(model@error, class(UndefinedErrorModel()))) {
     stop("No error model configured. Please add one.")
@@ -61,26 +60,15 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     
     res <- optimx::optimr(par=initDose, fn=recommendOptimisationFun, hessian=FALSE, method="L-BFGS-B",
                           model=model, etas=etas, dataset=datasetTbl_, targetValue=targetValue, doseIndex=doseIndex)
-    recommendedDose <- res$par
-    if (recommendedDose < 0) {
-      recommendedDose <- 0
+    recommendation <- res$par
+    if (recommendation < 0) {
+      recommendation <- 0
     }
-    dataset <- updateDoseInDataset(dataset=dataset, doseno=doseno, dose=recommendedDose)
+    dataset <- updateDoseAmount(object=dataset, amount=recommendation, dose_number=doseno)
   }
 
   return(dataset)
 })
-
-updateDoseInDataset <- function(dataset, doseno, dose) {
-  dataset@arms@list[[1]]@protocol@treatment@list <- dataset@arms@list[[1]]@protocol@treatment@list %>%
-    purrr::map(.f=function(admin) {
-      if (admin@dose_number==doseno) {
-        admin@amount <- dose
-      }
-      return(admin)
-    })
-  return(dataset)
-}
 
 recommendOptimisationFun <- function(par, model, etas, dataset, targetValue=targetValue, doseIndex=doseIndex) {
   dataset[doseIndex, "AMT"] <- par

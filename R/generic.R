@@ -242,3 +242,25 @@ setGeneric("recommend", function(object, dataset, etas=NULL, target=NULL, now=NU
   if (is.null(now)) now <- as.numeric(0)
   standardGeneric("recommend")
 })
+
+#_______________________________________________________________________________
+#----                       updateDoseAmount                                ----
+#_______________________________________________________________________________
+
+#' Update dose amount.
+#' 
+#' @param object generic object (e.g. dataset)
+#' @param amount updated dose amount
+#' @param dose_number corresponding dose number
+#' @param ... extra arguments
+#' @return updated object
+#' @export
+#' @rdname updateDoseAmount
+updateDoseAmount <- function(object, amount, dose_number, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("updateDoseAmount", function(object, amount, dose_number, ...) {
+  dose_number <- as.integer(dose_number)
+  standardGeneric("updateDoseAmount")
+})

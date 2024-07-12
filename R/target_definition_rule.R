@@ -28,7 +28,7 @@ setClass(
   contains="target_definition_rule"
 )
 
-#' Rule to identity what the trough time is.
+#' Rule to identity when the trough time is.
 #' 
 #' @param ii dosing interval
 #' @param use_next_dose if TRUE next dose will be used as trough time, if FALSE dose + ii is used as trough time

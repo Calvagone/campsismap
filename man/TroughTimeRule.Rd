@@ -2,7 +2,7 @@
 % Please edit documentation in R/target_definition_rule.R
 \name{TroughTimeRule}
 \alias{TroughTimeRule}
-\title{Rule to identity what the trough time is.}
+\title{Rule to identity when the trough time is.}
 \usage{
 TroughTimeRule(ii = 24, use_next_dose = TRUE)
 }
@@ -12,5 +12,5 @@ TroughTimeRule(ii = 24, use_next_dose = TRUE)
 \item{use_next_dose}{if TRUE next dose will be used as trough time, if FALSE dose + ii is used as trough time}
 }
 \description{
-Rule to identity what the trough time is.
+Rule to identity when the trough time is.
 }
