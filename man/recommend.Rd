@@ -2,7 +2,7 @@
 % Please edit documentation in R/generic.R, R/recommend.R
 \name{recommend}
 \alias{recommend}
-\alias{recommend,campsismap_model,dataset,numeric,target_definition,POSIXct,simulation_settings-method}
+\alias{recommend,campsismap_model,dataset,numeric,target_definition,numeric,simulation_settings-method}
 \title{Recommend.}
 \usage{
 recommend(
@@ -15,7 +15,7 @@ recommend(
   ...
 )
 
-\S4method{recommend}{campsismap_model,dataset,numeric,target_definition,POSIXct,simulation_settings}(
+\S4method{recommend}{campsismap_model,dataset,numeric,target_definition,numeric,simulation_settings}(
   object,
   dataset,
   etas = NULL,
@@ -34,7 +34,7 @@ recommend(
 
 \item{target}{target definition}
 
-\item{now}{defines what the future or the past is, POSIXct date}
+\item{now}{defines what the future or the past is, default is 0 (all doses adapted)}
 
 \item{settings}{simulation settings}
 

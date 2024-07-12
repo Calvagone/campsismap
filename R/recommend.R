@@ -4,8 +4,11 @@
 
 #' @rdname recommend
 #' @importFrom optimx optimr
-setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "target_definition", "POSIXct", "simulation_settings"),
+setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "target_definition", "numeric", "simulation_settings"),
           function(object, dataset, etas, target, now, settings, ...) {
+  
+  model <- object
+  browser()
   
   # Check error model
   if (is(model@error, class(UndefinedErrorModel()))) {
@@ -20,21 +23,78 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     etas <- rep(0, length(model@eta_names))
   }
   
+  # Assign dose number in dataset
+  dataset@arms@list[[1]]@protocol@treatment <- dataset@arms@list[[1]]@protocol@treatment %>%
+    campsis:::assignDoseNumber()
+  
   datasetTbl <- dataset %>%
     export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
   
+  dosing <- datasetTbl %>% 
+    dplyr::filter(EVID==1) %>%
+    dplyr::select(TIME, AMT)
+  
   rules <- Rules(TroughTimeRule(ii=12, use_next_dose=TRUE))
   
-  targetEffective <- target %>%
-    export(dest=TargetDefinitionEffective(), dosing="TODO", rules="TODO")
+  targetPerDose <- target %>%
+    export(dest=TargetDefinitionPerDose(), dosing=dosing)
   
-  optimisationFun <- function(par, model, dataset, target, now) {
-    # TODO
-    # Predict samples
-    # Compare to target
-    return(0)
+  targetEffective <- targetPerDose %>%
+    export(dest=TargetDefinitionEffective(), dosing=dosing, rules=rules)
+  
+  targetTbl <- targetEffective@table %>%
+    dplyr::mutate(ADAPTABLE_DOSE=LAST_DOSE_TIME > now) %>%
+    dplyr::filter(ADAPTABLE_DOSE)
+  
+  for (index in seq_len(nrow(targetTbl))) {
+    currentTarget <- targetTbl[index, ]
+    doseno <- currentTarget$LAST_DOSENO
+    targetValue <- tibble::tibble(TIME=currentTarget$TIME, DV=currentTarget$VALUE)
+    
+    dataset_ <- dataset %>%
+      addSamples(targetValue)
+    datasetTbl_ <- dataset_ %>%
+      export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
+    
+    doseIndex <- which(datasetTbl_$EVID == 1 & datasetTbl_$DOSENO==doseno)
+    initDose <- datasetTbl_$AMT[doseIndex]
+    
+    res <- optimx::optimr(par=initDose, fn=recommendOptimisationFun, hessian=FALSE, method="L-BFGS-B",
+                          model=model, etas=etas, dataset=datasetTbl_, targetValue=targetValue, doseIndex=doseIndex)
+    recommendedDose <- res$par
+    if (recommendedDose < 0) {
+      recommendedDose <- 0
+    }
+    dataset <- updateDoseInDataset(dataset=dataset, doseno=doseno, dose=recommendedDose)
   }
-  
-  retValue <- optimx::optimr(par=etas, fn=optimisationFun, hessian=FALSE, method="L-BFGS-B", model=model, dataset=datasetTbl, target=targetEffective, now=now)
-  return(TRUE)
+
+  return(dataset)
 })
+
+updateDoseInDataset <- function(dataset, doseno, dose) {
+  dataset@arms@list[[1]]@protocol@treatment@list <- dataset@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::map(.f=function(admin) {
+      if (admin@dose_number==doseno) {
+        admin@amount <- dose
+      }
+      return(admin)
+    })
+  return(dataset)
+}
+
+recommendOptimisationFun <- function(par, model, etas, dataset, targetValue=targetValue, doseIndex=doseIndex) {
+  dataset[doseIndex, "AMT"] <- par
+  results <- predict(object=model@model_cache, dataset=dataset, etas=etas, settings=model@settings)
+  
+  ipred <- results %>% dplyr::pull(model@variable)
+  ipredTimes <- results$TIME
+  dv <- targetValue$DV
+  dvTimes <- targetValue$TIME
+  
+  # Make sure times match...
+  assertthat::assert_that(length(dv)==nrow(results), msg="dv and results do not have the same number of observations")
+  assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6), msg="times in dv and results do not match")
+  
+  return((ipred-dv)^2)
+}
+

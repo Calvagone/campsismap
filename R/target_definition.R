@@ -71,9 +71,9 @@ TargetDefinitionPerDose <- function(table=data.frame(DOSENO=integer(0), VALUE=nu
 #_______________________________________________________________________________
 
 #' Target definition (effective).
-#' TIME   VALUE
-#' 24     X   Predose 2 should attain a target of X
-#' 48     Y   Predose 3 should attain a target of Y
+#' LAST_DOSE_TIME TIME   VALUE
+#' 0              24     X   Predose 2 should attain a target of X
+#' 24             48     Y   Predose 3 should attain a target of Y
 #' 
 #' @slot table table
 #' @export
@@ -161,13 +161,13 @@ setMethod("export", signature=c("target_definition_per_dose", "target_definition
     row <- table[rowIndex, ]
     lastRow <- rowIndex==totalRows
     if (lastRow) {
-      item <- tibble::tibble(TIME=row$TIME + ii, VALUE=row$VALUE)
+      item <- tibble::tibble(TIME=row$TIME + ii, VALUE=row$VALUE, LAST_DOSENO=row$DOSENO, LAST_DOSE_TIME=row$TIME)
     } else {
       if (useNextDose) {
         nextRow <- table[rowIndex + 1, ]
-        item <- tibble::tibble(TIME=nextRow$TIME, VALUE=row$VALUE)
+        item <- tibble::tibble(TIME=nextRow$TIME, VALUE=row$VALUE, LAST_DOSENO=row$DOSENO, LAST_DOSE_TIME=row$TIME)
       } else {
-        item <- tibble::tibble(TIME=row$TIME + ii, VALUE=row$VALUE)
+        item <- tibble::tibble(TIME=row$TIME + ii, VALUE=row$VALUE, LAST_DOSENO=row$DOSENO, LAST_DOSE_TIME=row$TIME)
       }
     }
     updatedTable <- dplyr::bind_rows(updatedTable, item)
