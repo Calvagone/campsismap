@@ -20,10 +20,7 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     dplyr::filter(EVID==1) %>%
     dplyr::select(TIME, AMT)
 
-  targetPerDose <- target %>%
-    export(dest=TargetDefinitionPerDose(), dosing=dosing)
-  
-  targetEffective <- targetPerDose %>%
+  targetEffective <- target %>%
     export(dest=TargetDefinitionEffective(), dosing=dosing, rules=rules)
   
   targetTbl <- targetEffective@table %>%
@@ -46,7 +43,7 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     datasetTbl_ <- dataset_ %>%
       export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
     
-    doseIndex <- which(datasetTbl_$EVID == 1 & datasetTbl_$DOSENO==doseno)
+    doseIndex <- which(datasetTbl_$EVID==1 & datasetTbl_$DOSENO==doseno)
     initDose <- datasetTbl_$AMT[doseIndex]
     
     res <- optimx::optimr(par=initDose, fn=recommendOptimisationFun, hessian=FALSE, method="L-BFGS-B",
@@ -67,16 +64,7 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
 recommendOptimisationFun <- function(par, model, etas, dataset, targetValue=targetValue, doseIndex=doseIndex) {
   dataset[doseIndex, "AMT"] <- par
   results <- predict(object=model@model_cache, dataset=dataset, etas=etas, settings=model@settings)
-  
-  ipred <- results %>% dplyr::pull(model@variable)
-  ipredTimes <- results$TIME
-  dv <- targetValue$DV
-  dvTimes <- targetValue$TIME
-  
-  # Make sure times match...
-  assertthat::assert_that(length(dv)==nrow(results), msg="dv and results do not have the same number of observations")
-  assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6), msg="times in dv and results do not match")
-  
-  return((ipred-dv)^2)
+  summary <- summarisePredictions(results=results, samples=targetValue, model=model)
+  return((summary$IPRED-summary$DV)^2)
 }
 

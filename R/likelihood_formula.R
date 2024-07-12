@@ -23,21 +23,26 @@ individualLikelihood <- function(model, dataset, samples, etas) {
   # Simulate
   if (length(samples) > 0) {
     results <- predict(object=model@model_cache, dataset=dataset, etas=etas, settings=model@settings)
-    
-    ipred <- results %>% dplyr::pull(model@variable)
-    ipredTimes <- results$TIME
-    dv <- samples$DV
-    dvTimes <- samples$TIME
-    
-    # Make sure times match...
-    assertthat::assert_that(length(dv)==nrow(results), msg="dv and results do not have the same number of observations")
-    assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6), msg="times in dv and results do not match")
-    
-    sd <- model@error %>% computeSd(x=ipred)
-    return(sum(dnorm(x=ipred, mean=dv, sd=sd, log=TRUE)))
+    summary <- summarisePredictions(results=results, samples=samples, model=model)
+    sd <- model@error %>% computeSd(x=summary$IPRED)
+    return(sum(dnorm(x=summary$IPRED, mean=summary$DV, sd=sd, log=TRUE)))
   } else {
     return(0)
   }
+}
+
+summarisePredictions <- function(results, samples, model) {
+  ipred <- results %>% dplyr::pull(model@variable)
+  ipredTimes <- results$TIME
+  dv <- samples$DV
+  dvTimes <- samples$TIME
+  
+  # Make sure times match...
+  assertthat::assert_that(length(dv)==nrow(results), msg="dv and results do not have the same number of observations")
+  assertthat::assert_that(all(abs(ipredTimes-dvTimes) < 1e-6), msg="times in dv and results do not match")
+  
+  retValue <- tibble::tibble(TIME=ipredTimes, DV=dv, IPRED=ipred)
+  return(retValue)
 }
 
 

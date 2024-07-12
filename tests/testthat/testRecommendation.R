@@ -21,7 +21,7 @@ test_that(getTestName("Test basic recommendation"), {
     add(Bolus(time=12, amount=2000))    # Dose to adapt
 
   mapModel <- CampsismapModel(model=model, "CONC") %>%
-    campsismap::setup(dest="mrgsolve")
+    campsismap::setup(dest="rxode2")
   
   # Test 1: basic recommendation
   target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=50)) # Target is 50 from 0 to infinite
@@ -72,7 +72,7 @@ test_that(getTestName("Test multiple targets"), {
     add(Bolus(time=60, amount=2000))     # Dose 5 to adapt
   
   mapModel <- CampsismapModel(model=model, "CONC") %>%
-    campsismap::setup(dest="mrgsolve")
+    campsismap::setup(dest="rxode2")
   
   target <- TargetDefinitionPerWindow(tibble(TIME=c(0,30), VALUE=c(50,60)))
   
