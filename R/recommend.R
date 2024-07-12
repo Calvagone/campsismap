@@ -39,6 +39,12 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     dplyr::mutate(ADAPTABLE_DOSE=LAST_DOSE_TIME > now) %>%
     dplyr::filter(ADAPTABLE_DOSE)
   
+  doseRoundingRule <- rules@list %>% purrr::detect(~(.x %>% getName())==(DoseRoundingRule() %>% getName()))
+  if (is.null(doseRoundingRule)) {
+    doseRoundingRule <- DoseRoundingRule() # Default
+    warning("No rule detected for rounding the doses. Default rule will apply.")
+  }
+  
   for (index in seq_len(nrow(targetTbl))) {
     currentTarget <- targetTbl[index, ]
     doseno <- currentTarget$LAST_DOSENO
@@ -58,6 +64,9 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     if (recommendation < 0) {
       recommendation <- 0
     }
+    # Round recommendation
+    recommendation <- doseRoundingRule@fun(recommendation)
+    
     dataset <- updateDoseAmount(object=dataset, amount=recommendation, dose_number=doseno)
   }
 

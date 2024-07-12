@@ -59,6 +59,7 @@ Collate:
     'dose_adaptation_rule.R'
     'dose_adaptation_rules.R'
     'trough_time_rule.R'
+    'dose_rounding_rule.R'
     'target_definition.R'
     'campsismap_model.R'
     'likelihood_formula.R'

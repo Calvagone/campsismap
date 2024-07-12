@@ -15,7 +15,9 @@ test_that(getTestName("Test basic recommendation"), {
     add(Bolus(time=12, amount=2000))    # Dose to adapt
   
   target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=50)) # Target is 50 from 0 to infinite
-  rules <- Rules(TroughTimeRule(ii=12))
+  rules <- Rules() %>%
+    add(TroughTimeRule(ii=12)) %>%
+    add(DoseRoundingRule())
   
   mapModel <- CampsismapModel(model=model, "CONC") %>%
     add(ProportionalErrorModel(0.25)) %>%
@@ -25,7 +27,7 @@ test_that(getTestName("Test basic recommendation"), {
     recommend(dataset=dataset, target=target, now=10, rules=rules) %>%
     add(Observations(seq(0,100,by=0.1)))
   
-  expect_equal(dataset_ %>% retrieveDoseAmount(2) %>% round(), 3425)
+  expect_equal(dataset_ %>% retrieveDoseAmount(2), 3425)
   
   results <- simulate(model=model %>% disable("IIV"), dataset=dataset_)
   
