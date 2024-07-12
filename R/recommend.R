@@ -22,10 +22,6 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     etas <- rep(0, length(model@eta_names))
   }
   
-  # Assign dose number in dataset
-  dataset@arms@list[[1]]@protocol@treatment <- dataset@arms@list[[1]]@protocol@treatment %>%
-    campsis:::assignDoseNumber()
-  
   datasetTbl <- dataset %>%
     export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
   

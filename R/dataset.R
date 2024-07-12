@@ -70,8 +70,24 @@ setMethod("getSimulationTimes", signature("dataset"), function(object) {
 #----                       updateDoseAmount                                ----
 #_______________________________________________________________________________
 
+checkAssignedDoseNumbers <- function(dataset) {
+  doseNumbers <- dataset@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::map_int(~.x@dose_number)
+  
+  if (any(is.na(doseNumbers))) {
+    # Call to internal method assignDoseNumber in Campsis
+    dataset@arms@list[[1]]@protocol@treatment <- dataset@arms@list[[1]]@protocol@treatment %>%
+      campsis:::assignDoseNumber()
+  } else {
+    # Don't do anything
+  }
+  
+  return(dataset)
+}
+
 #' @rdname updateDoseAmount
 setMethod("updateDoseAmount", signature("dataset", "numeric", "integer"), function(object, amount, dose_number) {
+  object <- checkAssignedDoseNumbers(object)
   object@arms@list[[1]]@protocol@treatment@list <- object@arms@list[[1]]@protocol@treatment@list %>%
     purrr::map(.f=function(admin) {
       if (admin@dose_number==dose_number) {
