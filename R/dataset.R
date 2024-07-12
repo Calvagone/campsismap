@@ -67,6 +67,19 @@ setMethod("getSimulationTimes", signature("dataset"), function(object) {
 })
 
 #_______________________________________________________________________________
+#----                     retrieveDoseAmount                                ----
+#_______________________________________________________________________________
+
+#' @rdname retrieveDoseAmount
+setMethod("retrieveDoseAmount", signature("dataset", "integer"), function(object, dose_number) {
+  object <- checkAssignedDoseNumbers(object)
+  retValue <- object@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::keep(~.x@dose_number==dose_number) %>%
+    purrr::map_dbl(~.x@amount)
+  return(retValue)
+})
+
+#_______________________________________________________________________________
 #----                       updateDoseAmount                                ----
 #_______________________________________________________________________________
 

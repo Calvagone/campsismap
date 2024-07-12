@@ -264,3 +264,24 @@ setGeneric("updateDoseAmount", function(object, amount, dose_number, ...) {
   dose_number <- as.integer(dose_number)
   standardGeneric("updateDoseAmount")
 })
+
+#_______________________________________________________________________________
+#----                     retrieveDoseAmount                                ----
+#_______________________________________________________________________________
+
+#' Retrieve dose amount.
+#' 
+#' @param object generic object (e.g. dataset)
+#' @param dose_number corresponding dose number
+#' @param ... extra arguments
+#' @return updated object
+#' @export
+#' @rdname retrieveDoseAmount
+retrieveDoseAmount <- function(object, dose_number, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("retrieveDoseAmount", function(object, dose_number, ...) {
+  dose_number <- as.integer(dose_number)
+  standardGeneric("retrieveDoseAmount")
+})

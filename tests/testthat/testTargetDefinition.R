@@ -4,7 +4,7 @@ library(tictoc)
 library(dplyr)
 
 context("Test the target definition objects")
-source(paste0("C:/prj/campsismap/tests/testthat/", "testUtils.R"))
+source(paste0("", "testUtils.R"))
 
 getUsecaseFile <- function(usecase, file) {
   return(file.path(testFolder, "usecases", usecase, file))

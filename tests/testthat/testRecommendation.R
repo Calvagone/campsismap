@@ -5,7 +5,7 @@ library(dplyr)
 library(campsis)
 
 context("Test the target definition objects")
-source(paste0("C:/prj/campsismap/tests/testthat/", "testUtils.R"))
+source(paste0("", "testUtils.R"))
 
 test_that(getTestName("Test basic recommendation"), {
   model <- model_suite$pk$'2cpt_fo'
@@ -23,6 +23,8 @@ test_that(getTestName("Test basic recommendation"), {
   dataset_ <- mapModel %>%
     recommend(dataset=dataset, target=target, now=10) %>%
     add(Observations(seq(0,100,by=0.1)))
+  
+  expect_equal(dataset_ %>% retrieveDoseAmount(2) %>% round(), 3425)
   
   results <- simulate(model=model %>% disable("IIV"), dataset=dataset_)
   
