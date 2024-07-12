@@ -144,8 +144,7 @@ maxValueInPlot <- function(plot, variable) {
     }
     return(layer)
   }) %>% purrr::discard(~is.null(.x)) %>%
-    purrr::flatten_dbl() %>%
-    max()
+    purrr::flatten_dbl()
   maxValue <- suppressWarnings(max(c(maxValue1, maxValue2)))
   return(maxValue)
 }
