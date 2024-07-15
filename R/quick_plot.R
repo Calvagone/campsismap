@@ -108,9 +108,19 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   
   # Draw target
   target <- recommendation@effective_target
+  
+  # Fill in target profile on the right-hand side
   table <- target@table
   lastValue <- table$VALUE[length(table$VALUE)]
   table_ <- dplyr::bind_rows(table, tibble::tibble(TIME=max(results$TIME), VALUE=lastValue))
+  
+  # Fill in target profile on the left-hand side
+  firstValue <- table$VALUE[1]
+  firstTime <- table$TIME[1]
+  if (firstTime > 0) {
+    table_ <- dplyr::bind_rows(tibble::tibble(TIME=0, VALUE=firstValue), table_)
+  }
+  
   retValue <- retValue +
     ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="hv", colour="palegreen1")
   

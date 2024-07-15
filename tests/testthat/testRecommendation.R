@@ -48,12 +48,13 @@ test_that(getTestName("Test basic recommendation"), {
     recommendation
   )
   
-  recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation")
+  recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
+    add(Observations(seq(0,100,by=0.1)))
 
   quickPlot(model=model, recommendation=recommendation)
   
   results <- simulate(model=model_suite$pk$'2cpt_fo' %>% disable("IIV"),
-                      dataset=recommendation@recommended_dataset %>% add(Observations(times=24)))
+                      dataset=recommendation@recommended_dataset)
   conc <- results %>% filter(TIME==24) %>% pull(CONC)
   expect_equal(conc %>% round(), 19)
 })
