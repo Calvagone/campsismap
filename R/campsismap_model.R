@@ -69,6 +69,10 @@ CampsismapModel <- function(model, variable) {
 #----                           add                                   ----
 #_______________________________________________________________________________
 
+#' Add error model to Campsismap model.
+#' @param object Campsismap model
+#' @param x error model
+#' @return updated Campsismap model
 setMethod("add", signature = c("campsismap_model", "error_model"), definition = function(object, x) {
   object@error <- x 
   return(object)

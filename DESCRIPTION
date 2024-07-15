@@ -20,6 +20,7 @@ Imports:
     digest,
     dplyr,
     DT,
+    ggplot2,
     lubridate,
     methods,
     mvtnorm,

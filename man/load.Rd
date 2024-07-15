@@ -2,42 +2,28 @@
 % Please edit documentation in R/generic.R, R/shiny_datetime_table_editor.R
 \name{load}
 \alias{load}
-\alias{read.datetimecsv}
+\alias{load,datetime_table_editor,character-method}
 \title{Generic load method to load data from a file or a folder.}
 \usage{
 load(object, file, ...)
 
-read.datetimecsv(
-  file,
-  dateTime = TRUE,
-  sort = TRUE,
-  relative = FALSE,
-  dateTime0 = NULL
-)
+\S4method{load}{datetime_table_editor,character}(object, file, ...)
 }
 \arguments{
-\item{object}{object to load with something}
+\item{object}{datetime table editor}
 
-\item{file}{path to csv file}
+\item{file}{path to csv file that contains 'Date' and 'Time' information}
 
-\item{...}{extra arguments}
-
-\item{dateTime}{if TRUE, the 'Date' and 'Time' columns will be converted into 'Datetime'}
-
-\item{sort}{by default, rows will be sorted (only if datetime is TRUE)}
-
-\item{relative}{Datetime replaced by relative TIME column (based on provided dateTime0)}
-
-\item{dateTime0}{reference date if relative argument is used, otherwise first datetime found in table is used as reference datetime}
+\item{...}{extra arguments, unused}
 }
 \value{
 the loaded object
+
+TRUE
 }
 \description{
 Generic load method to load data from a file or a folder.
 
-Read 'Datetime' csv file.
-This csv file must contain at least a column 'Date' and a column 'Time'.
-Date column must be formatted as 'ymd'.
-Time column must be formatted as 'hm'.
+Read 'Datetime' csv file and load the editor.
+See method 'read.datetimecsv'.
 }

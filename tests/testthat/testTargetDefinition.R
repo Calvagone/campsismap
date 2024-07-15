@@ -7,7 +7,7 @@ context("Test the target definition objects")
 source(paste0("", "testUtils.R"))
 
 getUsecaseFile <- function(usecase, file) {
-  return(file.path(testFolder, "usecases", usecase, file))
+  return(file.path("usecases", usecase, file))
 }
 
 importUsecase <- function(usecase) {

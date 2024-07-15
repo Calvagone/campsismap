@@ -52,6 +52,14 @@ PlotOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_break
 #----                           add                                   ----
 #_______________________________________________________________________________
 
+#' Apply plot options to plot.
+#' 
+#' @param object plot
+#' @param x options
+#' @param variable variable of interest
+#' @return updated plot
+#' @importFrom ggplot2 guides scale_x_datetime ylim
+#' @export
 setMethod("add", signature = c("ANY", "plot_options"), definition = function(object, x, variable) {
   options <- x
   plot <- object

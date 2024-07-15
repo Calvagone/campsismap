@@ -307,8 +307,15 @@ setGeneric("getInitialTable", function(object, ...) {
 #----                                 load                                  ----
 #_______________________________________________________________________________
 
-
-
+#' Read 'Datetime' csv file and load the editor.
+#' See method 'read.datetimecsv'.
+#' 
+#' @param object datetime table editor
+#' @param file path to csv file that contains 'Date' and 'Time' information
+#' @param ... extra arguments, unused
+#' @return TRUE
+#' @rdname load
+#' @export
 setMethod("load", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
   table <- tryCatch(
     read.datetimecsv(file=file, dateTime=FALSE),
@@ -333,7 +340,6 @@ setMethod("load", signature=c("datetime_table_editor", "character"), definition=
 #' @param relative Datetime replaced by relative TIME column (based on provided dateTime0)
 #' @param dateTime0 reference date if relative argument is used, otherwise first datetime found in table is used as reference datetime
 #' @importFrom readr cols read_csv
-#' @rdname load
 #' @export
 read.datetimecsv <- function(file, dateTime=TRUE, sort=TRUE, relative=FALSE, dateTime0=NULL) {
   table <- readr::read_csv(file=file, col_types=readr::cols(.default="n", Date="c", Time="c"))
