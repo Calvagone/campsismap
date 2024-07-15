@@ -74,3 +74,4 @@ Collate:
     'shiny_datetime_table_editor.R'
     'shiny_dosing_table_editor.R'
     'shiny_observations_table_editor.R'
+    'shiny_target_table_editor.R'
