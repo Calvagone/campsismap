@@ -56,6 +56,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "indi
   return(retValue + ggplot2::theme_bw())
 })
 
+#' @param recommendation Campsismap recommendation
 #' @rdname quickPlot
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_plot_type", "plot_display_options"),
           function(model, dataset, etas, plot, options, recommendation) {
