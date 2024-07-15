@@ -4,7 +4,8 @@
 #_______________________________________________________________________________
 
 #' @rdname quickPlot
-setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "individual_fit_plot_type", "plot_display_options"), function(model, dataset, etas, plot, options) {
+setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "individual_fit_plot_type", "plot_display_options"),
+          function(model, dataset, etas, plot, options) {
 
   # Check model is ready
   if (!checkModelReady(model, check_error_model=FALSE, raise_error=FALSE)) {
@@ -49,9 +50,66 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "indi
       ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="black")
   }
 
-  # Add options
+  # Add display options
   retValue <- retValue %>% add(options, variable=model@variable)
 
+  return(retValue + ggplot2::theme_bw())
+})
+
+#' @rdname quickPlot
+setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_plot_type", "plot_display_options"),
+          function(model, dataset, etas, plot, options, recommendation, target=NULL, now=NULL) {
+  
+  # Check model is ready
+  if (!checkModelReady(model, check_error_model=FALSE, raise_error=FALSE)) {
+    model <- model %>%
+      setup(dest="mrgsolve")
+  }
+  
+  # If etas not provided, they are all 0
+  if (length(etas)==0) {
+    etas <- rep(0, length(model@eta_names))
+  }
+  
+  # Add sampling if not there (1000 points by default)
+  dataset <- dataset %>%
+    addSampling()
+  
+  # Simulate
+  resultsA <- predict(object=model, dataset=dataset, etas=etas) %>%
+    dplyr::mutate(COLOR="Individual fit")
+  
+  resultsB <- predict(object=model, dataset=recommendation, etas=etas) %>%
+    dplyr::mutate(COLOR="Recommendation")
+
+  results <- dplyr::bind_rows(resultsA, resultsB)
+  
+  retValue <- ggplot2::ggplot(data=results, mapping=ggplot2::aes(x=TIME, y=.data[[model@variable]], colour=COLOR)) +
+    ggplot2::geom_line(linewidth=1, alpha=0.6)
+
+  # Scale color manual to add a defaut legend
+  retValue <- retValue +
+    ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"="#B90E1E", "Individual fit"="lightpink"))
+  
+  # Retrieve DV
+  dv <- dataset %>%
+    getSamples()
+  
+  # Add the observations
+  if (nrow(dv) > 0) {
+    retValue <- retValue +
+      ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="black")
+  }
+  
+  # Now vertical line
+  if (!is.null(now)) {
+    retValue <- retValue +
+      ggplot2::geom_vline(xintercept=now, color="black", linetype="dotted")
+  }
+  
+  # Add display options
+  retValue <- retValue %>% add(options, variable=model@variable)
+  
   return(retValue + ggplot2::theme_bw())
 })
 

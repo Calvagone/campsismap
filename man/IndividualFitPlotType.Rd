@@ -10,7 +10,7 @@ IndividualFitPlotType(show_pop = TRUE)
 \item{show_pop}{show population (typical profile)}
 }
 \value{
-an individual fit plot type
+individual fit plot type
 }
 \description{
 Individual fit plot type.
