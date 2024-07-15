@@ -315,7 +315,6 @@ setGeneric("getInitialTable", function(object, ...) {
 #' @param ... extra arguments, unused
 #' @return TRUE
 #' @rdname load
-#' @export
 setMethod("load", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
   table <- tryCatch(
     read.datetimecsv(file=file, dateTime=FALSE),
