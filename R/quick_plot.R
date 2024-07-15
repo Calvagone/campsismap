@@ -89,7 +89,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
 
   # Scale color manual to add a defaut legend
   retValue <- retValue +
-    ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"="#B90E1E", "Individual fit"="lightpink"))
+    ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"="#B90E1E", "Recommendation"="#B2B2B2"))
   
   # Retrieve DV
   dv <- dataset %>%
@@ -105,6 +105,17 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   if (!is.null(now)) {
     retValue <- retValue +
       ggplot2::geom_vline(xintercept=now, color="black", linetype="dotted")
+  }
+  
+  # Draw target
+  if (!is.null(target)) {
+    if (is(target, "target_definition_per_window") && nrow(target@table) > 0) {
+      table <- target@table
+      lastValue <- table$VALUE[length(table$VALUE)]
+      table_ <- dplyr::bind_rows(table, tibble::tibble(TIME=max(results$TIME), VALUE=lastValue))
+      retValue <- retValue +
+        ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="hv", colour="palegreen1")
+    }
   }
   
   # Add display options

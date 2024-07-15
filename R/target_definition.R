@@ -71,9 +71,9 @@ TargetDefinitionPerDose <- function(table=data.frame(DOSENO=integer(0), VALUE=nu
 #_______________________________________________________________________________
 
 #' Target definition (effective).
-#' LAST_DOSE_TIME TIME   VALUE
-#' 0              24     X   Predose 2 should attain a target of X
-#' 24             48     Y   Predose 3 should attain a target of Y
+#' TIME   VALUE LAST_DOSENO LAST_DOSE_TIME 
+#' 24     X     1            0               Predose 2 should attain a target of X
+#' 48     Y     2            24              Predose 3 should attain a target of Y
 #' 
 #' @slot table table
 #' @export
@@ -89,7 +89,8 @@ setClass(
 #' 
 #' @param table data frame with (effective) TIME and VALUE columns
 #' @export
-TargetDefinitionEffective <- function(table=data.frame(TIME=numeric(0), VALUE=numeric(0))) {
+TargetDefinitionEffective <- function(table=data.frame(TIME=numeric(0), VALUE=numeric(0),
+                                                       LAST_DOSENO=integer(0), LAST_DOSE_TIME=numeric(0))) {
   return(new("target_definition_effective", table=table))
 }
 
