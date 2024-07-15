@@ -119,9 +119,6 @@ quickPlot <- function(model, dataset, etas, plot, options, ...) {
 }
 
 setGeneric("quickPlot", function(model, dataset=NULL, etas=NULL, plot=NULL, options=NULL, ...) {
-  if (is.null(plot)) {
-    plot <- IndividualFitPlotType()
-  } 
   if (is.null(etas)) {
     etas <- numeric()
   }
@@ -132,6 +129,13 @@ setGeneric("quickPlot", function(model, dataset=NULL, etas=NULL, plot=NULL, opti
   if (is.null(dataset) && !is.null(args$recommendation)) {
     dataset <- args$recommendation@original_dataset
   }
+  if (is.null(plot)) {
+    if (is.null(args$recommendation)) {
+      plot <- IndividualFitPlotType()
+    } else {
+      plot <- RecommendationPlotType()
+    }
+  } 
   standardGeneric("quickPlot")
 })
 
