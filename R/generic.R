@@ -118,7 +118,7 @@ quickPlot <- function(model, dataset, etas, plot, options, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("quickPlot", function(model, dataset, etas=NULL, plot=NULL, options=NULL, ...) {
+setGeneric("quickPlot", function(model, dataset=NULL, etas=NULL, plot=NULL, options=NULL, ...) {
   if (is.null(plot)) {
     plot <- IndividualFitPlotType()
   } 
@@ -127,7 +127,11 @@ setGeneric("quickPlot", function(model, dataset, etas=NULL, plot=NULL, options=N
   }
   if (is.null(options)) {
     options <- PlotDisplayOptions()
-  } 
+  }
+  args <- list(...)
+  if (is.null(dataset) && !is.null(args$recommendation)) {
+    dataset <- args$recommendation@original_dataset
+  }
   standardGeneric("quickPlot")
 })
 

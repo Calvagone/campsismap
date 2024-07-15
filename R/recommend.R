@@ -13,17 +13,10 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
   checkModelReady(model, check_error_model=FALSE)
   etas <- initialiseEtaVector(etas, model=model)
   
-  datasetTbl <- dataset %>%
-    export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
-  
-  dosing <- datasetTbl %>% 
-    dplyr::filter(EVID==1) %>%
-    dplyr::select(TIME, AMT)
+  # Prepare recommendation object
+  retValue <- Recommendation(dataset=dataset, target=target, rules=rules, now=now)
 
-  targetEffective <- target %>%
-    export(dest=TargetDefinitionEffective(), dosing=dosing, rules=rules)
-  
-  targetTbl <- targetEffective@table %>%
+  targetTbl <- retValue@effective_target@table %>%
     dplyr::mutate(ADAPTABLE_DOSE=LAST_DOSE_TIME > now) %>%
     dplyr::filter(ADAPTABLE_DOSE)
   
@@ -33,12 +26,15 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     warning("No rule detected for rounding the doses. Default rule will apply.")
   }
   
+  # Dataset copy
+  recommendedDataset <- dataset
+  
   for (index in seq_len(nrow(targetTbl))) {
     currentTarget <- targetTbl[index, ]
     doseno <- currentTarget$LAST_DOSENO
     targetValue <- tibble::tibble(TIME=currentTarget$TIME, DV=currentTarget$VALUE)
     
-    dataset_ <- dataset %>%
+    dataset_ <- recommendedDataset %>%
       addSamples(targetValue)
     datasetTbl_ <- dataset_ %>%
       export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
@@ -48,17 +44,19 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     
     res <- optimx::optimr(par=initDose, fn=recommendOptimisationFun, hessian=FALSE, method="L-BFGS-B",
                           model=model, etas=etas, dataset=datasetTbl_, targetValue=targetValue, doseIndex=doseIndex)
-    recommendation <- res$par
-    if (recommendation < 0) {
-      recommendation <- 0
+    recommendedDose <- res$par
+    if (recommendedDose < 0) {
+      recommendedDose <- 0
     }
-    # Round recommendation
-    recommendation <- doseRoundingRule@fun(recommendation)
+    # Round recommended dose
+    recommendedDose <- doseRoundingRule@fun(recommendedDose)
     
-    dataset <- updateDoseAmount(object=dataset, amount=recommendation, dose_number=doseno)
+    recommendedDataset <- updateDoseAmount(object=recommendedDataset, amount=recommendedDose, dose_number=doseno)
   }
+  
+  retValue@recommended_dataset <- recommendedDataset
 
-  return(dataset)
+  return(retValue)
 })
 
 recommendOptimisationFun <- function(par, model, etas, dataset, targetValue=targetValue, doseIndex=doseIndex) {

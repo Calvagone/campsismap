@@ -58,7 +58,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "indi
 
 #' @rdname quickPlot
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_plot_type", "plot_display_options"),
-          function(model, dataset, etas, plot, options, recommendation, target=NULL, now=NULL) {
+          function(model, dataset, etas, plot, options, recommendation) {
   
   # Check model is ready
   if (!checkModelReady(model, check_error_model=FALSE, raise_error=FALSE)) {
@@ -79,7 +79,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   resultsA <- predict(object=model, dataset=dataset, etas=etas) %>%
     dplyr::mutate(COLOR="Individual fit")
   
-  resultsB <- predict(object=model, dataset=recommendation, etas=etas) %>%
+  resultsB <- predict(object=model, dataset=recommendation@recommended_dataset, etas=etas) %>%
     dplyr::mutate(COLOR="Recommendation")
 
   results <- dplyr::bind_rows(resultsA, resultsB)
@@ -102,21 +102,17 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   }
   
   # Now vertical line
-  if (!is.null(now)) {
-    retValue <- retValue +
-      ggplot2::geom_vline(xintercept=now, color="black", linetype="dotted")
-  }
+  now <- recommendation@now
+  retValue <- retValue +
+    ggplot2::geom_vline(xintercept=now, color="black", linetype="dotted")
   
   # Draw target
-  if (!is.null(target)) {
-    if (is(target, "target_definition_per_window") && nrow(target@table) > 0) {
-      table <- target@table
-      lastValue <- table$VALUE[length(table$VALUE)]
-      table_ <- dplyr::bind_rows(table, tibble::tibble(TIME=max(results$TIME), VALUE=lastValue))
-      retValue <- retValue +
-        ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="hv", colour="palegreen1")
-    }
-  }
+  target <- recommendation@effective_target
+  table <- target@table
+  lastValue <- table$VALUE[length(table$VALUE)]
+  table_ <- dplyr::bind_rows(table, tibble::tibble(TIME=max(results$TIME), VALUE=lastValue))
+  retValue <- retValue +
+    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="hv", colour="palegreen1")
   
   # Add display options
   retValue <- retValue %>% add(options, variable=model@variable)

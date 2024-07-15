@@ -4,7 +4,7 @@ library(tictoc)
 library(dplyr)
 
 context("Test the target definition objects")
-source(paste0("", "testUtils.R"))
+source(paste0("C:/prj/campsismap/tests/testthat/", "testUtils.R"))
 
 getRules <- function() {
   rules <- Rules() %>%
@@ -84,20 +84,21 @@ test_that(getTestName("Test multiple targets"), {
   recommendationLogic <- expression(
     model %>%
       campsismap::setup(dest=destEngine) %>%
-      recommend(dataset=dataset, target=target, now=now, rules=getRules()) %>%
-      add(Observations(seq(0,100,by=0.1)))
-  )
-  test <- expression(
-    expect_equal(dataset_ %>% retrieveDoseAmount(1), 4000), # Didn't changed because of 'now'
-    expect_equal(dataset_ %>% retrieveDoseAmount(2), 3425),
-    expect_equal(dataset_ %>% retrieveDoseAmount(3), 2645),
-    expect_equal(dataset_ %>% retrieveDoseAmount(4), 3746),
-    expect_equal(dataset_ %>% retrieveDoseAmount(5), 3175),
-    expect_equal(dataset_ %>% retrieveDoseAmount(6), 3175),
-    dataset_
+      recommend(dataset=dataset, target=target, now=now, rules=getRules())
   )
   
-  recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="dataset_")
-
-  quickPlot(model=model, dataset=dataset, plot=RecommendationPlotType(), recommendation=recommendation, target=target, now=now)
+  test <- expression(
+    expect_equal(recommendation %>% retrieveDoseAmount(1), 4000), # Didn't changed because of 'now'
+    expect_equal(recommendation %>% retrieveDoseAmount(2), 3425),
+    expect_equal(recommendation %>% retrieveDoseAmount(3), 2645),
+    expect_equal(recommendation %>% retrieveDoseAmount(4), 3746),
+    expect_equal(recommendation %>% retrieveDoseAmount(5), 3175),
+    expect_equal(recommendation %>% retrieveDoseAmount(6), 3175),
+    recommendation
+  )
+  
+  recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
+    add(Observations(seq(0,100,by=0.1)))
+  
+  quickPlot(model=model, plot=RecommendationPlotType(), recommendation=recommendation)
 })

@@ -4,14 +4,14 @@
 \name{target_definition_effective-class}
 \alias{target_definition_effective-class}
 \title{Target definition (effective).
-LAST_DOSE_TIME TIME   VALUE
-0              24     X   Predose 2 should attain a target of X
-24             48     Y   Predose 3 should attain a target of Y}
+TIME   VALUE LAST_DOSENO LAST_DOSE_TIME 
+24     X     1            0               Predose 2 should attain a target of X
+48     Y     2            24              Predose 3 should attain a target of Y}
 \description{
 Target definition (effective).
-LAST_DOSE_TIME TIME   VALUE
-0              24     X   Predose 2 should attain a target of X
-24             48     Y   Predose 3 should attain a target of Y
+TIME   VALUE LAST_DOSENO LAST_DOSE_TIME 
+24     X     1            0               Predose 2 should attain a target of X
+48     Y     2            24              Predose 3 should attain a target of Y
 }
 \section{Slots}{
 

@@ -65,6 +65,7 @@ Collate:
     'campsismap_model.R'
     'likelihood_formula.R'
     'map_estimation.R'
+    'recommendation.R'
     'recommend.R'
     'plot_display_options.R'
     'quick_plot_type.R'

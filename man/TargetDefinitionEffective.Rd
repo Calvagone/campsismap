@@ -5,7 +5,8 @@
 \title{Target definition (effective).}
 \usage{
 TargetDefinitionEffective(
-  table = data.frame(TIME = numeric(0), VALUE = numeric(0))
+  table = data.frame(TIME = numeric(0), VALUE = numeric(0), LAST_DOSENO = integer(0),
+    LAST_DOSE_TIME = numeric(0))
 )
 }
 \arguments{
