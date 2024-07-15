@@ -1,5 +1,5 @@
 #_______________________________________________________________________________
-#----                       plot_options class                              ----
+#----                       plot_display_options class                              ----
 #_______________________________________________________________________________
 
 #' Plot options class.
@@ -13,7 +13,7 @@
 #' @slot legend_title legend title
 #' @export
 setClass(
-  "plot_options",
+  "plot_display_options",
   representation(
     ylim="numeric",
     timeref="POSIXct",
@@ -25,7 +25,7 @@ setClass(
   )
 )
 
-#' Plot options.
+#' Plot display options.
 #' 
 #' @param ylim suggested Y-axis limit
 #' @param timeref POSIXct time corresponding to TIME=0 in simulation
@@ -36,14 +36,14 @@ setClass(
 #' @param legend_title legend title
 #' @return an object
 #' @export
-PlotOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day", minor_breaks_interval=6, show_legend=FALSE, legend_title="Legend") {
+PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day", minor_breaks_interval=6, show_legend=FALSE, legend_title="Legend") {
   if (is.null(ylim)) {
     ylim <- NA
   }
   if (is.null(timeref)) {
     timeref <- NA
   }
-  return(new("plot_options", ylim=as.numeric(ylim), timeref=as.POSIXct(timeref), date_labels=date_labels,
+  return(new("plot_display_options", ylim=as.numeric(ylim), timeref=as.POSIXct(timeref), date_labels=date_labels,
              date_breaks=date_breaks, minor_breaks_interval=as.integer(minor_breaks_interval),
              show_legend=show_legend, legend_title=legend_title))
 }
@@ -59,7 +59,7 @@ PlotOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_break
 #' @param variable variable of interest
 #' @return updated plot
 #' @importFrom ggplot2 guides scale_x_datetime ylim
-setMethod("add", signature = c("ANY", "plot_options"), definition = function(object, x, variable) {
+setMethod("add", signature = c("ANY", "plot_display_options"), definition = function(object, x, variable) {
   options <- x
   plot <- object
   
