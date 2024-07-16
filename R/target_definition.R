@@ -36,7 +36,10 @@ setClass(
 #' @param table data frame with TIME and VALUE columns
 #' @export
 TargetDefinitionPerWindow <- function(table=data.frame(TIME=numeric(0), VALUE=numeric(0))) {
-  return(new("target_definition_per_window", table=table))
+  expectedColumns <- c("TIME", "VALUE")
+  assertthat::assert_that(all(expectedColumns %in% colnames(table)),
+                          msg=sprintf("Expected columns: %s", paste0(expectedColumns, collapse=",")))
+  return(new("target_definition_per_window", table=table %>% dplyr::select(dplyr::all_of(expectedColumns))))
 }
 
 #_______________________________________________________________________________
@@ -63,7 +66,10 @@ setClass(
 #' @param table data frame with DOSENO and VALUE columns
 #' @export
 TargetDefinitionPerDose <- function(table=data.frame(DOSENO=integer(0), VALUE=numeric(0))) {
-  return(new("target_definition_per_dose", table=table))
+  expectedColumns <- c("DOSENO", "VALUE")
+  assertthat::assert_that(all(expectedColumns %in% colnames(table)),
+                          msg=sprintf("Expected columns: %s", paste0(expectedColumns, collapse=",")))
+  return(new("target_definition_per_dose", table=table %>% dplyr::select(dplyr::all_of(expectedColumns))))
 }
 
 #_______________________________________________________________________________
@@ -91,7 +97,10 @@ setClass(
 #' @export
 TargetDefinitionEffective <- function(table=data.frame(TIME=numeric(0), VALUE=numeric(0),
                                                        LAST_DOSENO=integer(0), LAST_DOSE_TIME=numeric(0))) {
-  return(new("target_definition_effective", table=table))
+  expectedColumns <- c("TIME", "VALUE", "LAST_DOSENO", "LAST_DOSE_TIME")
+  assertthat::assert_that(all(expectedColumns %in% colnames(table)),
+                          msg=sprintf("Expected columns: %s", paste0(expectedColumns, collapse=",")))
+  return(new("target_definition_effective", table=table %>% dplyr::select(dplyr::all_of(expectedColumns))))
 }
 
 annotateDosing <- function(dosing) {

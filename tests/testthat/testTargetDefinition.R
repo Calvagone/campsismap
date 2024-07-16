@@ -7,7 +7,11 @@ context("Test the target definition objects")
 source(paste0("", "testUtils.R"))
 
 getUsecaseFile <- function(usecase, file) {
-  return(file.path("usecases", usecase, file))
+  if (testFolder=="") {
+    return(file.path("usecases", usecase, file))
+  } else {
+    return(file.path(testFolder, "usecases", usecase, file))
+  }
 }
 
 importUsecase <- function(usecase) {
@@ -51,4 +55,15 @@ test_that(getTestName("Target definition per window can be converted to an effec
   targetEffectiveB <- targetDose %>% export(TargetDefinitionEffective(), dosing=dosing, rules=rules)
   
   expect_true(s4Eq(targetEffectiveA, targetEffectiveB))
+})
+
+test_that(getTestName("Negative time in target should work"), {
+  rules <- Rules(TroughTimeRule(ii=24, use_next_dose=TRUE))
+  targetWindow <- TargetDefinitionPerWindow(tibble(TIME=-8, VALUE=100))
+  targetEffective <- targetWindow %>% export(TargetDefinitionEffective(), dosing=tibble::tibble(TIME=c(0,24,48)), rules=rules)
+  expect_equal(targetEffective, TargetDefinitionEffective(tibble(TIME=c(24,48,72), VALUE=100, LAST_DOSENO=1:3, LAST_DOSE_TIME=c(0,24,48))))
+})
+
+test_that(getTestName("Target must contain the correct column names"), {
+  expect_error(TargetDefinitionPerWindow(tibble(TIME=-8, Target=100)), regexp="Expected columns")
 })

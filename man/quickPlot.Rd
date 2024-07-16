@@ -24,6 +24,8 @@ quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
 \item{options}{plot options}
 
 \item{...}{extra arguments}
+
+\item{recommendation}{Campsismap recommendation}
 }
 \value{
 a ggplot2 object
