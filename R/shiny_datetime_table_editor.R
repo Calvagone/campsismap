@@ -139,10 +139,21 @@ getRowAsTibble <- function(object, input) {
   return(retValue)
 }
 
+#' Posix to date string.
+#' 
+#' @param x POSIXct date
+#' @return date, string form '%Y-%m-%d'
+#' @export
 posixToDateStr <- function(x) {
   return(strftime(x, "%Y-%m-%d"))
 }
 
+#' Posix to time string.
+#' 
+#' @param x POSIXct time
+#' @param seconds export seconds, logical value
+#' @return time, string form '%H:%M:%S' or '%H:%M' depending on argument 'seconds'
+#' @export
 posixToTimeStr <- function(x, seconds=FALSE) {
   if (seconds) {
     return(strftime(x, "%H:%M:%S"))
@@ -239,7 +250,13 @@ toDateTimeTable <- function(table, sort=TRUE, preserve_columns=FALSE) {
   return(table)
 }
 
+#' To date time.
+#' 
+#' @param date date, 'ymd' formatted string
+#' @param time time, 'hm' formatted string
 #' @importFrom lubridate ymd_hm
+#' @return POSIXct value
+#' @export
 toDateTime <- function(date, time) {
   return(lubridate::ymd_hm(paste(date, time), tz=Sys.timezone()))
 }
