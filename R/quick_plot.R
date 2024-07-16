@@ -105,7 +105,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   # Now vertical line
   now <- recommendation@now
   retValue <- retValue +
-    ggplot2::geom_vline(xintercept=now, color="black", linetype="dotted")
+    ggplot2::geom_vline(mapping=ggplot2::aes(xintercept=TIME), data=tibble::tibble(TIME=now), color="black", linetype="dotted")
   
   # Draw target
   target <- recommendation@effective_target
