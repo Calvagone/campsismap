@@ -65,3 +65,25 @@ setMethod("add", signature = c("recommendation", "observations"), definition = f
 setMethod("retrieveDoseAmount", signature("recommendation", "integer"), function(object, dose_number) {
   return(object@recommended_dataset %>% retrieveDoseAmount(dose_number=dose_number))
 })
+
+#_______________________________________________________________________________
+#----                            export                                     ----
+#_______________________________________________________________________________
+
+setMethod("export", signature("recommendation", "character"), function(object, dest) {
+  
+  originalDataset <- checkAssignedDoseNumbers(object@original_dataset)
+  recommendedDataset <- checkAssignedDoseNumbers(object@recommended_dataset)
+
+  summaryOriginal <- originalDataset@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::map_df(~tibble::tibble(DOSENO=.x@dose_number, TIME=.x@time, ORIGINAL=.x@amount))
+  
+  summaryRecommendation <- recommendedDataset@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::map_df(~tibble::tibble(DOSENO=.x@dose_number, RECOMMENDATION=.x@amount))
+  
+  summary <- summaryOriginal %>%
+    dplyr::left_join(summaryRecommendation, by=c("DOSENO")) %>%
+    dplyr::filter(TIME > recommendation@now)
+
+  return(summary)
+})
