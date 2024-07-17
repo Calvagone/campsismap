@@ -74,6 +74,49 @@ test_that(getTestName("Test basic recommendation"), {
 })
 
 
+test_that(getTestName("Test basic recommendation (ETAs vs typical)"), {
+  dataset <- Dataset() %>%
+    add(Bolus(time=0, amount=4000)) %>% # Fixed loading dose
+    add(Bolus(time=12, amount=2000))    # Dose to adapt
+  
+  model <- CampsismapModel(model=model_suite$pk$'2cpt_fo', "CONC")
+  
+  # Test 1: basic recommendation
+  target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=50)) # Target is 50 from 0 to infinite
+  
+  recommendationLogicA <- expression(
+    model %>%
+      campsismap::setup(dest=destEngine) %>%
+      recommend(dataset=dataset, target=target, now=10, rules=getRules())
+  )
+  recommendationLogicB <- expression(
+    model %>%
+      campsismap::setup(dest=destEngine) %>%
+      recommend(dataset=dataset, target=target, now=10, rules=getRules(), etas=c(ETA_KA=0, ETA_VC=0, ETA_VP=0, ETA_Q=0, ETA_CL=0.5))
+  )
+  
+  testA <- expression(
+    expect_equal(recommendation %>% retrieveDoseAmount(1), 4000), # Didn't changed because of 'now'
+    expect_equal(recommendation %>% retrieveDoseAmount(2), 3425),
+    recommendation
+  )
+  
+  testB <- expression(
+    expect_equal(recommendation %>% retrieveDoseAmount(1), 4000), # Didn't changed because of 'now'
+    expect_equal(recommendation %>% retrieveDoseAmount(2), 7192),
+    recommendation
+  )
+  
+  recommendationA <- campsismapTest(recommendationLogicA, testA, env=environment(), output_name="recommendation") %>%
+    add(Observations(seq(0,100,by=0.1)))
+  recommendationB <- campsismapTest(recommendationLogicB, testB, env=environment(), output_name="recommendation") %>%
+    add(Observations(seq(0,100,by=0.1)))
+
+  plotly::ggplotly(quickPlot(model=model, recommendation=recommendationA))
+  plotly::ggplotly(quickPlot(model=model, recommendation=recommendationB))
+})
+
+
 test_that(getTestName("Test multiple targets"), {
   dataset <- Dataset() %>%
     add(Bolus(time=0, amount=4000)) %>%  # Fixed loading dose

@@ -20,7 +20,7 @@ quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
   plot,
   options,
   recommendation,
-  position_dodge_width = 3600 * 12 * 0.9
+  position_dodge_width = ifelse(is.na(options@timeref), 0.9, 3600 * 24 * 0.9)
 )
 }
 \arguments{
