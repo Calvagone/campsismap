@@ -83,7 +83,7 @@ setMethod("export", signature("recommendation", "character"), function(object, d
   
   summary <- summaryOriginal %>%
     dplyr::left_join(summaryRecommendation, by=c("DOSENO")) %>%
-    dplyr::filter(TIME > recommendation@now)
+    dplyr::filter(TIME > object@now)
 
   return(summary)
 })

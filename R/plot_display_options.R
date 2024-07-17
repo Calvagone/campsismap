@@ -133,7 +133,8 @@ minorBreaksCustom <- function(limits, breaksInterval) {
 plotToPOSIXct <- function(plot, timeref) {
   plot$data <- timeToPOSIXct(plot$data, timeref=timeref)
   plot$layers <- plot$layers %>% purrr::map(.f=function(layer) {
-    layer$data <- timeToPOSIXct(layer$data, timeref=timeref)
+    constructor <- layer$constructor[1]
+    layer$data <- timeToPOSIXct(layer$data, timeref=timeref, constructor=constructor)
     return(layer)
   })
   
@@ -179,10 +180,18 @@ minMaxInPlot <- function(plot, variable, fun) {
   return(maxValue)
 }
 
-timeToPOSIXct <- function(x, timeref) {
+timeToPOSIXct <- function(x, timeref, constructor=NULL) {
   if ("TIME" %in% colnames(x)) {
     x <- x %>%
       dplyr::mutate(TIME=timeref + lubridate::dhours(TIME))
+    if (!is.null(constructor) && grepl(pattern="geom_col", x=constructor)) {
+      print("geom_col detected")
+      if (length(unique(x$TIME)) == 1) {
+        # x <- x %>%
+        #   dplyr::mutate(TIME=as.Date(TIME))
+        x <- dplyr::bind_rows(x, x %>% dplyr::mutate(value=0, TIME=TIME + lubridate::dhours(24)))
+      }
+    }
   }
   return(x)
 } 

@@ -132,30 +132,37 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
 })
 
 #' @param recommendation Campsismap recommendation
+#' @param position_dodge_width position dodge width
 #' @importFrom ggplot2 geom_col geom_text geom_vline guides scale_fill_manual theme_bw
 #' @importFrom tidyr pivot_longer
 #' @rdname quickPlot
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_bar_plot_type", "plot_display_options"),
-          function(model, dataset, etas, plot, options, recommendation) {
+          function(model, dataset, etas, plot, options, recommendation, position_dodge_width=3600*12*0.9) {
             
   summary <- recommendation %>% export(dest="summary") %>%
     dplyr::rename(Original=ORIGINAL, Recommendation=RECOMMENDATION) %>%
     tidyr::pivot_longer(cols=c("Original", "Recommendation"), names_to="AMT")
   
-  retValue <- ggplot2::ggplot(data=summary, mapping=ggplot2::aes(x=TIME, y=value)) +
-    ggplot2::geom_col(mapping=ggplot2::aes(fill=AMT), position="dodge") +
+  # Data passed to geom_col due to bug with POSIXct if 1 bar
+  # See method plotToPOSIXct and timeToPOSIXct
+  retValue <- ggplot2::ggplot() +
+    ggplot2::geom_col(mapping=ggplot2::aes(x=TIME, y=value, fill=AMT), data=summary, position="dodge2") +
     ggplot2::geom_vline(mapping=ggplot2::aes(xintercept=TIME), data=tibble::tibble(TIME=recommendation@now), color="black", linetype="dotted") +
     ggplot2::ylab("AMT") +
-    ggplot2::scale_fill_manual(values=c("Original"="#B90E1E", "Recommendation"="#B2B2B2")) +
-    ggplot2::guides(fill="none")
-
+    ggplot2::scale_fill_manual(values=c("Original"="#B90E1E", "Recommendation"="#B2B2B2"))
+  
+  retValue <- retValue +
+    ggplot2::geom_text(ggplot2::aes(x=TIME, y=value, label=value, group=AMT), data=summary, vjust=1.6, color="white",
+                       position = ggplot2::position_dodge(width=position_dodge_width), size=3.5, fontface="bold")
+  
   # Add display options
   retValue <- retValue %>%
-    add(options, variable=model@variable)
+    add(options, variable="value")
   
-  retValue <- retValue + 
-    ggplot2::geom_text(ggplot2::aes(x=TIME, label=value, group=AMT), vjust=1.6, color="white",
-                                    position = ggplot2::position_dodge(width=36000), size=3.5, fontface="bold")
+  
+  
+  retValue <- retValue +
+    ggplot2::guides(fill="none")
   
   return(retValue + ggplot2::theme_bw())
 })
