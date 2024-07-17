@@ -15,7 +15,7 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
   
   # Prepare recommendation object
   retValue <- Recommendation(dataset=dataset, target=target, rules=rules, now=now)
-
+  
   targetTbl <- retValue@effective_target@table %>%
     dplyr::mutate(ADAPTABLE_DOSE=LAST_DOSE_TIME > now) %>%
     dplyr::filter(ADAPTABLE_DOSE)
@@ -54,7 +54,11 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     recommendedDataset <- updateDoseAmount(object=recommendedDataset, amount=recommendedDose, dose_number=doseno)
   }
   
+  # Store recommended dataset
   retValue@recommended_dataset <- recommendedDataset
+  
+  # Store ETAs
+  retValue@etas <- etas
 
   return(retValue)
 })

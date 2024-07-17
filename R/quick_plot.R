@@ -68,8 +68,10 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   }
   
   # If etas not provided, they are all 0
-  if (length(etas)==0) {
-    etas <- rep(0, length(model@eta_names))
+  if (length(etas) == 0) {
+    etas <- recommendation@etas
+  } else {
+    warning("ETAs specified in quickPlot call, ETAs contained in recommendation are discarded")
   }
   
   # Add sampling if not there (1000 points by default)

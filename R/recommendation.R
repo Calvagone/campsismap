@@ -14,6 +14,7 @@ setClass(
     original_target = "target_definition",
     effective_target = "target_definition_effective",
     rules = "dose_adaptation_rules",
+    etas = "numeric",
     now = "numeric"
   )
 )
