@@ -131,6 +131,35 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   return(retValue + ggplot2::theme_bw())
 })
 
+#' @param recommendation Campsismap recommendation
+#' @importFrom ggplot2 geom_col geom_text geom_vline guides scale_fill_manual theme_bw
+#' @importFrom tidyr pivot_longer
+#' @rdname quickPlot
+setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_bar_plot_type", "plot_display_options"),
+          function(model, dataset, etas, plot, options, recommendation) {
+            
+  summary <- recommendation %>% export(dest="summary") %>%
+    dplyr::rename(Original=ORIGINAL, Recommendation=RECOMMENDATION) %>%
+    tidyr::pivot_longer(cols=c("Original", "Recommendation"), names_to="AMT")
+  
+  retValue <- ggplot2::ggplot(data=summary, mapping=ggplot2::aes(x=TIME, y=value)) +
+    ggplot2::geom_col(mapping=ggplot2::aes(fill=AMT), position="dodge") +
+    ggplot2::geom_vline(mapping=ggplot2::aes(xintercept=TIME), data=tibble::tibble(TIME=recommendation@now), color="black", linetype="dotted") +
+    ggplot2::ylab("AMT") +
+    ggplot2::scale_fill_manual(values=c("Original"="#B90E1E", "Recommendation"="#B2B2B2")) +
+    ggplot2::guides(fill="none")
+
+  # Add display options
+  retValue <- retValue %>%
+    add(options, variable=model@variable)
+  
+  retValue <- retValue + 
+    ggplot2::geom_text(ggplot2::aes(x=TIME, label=value, group=AMT), vjust=1.6, color="white",
+                                    position = ggplot2::position_dodge(width=36000), size=3.5, fontface="bold")
+  
+  return(retValue + ggplot2::theme_bw())
+})
+
 addSampling <- function(dataset, length.out=1000) {
   # Retrieve DV
   dv <- dataset %>%

@@ -4,7 +4,7 @@ library(tictoc)
 library(dplyr)
 
 context("Test the target definition objects")
-source(paste0("", "testUtils.R"))
+source(paste0("C:/prj/campsismap/tests/testthat/", "testUtils.R"))
 
 getRules <- function() {
   rules <- Rules() %>%
@@ -93,5 +93,15 @@ test_that(getTestName("Test multiple targets"), {
   recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
     add(Observations(seq(0,100,by=0.1)))
   
-  quickPlot(model=model, recommendation=recommendation)
+  options <- PlotDisplayOptions(timeref=Sys.time(), show_legend=FALSE, legend_title="")
+  
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options)
+  plot
+  
+  min <- minValueInPlot(plot, "TIME")
+  max <- maxValueInPlot(plot, "TIME")
+  
+  options@date_limits <- c(min, max) # Add limits
+  plot <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options)
+  plot
 })

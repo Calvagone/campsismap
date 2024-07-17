@@ -4,6 +4,7 @@
 \alias{quickPlot}
 \alias{quickPlot,campsismap_model,dataset,numeric,individual_fit_plot_type,plot_display_options-method}
 \alias{quickPlot,campsismap_model,dataset,numeric,recommendation_plot_type,plot_display_options-method}
+\alias{quickPlot,campsismap_model,dataset,numeric,recommendation_bar_plot_type,plot_display_options-method}
 \title{Quickly visualise the individual predictions with regard to the observed data.}
 \usage{
 quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
@@ -11,6 +12,8 @@ quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
 \S4method{quickPlot}{campsismap_model,dataset,numeric,individual_fit_plot_type,plot_display_options}(model, dataset, etas, plot, options)
 
 \S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_plot_type,plot_display_options}(model, dataset, etas, plot, options, recommendation)
+
+\S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_bar_plot_type,plot_display_options}(model, dataset, etas, plot, options, recommendation)
 }
 \arguments{
 \item{model}{Campsismap or Campsis model}

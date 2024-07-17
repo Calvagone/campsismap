@@ -20,6 +20,8 @@ Plot options class.
 
 \item{\code{minor_breaks_interval}}{minor breaks interval in hours}
 
+\item{\code{date_limits}}{date limits, vector of 2 POSIXct values with the limits}
+
 \item{\code{show_legend}}{show a legend}
 
 \item{\code{legend_title}}{legend title}

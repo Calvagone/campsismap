@@ -9,6 +9,7 @@
 #' @slot date_labels label of datetime on X-axis
 #' @slot date_breaks data breaks, e.g. '1 day'
 #' @slot minor_breaks_interval minor breaks interval in hours
+#' @slot date_limits date limits, vector of 2 POSIXct values with the limits
 #' @slot show_legend show a legend
 #' @slot legend_title legend title
 #' @export
@@ -20,6 +21,7 @@ setClass(
     date_labels="character",
     date_breaks="character", # E.g. '1 day'
     minor_breaks_interval="integer", # E.g. 6
+    date_limits="POSIXct",
     show_legend="logical",
     legend_title="character"
   )
@@ -32,11 +34,13 @@ setClass(
 #' @param date_labels label of datetime on X-axis
 #' @param date_breaks data breaks, e.g. '1 day'
 #' @param minor_breaks_interval minor breaks interval in hours
+#' @param date_limits date limits, vector of 2 POSIXct values with the limits
 #' @param show_legend show a legend
 #' @param legend_title legend title
 #' @return an object
 #' @export
-PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day", minor_breaks_interval=6, show_legend=FALSE, legend_title="Legend") {
+PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",
+                               minor_breaks_interval=6, date_limits=.POSIXct(character(0)), show_legend=FALSE, legend_title="Legend") {
   if (is.null(ylim)) {
     ylim <- NA
   }
@@ -44,7 +48,7 @@ PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", dat
     timeref <- NA
   }
   return(new("plot_display_options", ylim=as.numeric(ylim), timeref=as.POSIXct(timeref), date_labels=date_labels,
-             date_breaks=date_breaks, minor_breaks_interval=as.integer(minor_breaks_interval),
+             date_breaks=date_breaks, minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits,
              show_legend=show_legend, legend_title=legend_title))
 }
 
@@ -85,8 +89,13 @@ setMethod("add", signature = c("ANY", "plot_display_options"), definition = func
     fun <- function(limits) {
       return(minorBreaksCustom(limits=limits, breaksInterval=options@minor_breaks_interval))
     }
-    plot <- plot +
-      ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels)
+    if (length(options@date_limits) > 0) {
+      plot <- plot +
+        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels, limits=options@date_limits)
+    } else {
+      plot <- plot +
+        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels)
+    }
   }
   
   if (!options@show_legend) {
@@ -138,21 +147,35 @@ plotToPOSIXct <- function(plot, timeref) {
 #' @return max value in all data layers
 #' @export
 maxValueInPlot <- function(plot, variable) {
+  return(minMaxInPlot(plot=plot, variable=variable, fun=max))
+}
+
+#' Automatically get the min value from the plot.
+#' 
+#' @param plot ggplot2 plot
+#' @param variable variable of interest
+#' @return min value in all data layers
+#' @export
+minValueInPlot <- function(plot, variable) {
+  return(minMaxInPlot(plot=plot, variable=variable, fun=min))
+}
+
+minMaxInPlot <- function(plot, variable, fun) {
   if (variable %in% colnames(plot$data)) {
-    maxValue1 <- max(plot$data[, variable])
+    value1 <- fun(plot$data %>% dplyr::pull(variable))
   } else {
-    maxValue1 <- NULL
+    value1 <- NULL
   }
-  maxValue2 <- plot$layers %>% purrr::map(.f=function(layer) {
+  value2 <- plot$layers %>% purrr::map(.f=function(layer) {
     if (variable %in% colnames(layer$data)) {
-      return(max(layer$data[, variable]))
+      return(fun(layer$data %>% dplyr::pull(variable)))
     } else {
       return(NULL)
     }
     return(layer)
   }) %>% purrr::discard(~is.null(.x)) %>%
     purrr::flatten_dbl()
-  maxValue <- suppressWarnings(max(c(maxValue1, maxValue2)))
+  maxValue <- suppressWarnings(fun(c(value1, value2)))
   return(maxValue)
 }
 

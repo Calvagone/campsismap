@@ -60,4 +60,27 @@ RecommendationPlotType <- function() {
   return(new("recommendation_plot_type"))
 }
 
+#_______________________________________________________________________________
+#----                 recommendation_bar_plot_type class                    ----
+#_______________________________________________________________________________
+
+#' 
+#' Recommendation bar plot type.
+#' 
+#' @export
+setClass(
+  "recommendation_bar_plot_type",
+  representation(
+  ),
+  contains="quick_plot_type"
+)
+
+#' Recommendation bar plot type.
+#' 
+#' @return recommendation bar plot type
+#' @export
+RecommendationBarPlotType <- function() {
+  return(new("recommendation_bar_plot_type"))
+}
+
 

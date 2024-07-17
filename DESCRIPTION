@@ -31,7 +31,8 @@ Imports:
     RJSONIO,
     shiny,
     shinyTime,
-    tibble
+    tibble,
+    tidyr
 Suggests: 
     devtools,
     knitr,

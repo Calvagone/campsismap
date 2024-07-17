@@ -10,6 +10,7 @@ PlotDisplayOptions(
   date_labels = "\%b \%d",
   date_breaks = "1 day",
   minor_breaks_interval = 6,
+  date_limits = .POSIXct(character(0)),
   show_legend = FALSE,
   legend_title = "Legend"
 )
@@ -24,6 +25,8 @@ PlotDisplayOptions(
 \item{date_breaks}{data breaks, e.g. '1 day'}
 
 \item{minor_breaks_interval}{minor breaks interval in hours}
+
+\item{date_limits}{date limits, vector of 2 POSIXct values with the limits}
 
 \item{show_legend}{show a legend}
 
