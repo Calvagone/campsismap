@@ -4,7 +4,7 @@
 # setwd("C:/prj/campsismap/tests/")
 # testFolder <- "C:/prj/campsismap/tests/testthat/"
 
-testFolder <- "C:/prj/campsismap/tests/testthat/"
+testFolder <- ""
 overwriteNonRegressionFiles <- FALSE
 testEngines <- c("rxode2", "mrgsolve")
 
