@@ -137,7 +137,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
 #' @importFrom tidyr pivot_longer
 #' @rdname quickPlot
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_bar_plot_type", "plot_display_options"),
-          function(model, dataset, etas, plot, options, recommendation, position_dodge_width=3600*12*0.9) {
+          function(model, dataset, etas, plot, options, recommendation, position_dodge_width=ifelse(is.na(options@timeref), 0.9, 3600*24*0.9)) {
             
   summary <- recommendation %>% export(dest="summary") %>%
     dplyr::rename(Original=ORIGINAL, Recommendation=RECOMMENDATION) %>%

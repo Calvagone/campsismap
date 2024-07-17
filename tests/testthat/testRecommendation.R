@@ -37,8 +37,22 @@ test_that(getTestName("Test basic recommendation"), {
   recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
     add(Observations(seq(0,100,by=0.1)))
 
-  quickPlot(model=model, recommendation=recommendation)
+  # Plot test 1
   
+  options <- PlotDisplayOptions(timeref=Sys.time(), show_legend=FALSE, legend_title="")
+  
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options)
+  plot
+  
+  # Recommendation bar plot with options
+  options@date_limits <- c(minValueInPlot(plot, "TIME"), maxValueInPlot(plot, "TIME"))
+  plot <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options)
+  plot
+  
+  # Recommendation bar plot without options
+  plot <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType())
+  plot
+
   # Test 2: negative recommendation is not possible, 0 is returned
   target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=5))
 
@@ -98,10 +112,46 @@ test_that(getTestName("Test multiple targets"), {
   plot <- quickPlot(model=model, recommendation=recommendation, options=options)
   plot
   
-  min <- minValueInPlot(plot, "TIME")
-  max <- maxValueInPlot(plot, "TIME")
-  
-  options@date_limits <- c(min, max) # Add limits
-  plot <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options)
+  options@date_limits <- c(minValueInPlot(plot, "TIME"),  maxValueInPlot(plot, "TIME"))
+  plot <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options, position_dodge_width=3600*12*0.9)
   plot
+
+})
+
+test_that(getTestName("Issues with geom_col if 1 bar"), {
+  
+  # # X axis problem if 1 bar
+  # xx <- Sys.time()
+  # plot <- ggplot2::ggplot(data=data.frame(TIME=c(xx, xx), value=c(1,2), AMT=c("A", "B")),
+  #                         mapping=ggplot2::aes(x=TIME, y=value)) +
+  #   ggplot2::geom_col(mapping=ggplot2::aes(fill=AMT), position="dodge2")
+  # plot
+  # 
+  # # X axis problem if 1 bar
+  # xx <- Sys.time()
+  # plot <- ggplot2::ggplot() +
+  #   ggplot2::geom_col(data=data.frame(TIME=c(xx, xx), value=c(1,2), AMT=c("A", "B")), mapping=ggplot2::aes(x=TIME, y=value, fill=AMT), position="dodge2")
+  # plot
+  # 
+  # # No Xaxis problem if 1 bar and date
+  # xx <- Sys.Date()
+  # plot <- ggplot2::ggplot(data=data.frame(TIME=c(xx, xx), value=c(1,2), AMT=c("A", "B")),
+  #                         mapping=ggplot2::aes(x=TIME, y=value)) +
+  #   ggplot2::geom_col(mapping=ggplot2::aes(fill=AMT), position="dodge2")
+  # plot
+  # 
+  # # No X axis problem if 2 bars
+  # xx <- Sys.time()
+  # yy <- Sys.time() + lubridate::dhours(10)
+  # plot <- ggplot2::ggplot(data=data.frame(TIME=c(xx, xx, yy, yy), value=c(1,2,1,2), AMT=c("A", "B", "A", "B")),
+  #                         mapping=ggplot2::aes(x=TIME, y=value)) +
+  #   ggplot2::geom_col(mapping=ggplot2::aes(fill=AMT), position="dodge2")
+  # plot
+  # 
+  # 
+  # plot <- ggplot2::ggplot(data=data.frame(TIME=c(1, 1), value=c(1,2), AMT=c("A", "B")),
+  #                         mapping=ggplot2::aes(x=TIME, y=value)) +
+  #   ggplot2::geom_col(mapping=ggplot2::aes(fill=AMT), position="dodge")
+  # plotToPOSIXct(plot, timeref=Sys.time())
+  
 })

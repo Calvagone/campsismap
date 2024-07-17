@@ -185,7 +185,7 @@ timeToPOSIXct <- function(x, timeref, constructor=NULL) {
     x <- x %>%
       dplyr::mutate(TIME=timeref + lubridate::dhours(TIME))
     if (!is.null(constructor) && grepl(pattern="geom_col", x=constructor)) {
-      print("geom_col detected")
+      # print("geom_col detected")
       if (length(unique(x$TIME)) == 1) {
         # x <- x %>%
         #   dplyr::mutate(TIME=as.Date(TIME))
