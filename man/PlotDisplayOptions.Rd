@@ -12,7 +12,11 @@ PlotDisplayOptions(
   minor_breaks_interval = 6,
   date_limits = .POSIXct(character(0)),
   show_legend = FALSE,
-  legend_title = "Legend"
+  legend_title = "Legend",
+  x_axis_label = "Time",
+  y_axis_label = "Concentration",
+  x_axis_bar_plot_label = "Time",
+  y_axis_bar_plot_label = "Dose"
 )
 }
 \arguments{

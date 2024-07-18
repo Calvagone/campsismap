@@ -83,4 +83,25 @@ RecommendationBarPlotType <- function() {
   return(new("recommendation_bar_plot_type"))
 }
 
+#_______________________________________________________________________________
+#----               recommendation_full_plot_type class                     ----
+#_______________________________________________________________________________
 
+#' 
+#' Recommendation full plot type (profile + bar plot).
+#' 
+#' @export
+setClass(
+  "recommendation_full_plot_type",
+  representation(
+  ),
+  contains="quick_plot_type"
+)
+
+#' Recommendation full plot type.
+#' 
+#' @return recommendation full plot type
+#' @export
+RecommendationFullPlotType <- function() {
+  return(new("recommendation_full_plot_type"))
+}

@@ -25,6 +25,7 @@ Imports:
     methods,
     mvtnorm,
     optimx,
+    patchwork,
     purrr,
     readr,
     rlang,

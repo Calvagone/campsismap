@@ -5,6 +5,7 @@
 \alias{quickPlot,campsismap_model,dataset,numeric,individual_fit_plot_type,plot_display_options-method}
 \alias{quickPlot,campsismap_model,dataset,numeric,recommendation_plot_type,plot_display_options-method}
 \alias{quickPlot,campsismap_model,dataset,numeric,recommendation_bar_plot_type,plot_display_options-method}
+\alias{quickPlot,campsismap_model,dataset,numeric,recommendation_full_plot_type,plot_display_options-method}
 \title{Quickly visualise the individual predictions with regard to the observed data.}
 \usage{
 quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
@@ -14,6 +15,16 @@ quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
 \S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_plot_type,plot_display_options}(model, dataset, etas, plot, options, recommendation)
 
 \S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_bar_plot_type,plot_display_options}(
+  model,
+  dataset,
+  etas,
+  plot,
+  options,
+  recommendation,
+  position_dodge_width = ifelse(is.na(options@timeref), 0.9, 3600 * 24 * 0.9)
+)
+
+\S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_full_plot_type,plot_display_options}(
   model,
   dataset,
   etas,

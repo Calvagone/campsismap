@@ -133,7 +133,7 @@ setGeneric("quickPlot", function(model, dataset=NULL, etas=NULL, plot=NULL, opti
     if (is.null(args$recommendation)) {
       plot <- IndividualFitPlotType()
     } else {
-      plot <- RecommendationPlotType()
+      plot <- RecommendationFullPlotType()
     }
   } 
   standardGeneric("quickPlot")

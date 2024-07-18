@@ -23,7 +23,11 @@ setClass(
     minor_breaks_interval="integer", # E.g. 6
     date_limits="POSIXct",
     show_legend="logical",
-    legend_title="character"
+    legend_title="character",
+    x_axis_label="character",
+    y_axis_label="character",
+    x_axis_bar_plot_label="character",
+    y_axis_bar_plot_label="character"
   )
 )
 
@@ -40,7 +44,8 @@ setClass(
 #' @return an object
 #' @export
 PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",
-                               minor_breaks_interval=6, date_limits=.POSIXct(character(0)), show_legend=FALSE, legend_title="Legend") {
+                               minor_breaks_interval=6, date_limits=.POSIXct(character(0)), show_legend=FALSE, legend_title="Legend",
+                               x_axis_label="Time", y_axis_label="Concentration", x_axis_bar_plot_label="Time", y_axis_bar_plot_label="Dose") {
   if (is.null(ylim)) {
     ylim <- NA
   }
@@ -49,7 +54,8 @@ PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", dat
   }
   return(new("plot_display_options", ylim=as.numeric(ylim), timeref=as.POSIXct(timeref), date_labels=date_labels,
              date_breaks=date_breaks, minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits,
-             show_legend=show_legend, legend_title=legend_title))
+             show_legend=show_legend, legend_title=legend_title,
+             x_axis_label=x_axis_label, y_axis_label=y_axis_label, x_axis_bar_plot_label=x_axis_bar_plot_label, y_axis_bar_plot_label=y_axis_bar_plot_label))
 }
 
 #_______________________________________________________________________________
@@ -66,6 +72,7 @@ PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", dat
 setMethod("add", signature = c("ANY", "plot_display_options"), definition = function(object, x, variable) {
   options <- x
   plot <- object
+  bar_plot <- isBarPlot(plot)
   
   # Use suggested Y limit
   suggestedYLim <- options@ylim
@@ -83,25 +90,45 @@ setMethod("add", signature = c("ANY", "plot_display_options"), definition = func
   timeref <- options@timeref
   
   # Datetime label
-  if (!is.na(timeref)) {
+  if (is.na(timeref)) {
+    # Limits can't be defined using date_limits (POSIXct vector)
+  } else {
     plot <- plotToPOSIXct(plot=plot, timeref=timeref)
-
+    
     fun <- function(limits) {
       return(minorBreaksCustom(limits=limits, breaksInterval=options@minor_breaks_interval))
     }
-
+    
     if (length(options@date_limits) > 0) {
       plot <- plot +
         ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels, limits=options@date_limits) 
     } else {
       min <- as.POSIXct(minValueInPlot(plot, "TIME"))
       max <- as.POSIXct(maxValueInPlot(plot, "TIME"))
-      print(min)
-      print(max)
       plot <- plot +
         ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels, limits=c(min, max))
     }
   }
+  
+  if (bar_plot) {
+    x_axis_label <- options@x_axis_bar_plot_label
+    y_axis_label <- options@y_axis_bar_plot_label
+  } else {
+    x_axis_label <- options@x_axis_label
+    y_axis_label <- options@y_axis_label
+  }
+  if (x_axis_label=="") {
+    x_axis_label <- NULL
+  }
+  if (y_axis_label=="") {
+    y_axis_label <- NULL
+  }
+  
+  plot <- plot +
+    ggplot2::xlab(x_axis_label)
+  
+  plot <- plot +
+    ggplot2::ylab(y_axis_label)
   
   if (!options@show_legend) {
     plot <- plot +
@@ -138,7 +165,7 @@ minorBreaksCustom <- function(limits, breaksInterval) {
 plotToPOSIXct <- function(plot, timeref) {
   plot$data <- timeToPOSIXct(plot$data, timeref=timeref)
   plot$layers <- plot$layers %>% purrr::map(.f=function(layer) {
-    constructor <- layer$constructor[1]
+    constructor <- layer$constructor[1] %>% as.character()
     layer$data <- timeToPOSIXct(layer$data, timeref=timeref, constructor=constructor)
     return(layer)
   })
@@ -197,4 +224,16 @@ timeToPOSIXct <- function(x, timeref, constructor=NULL) {
     }
   }
   return(x)
-} 
+}
+
+isBarPlot <- function(plot) {
+  values <- plot$layers %>% purrr::map_lgl(.f=function(layer) {
+    constructor <- layer$constructor[1] %>% as.character()
+    if (!is.null(constructor) && grepl(pattern="geom_col", x=constructor)) {
+      return(TRUE)
+    } else {
+      return(FALSE)
+    }
+  })
+  return(any(values))
+}

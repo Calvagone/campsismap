@@ -151,14 +151,18 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   
   if (nrow(summary) > 0) {
     retValue <- retValue +
-      ggplot2::geom_col(mapping=ggplot2::aes(x=TIME, y=value, fill=AMT), data=summary, position="dodge2") +
+      ggplot2::geom_col(mapping=ggplot2::aes(x=TIME, y=value, fill=AMT), data=summary, position="dodge") +
       ggplot2::geom_text(ggplot2::aes(x=TIME, y=value, label=value, group=AMT), data=summary, vjust=1.6, color="white",
                          position = ggplot2::position_dodge(width=position_dodge_width), size=3.5, fontface="bold") +
       ggplot2::scale_fill_manual(values=c("Original"="#B90E1E", "Recommendation"="#B2B2B2"))
+  } else {
+    # Otherwise, x-axis is shifted by 1 day (after conversion to POSIXct), seems a bug in ggplot2
+    # If this point is there, it seems to work well
+    retValue <- retValue +
+      ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=VALUE), data=tibble::tibble(TIME=c(recommendation@now), VALUE=0), color="black", alpha=0)
   }
   retValue <- retValue +
-    ggplot2::geom_vline(mapping=ggplot2::aes(xintercept=TIME), data=tibble::tibble(TIME=c(recommendation@now)), color="black", linetype="dotted") +
-    ggplot2::ylab("AMT")
+    ggplot2::geom_vline(mapping=ggplot2::aes(xintercept=TIME), data=tibble::tibble(TIME=c(recommendation@now)), color="black", linetype="dotted")
   
   # Add display options
   retValue <- retValue %>%
@@ -168,6 +172,35 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
     ggplot2::guides(fill="none")
   
   return(retValue + ggplot2::theme_bw())
+})
+
+
+#' @param recommendation Campsismap recommendation
+#' @param position_dodge_width position dodge width
+#' @importFrom patchwork plot_layout
+#' @rdname quickPlot
+setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_full_plot_type", "plot_display_options"),
+          function(model, dataset, etas, plot, options, recommendation, position_dodge_width=ifelse(is.na(options@timeref), 0.9, 3600*24*0.9)) {
+            
+  # position_dodge_width <- ifelse(is.na(options@timeref), 0.9, 3600*24*0.9)          
+  plotA <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationPlotType(), options=options)
+  options_ <- options
+  limitsPlotA <- c(minValueInPlot(plotA, "TIME"), maxValueInPlot(plotA, "TIME"))
+  
+  if (!is.na(options_@timeref)) {
+    options_@date_limits <- limitsPlotA
+  }
+
+  plotB <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options_, position_dodge_width=position_dodge_width)
+  if (is.na(options_@timeref)) {
+    # Not working well
+    # plotB <- plotB +
+    #   ggplot2::scale_x_continuous(limits=limitsPlotA)
+  }
+  
+  retValue <- plotA + plotB + patchwork::plot_layout(ncol = 1, heights = c(0.75, 0.25))
+
+  return(retValue)
 })
 
 addSampling <- function(dataset, length.out=1000) {

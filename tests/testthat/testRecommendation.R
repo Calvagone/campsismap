@@ -37,20 +37,13 @@ test_that(getTestName("Test basic recommendation"), {
   recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
     add(Observations(seq(0,100,by=0.1)))
 
-  # Plot test 1
-  
+  # Full plot with options
   options <- PlotDisplayOptions(timeref=Sys.time(), show_legend=FALSE, legend_title="")
-  
   plot <- quickPlot(model=model, recommendation=recommendation, options=options)
   plot
   
-  # Recommendation bar plot with options
-  options@date_limits <- c(minValueInPlot(plot, "TIME"), maxValueInPlot(plot, "TIME"))
-  plot <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options)
-  plot
-  
   # Recommendation bar plot without options
-  plot <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType())
+  plot <- quickPlot(model=model, recommendation=recommendation)
   plot
 
   # Test 2: negative recommendation is not possible, 0 is returned
@@ -65,8 +58,6 @@ test_that(getTestName("Test basic recommendation"), {
   recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
     add(Observations(seq(0,100,by=0.1)))
 
-  quickPlot(model=model, recommendation=recommendation)
-  
   results <- simulate(model=model_suite$pk$'2cpt_fo' %>% disable("IIV"),
                       dataset=recommendation@recommended_dataset)
   conc <- results %>% filter(TIME==24) %>% pull(CONC)
@@ -112,8 +103,66 @@ test_that(getTestName("Test basic recommendation (ETAs vs typical)"), {
   recommendationB <- campsismapTest(recommendationLogicB, testB, env=environment(), output_name="recommendation") %>%
     add(Observations(seq(0,100,by=0.1)))
 
-  plotly::ggplotly(quickPlot(model=model, recommendation=recommendationA))
-  plotly::ggplotly(quickPlot(model=model, recommendation=recommendationB))
+  quickPlot(model=model, recommendation=recommendationA)
+  quickPlot(model=model, recommendation=recommendationB)
+})
+
+test_that(getTestName("Test basic recommendation (also adapt first dose"), {
+  dataset <- Dataset() %>%
+    add(Bolus(time=0, amount=4000)) %>% # Fixed loading dose
+    add(Bolus(time=12, amount=2000))    # Dose to adapt
+  
+  model <- CampsismapModel(model=model_suite$pk$'2cpt_fo', "CONC")
+  
+  # Test 1: basic recommendation
+  target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=50)) # Target is 50 from 0 to infinite
+  
+  recommendationLogic <- expression(
+    model %>%
+      campsismap::setup(dest=destEngine) %>%
+      recommend(dataset=dataset, target=target, now=-10, rules=getRules())
+  )
+  test <- expression(
+    expect_equal(recommendation %>% retrieveDoseAmount(1), 5501),
+    expect_equal(recommendation %>% retrieveDoseAmount(2), 2646),
+    recommendation
+  )
+  
+  recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
+    add(Observations(seq(0,100,by=0.1)))
+  
+  options <- PlotDisplayOptions(timeref=Sys.time())
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options, position_dodge_width=3600*12*0.9)
+  plot
+})
+
+test_that(getTestName("No recommendation given if now is after the adaptable doses"), {
+  dataset <- Dataset() %>%
+    add(Bolus(time=0, amount=4000)) %>% # Fixed loading dose
+    add(Bolus(time=12, amount=2000))    # Dose to adapt
+  
+  model <- CampsismapModel(model=model_suite$pk$'2cpt_fo', "CONC")
+  
+  # Test 1: basic recommendation
+  target <- TargetDefinitionPerWindow(tibble(TIME=0, VALUE=50)) # Target is 50 from 0 to infinite
+  
+  recommendationLogic <- expression(
+    model %>%
+      campsismap::setup(dest=destEngine) %>%
+      recommend(dataset=dataset, target=target, now=15, rules=getRules())
+  )
+  test <- expression(
+    expect_equal(recommendation %>% retrieveDoseAmount(1), 4000),
+    expect_equal(recommendation %>% retrieveDoseAmount(2), 2000),
+    recommendation
+  )
+  
+  recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
+    add(Observations(seq(0,100,by=0.1)))
+  
+  options <- PlotDisplayOptions(timeref=Sys.time())
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options, position_dodge_width=3600*12*0.9)
+  plot
 })
 
 
@@ -150,13 +199,8 @@ test_that(getTestName("Test multiple targets"), {
   recommendation <- campsismapTest(recommendationLogic, test, env=environment(), output_name="recommendation") %>%
     add(Observations(seq(0,100,by=0.1)))
   
-  options <- PlotDisplayOptions(timeref=Sys.time(), show_legend=FALSE, legend_title="")
-  
-  plot <- quickPlot(model=model, recommendation=recommendation, options=options)
-  plot
-  
-  options@date_limits <- c(minValueInPlot(plot, "TIME"),  maxValueInPlot(plot, "TIME"))
-  plot <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options, position_dodge_width=3600*12*0.9)
+  options <- PlotDisplayOptions(timeref=Sys.time())
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options, position_dodge_width=3600*12*0.9)
   plot
 
 })
