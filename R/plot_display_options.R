@@ -73,7 +73,7 @@ setMethod("add", signature = c("ANY", "plot_display_options"), definition = func
   maxYValue <- maxValueInPlot(plot=plot, variable=variable)
   
   if (!is.na(suggestedYLim)) {
-    if (maxYValue > suggestedYLim) {
+    if (is.finite(maxYValue) && maxYValue > suggestedYLim) {
       suggestedYLim <- maxYValue
     }
     plot <- plot + 
@@ -85,16 +85,21 @@ setMethod("add", signature = c("ANY", "plot_display_options"), definition = func
   # Datetime label
   if (!is.na(timeref)) {
     plot <- plotToPOSIXct(plot=plot, timeref=timeref)
-    
+
     fun <- function(limits) {
       return(minorBreaksCustom(limits=limits, breaksInterval=options@minor_breaks_interval))
     }
+
     if (length(options@date_limits) > 0) {
       plot <- plot +
-        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels, limits=options@date_limits)
+        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels, limits=options@date_limits) 
     } else {
+      min <- as.POSIXct(minValueInPlot(plot, "TIME"))
+      max <- as.POSIXct(maxValueInPlot(plot, "TIME"))
+      print(min)
+      print(max)
       plot <- plot +
-        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels)
+        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels, limits=c(min, max))
     }
   }
   
@@ -176,8 +181,8 @@ minMaxInPlot <- function(plot, variable, fun) {
     return(layer)
   }) %>% purrr::discard(~is.null(.x)) %>%
     purrr::flatten_dbl()
-  maxValue <- suppressWarnings(fun(c(value1, value2)))
-  return(maxValue)
+  retValue <- suppressWarnings(fun(c(value1, value2)))
+  return(retValue)
 }
 
 timeToPOSIXct <- function(x, timeref, constructor=NULL) {
@@ -185,10 +190,8 @@ timeToPOSIXct <- function(x, timeref, constructor=NULL) {
     x <- x %>%
       dplyr::mutate(TIME=timeref + lubridate::dhours(TIME))
     if (!is.null(constructor) && grepl(pattern="geom_col", x=constructor)) {
-      # print("geom_col detected")
       if (length(unique(x$TIME)) == 1) {
-        # x <- x %>%
-        #   dplyr::mutate(TIME=as.Date(TIME))
+        print(sprintf("Duplicating rows in layer %s", constructor))
         x <- dplyr::bind_rows(x, x %>% dplyr::mutate(value=0, TIME=TIME + lubridate::dhours(24)))
       }
     }
