@@ -25,5 +25,13 @@ Plot options class.
 \item{\code{show_legend}}{show a legend}
 
 \item{\code{legend_title}}{legend title}
+
+\item{\code{x_axis_label}}{label}
+
+\item{\code{y_axis_label}}{label}
+
+\item{\code{x_axis_bar_plot_label}}{label}
+
+\item{\code{y_axis_bar_plot_label}}{label}
 }}
 

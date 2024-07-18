@@ -53,7 +53,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "indi
   # Add display options
   retValue <- retValue %>% add(options, variable=model@variable)
 
-  return(retValue + ggplot2::theme_bw())
+  return(retValue)
 })
 
 #' @param recommendation Campsismap recommendation
@@ -130,7 +130,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   # Add display options
   retValue <- retValue %>% add(options, variable=model@variable)
   
-  return(retValue + ggplot2::theme_bw())
+  return(retValue)
 })
 
 #' @param recommendation Campsismap recommendation
@@ -171,7 +171,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   retValue <- retValue +
     ggplot2::guides(fill="none")
   
-  return(retValue + ggplot2::theme_bw())
+  return(retValue)
 })
 
 

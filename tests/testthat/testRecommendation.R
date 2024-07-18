@@ -38,7 +38,7 @@ test_that(getTestName("Test basic recommendation"), {
     add(Observations(seq(0,100,by=0.1)))
 
   # Full plot with options
-  options <- PlotDisplayOptions(timeref=Sys.time(), show_legend=FALSE, legend_title="")
+  options <- PlotDisplayOptions(timeref=Sys.time())
   plot <- quickPlot(model=model, recommendation=recommendation, options=options)
   plot
   

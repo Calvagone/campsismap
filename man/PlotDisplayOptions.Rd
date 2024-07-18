@@ -13,6 +13,7 @@ PlotDisplayOptions(
   date_limits = .POSIXct(character(0)),
   show_legend = FALSE,
   legend_title = "Legend",
+  legend_position = "right",
   x_axis_label = "Time",
   y_axis_label = "Concentration",
   x_axis_bar_plot_label = "Time",
@@ -35,6 +36,16 @@ PlotDisplayOptions(
 \item{show_legend}{show a legend}
 
 \item{legend_title}{legend title}
+
+\item{legend_position}{legend position}
+
+\item{x_axis_label}{label}
+
+\item{y_axis_label}{label}
+
+\item{x_axis_bar_plot_label}{label}
+
+\item{y_axis_bar_plot_label}{label}
 }
 \value{
 an object

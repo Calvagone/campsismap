@@ -12,6 +12,10 @@
 #' @slot date_limits date limits, vector of 2 POSIXct values with the limits
 #' @slot show_legend show a legend
 #' @slot legend_title legend title
+#' @slot x_axis_label label
+#' @slot y_axis_label label
+#' @slot x_axis_bar_plot_label label
+#' @slot y_axis_bar_plot_label label
 #' @export
 setClass(
   "plot_display_options",
@@ -24,6 +28,7 @@ setClass(
     date_limits="POSIXct",
     show_legend="logical",
     legend_title="character",
+    legend_position="character",
     x_axis_label="character",
     y_axis_label="character",
     x_axis_bar_plot_label="character",
@@ -41,10 +46,16 @@ setClass(
 #' @param date_limits date limits, vector of 2 POSIXct values with the limits
 #' @param show_legend show a legend
 #' @param legend_title legend title
+#' @param legend_position legend position
+#' @param x_axis_label label
+#' @param y_axis_label label
+#' @param x_axis_bar_plot_label label
+#' @param y_axis_bar_plot_label label
 #' @return an object
 #' @export
 PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",
-                               minor_breaks_interval=6, date_limits=.POSIXct(character(0)), show_legend=FALSE, legend_title="Legend",
+                               minor_breaks_interval=6, date_limits=.POSIXct(character(0)),
+                               show_legend=FALSE, legend_title="Legend", legend_position="right",
                                x_axis_label="Time", y_axis_label="Concentration", x_axis_bar_plot_label="Time", y_axis_bar_plot_label="Dose") {
   if (is.null(ylim)) {
     ylim <- NA
@@ -54,7 +65,7 @@ PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", dat
   }
   return(new("plot_display_options", ylim=as.numeric(ylim), timeref=as.POSIXct(timeref), date_labels=date_labels,
              date_breaks=date_breaks, minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits,
-             show_legend=show_legend, legend_title=legend_title,
+             show_legend=show_legend, legend_title=legend_title, legend_position=legend_position,
              x_axis_label=x_axis_label, y_axis_label=y_axis_label, x_axis_bar_plot_label=x_axis_bar_plot_label, y_axis_bar_plot_label=y_axis_bar_plot_label))
 }
 
@@ -129,11 +140,17 @@ setMethod("add", signature = c("ANY", "plot_display_options"), definition = func
   
   plot <- plot +
     ggplot2::ylab(y_axis_label)
-  
+
   if (!options@show_legend) {
     plot <- plot +
       ggplot2::guides(color="none")
   }
+  
+  plot <- plot +
+    ggplot2::theme_bw()
+  
+  plot <- plot +
+    ggplot2::theme(legend.position=options@legend_position)
 
   return(plot)
 })
