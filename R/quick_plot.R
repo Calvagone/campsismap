@@ -134,15 +134,27 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
 })
 
 #' @param recommendation Campsismap recommendation
-#' @param position_dodge_width position dodge width
 #' @importFrom ggplot2 geom_col geom_text geom_vline guides scale_fill_manual theme_bw
 #' @importFrom tidyr pivot_longer
 #' @rdname quickPlot
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_bar_plot_type", "plot_display_options"),
-          function(model, dataset, etas, plot, options, recommendation, position_dodge_width=ifelse(is.na(options@timeref), 0.9, 3600*24*0.9)) {
+          function(model, dataset, etas, plot, options, recommendation) {
             
+  # Retrieve summary          
   summary <- recommendation %>% export(dest="summary") %>%
-    dplyr::rename(Original=ORIGINAL, Recommendation=RECOMMENDATION) %>%
+    dplyr::rename(Original=ORIGINAL, Recommendation=RECOMMENDATION)
+  
+  # Deriving position dodge width automatically
+  diffTime <- diff(summary$TIME)
+  hasTimeref <- !is.na(options@timeref)
+  
+  if (length(diffTime)==0) {
+    diffTime <- ifelse(hasTimeref, 24, 1)
+  }
+  position_dodge_width <- ifelse(hasTimeref, 3600*min(diffTime)*0.9, min(diffTime)*0.9)
+
+  # Pivot longer
+  summary <- summary %>%
     tidyr::pivot_longer(cols=c("Original", "Recommendation"), names_to="AMT")
   
   # Data passed to geom_col due to bug with POSIXct if 1 bar (and not in ggplot constructor)
@@ -174,13 +186,11 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
 
 
 #' @param recommendation Campsismap recommendation
-#' @param position_dodge_width position dodge width
 #' @importFrom patchwork plot_layout
 #' @rdname quickPlot
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "recommendation_full_plot_type", "plot_display_options"),
-          function(model, dataset, etas, plot, options, recommendation, position_dodge_width=ifelse(is.na(options@timeref), 0.9, 3600*24*0.9)) {
+          function(model, dataset, etas, plot, options, recommendation) {
             
-  # position_dodge_width <- ifelse(is.na(options@timeref), 0.9, 3600*24*0.9)          
   plotA <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationPlotType(), options=options)
   options_ <- options
   limitsPlotA <- c(minValueInPlot(plotA, "TIME"), maxValueInPlot(plotA, "TIME"))
@@ -189,7 +199,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
     options_@date_limits <- limitsPlotA
   }
 
-  plotB <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options_, position_dodge_width=position_dodge_width)
+  plotB <- quickPlot(model=model, recommendation=recommendation, plot=RecommendationBarPlotType(), options=options_)
   if (is.na(options_@timeref)) {
     # Not working well
     # plotB <- plotB +

@@ -132,7 +132,7 @@ test_that(getTestName("Test basic recommendation (also adapt first dose"), {
     add(Observations(seq(0,100,by=0.1)))
   
   options <- PlotDisplayOptions(timeref=Sys.time())
-  plot <- quickPlot(model=model, recommendation=recommendation, options=options, position_dodge_width=3600*12*0.9)
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options)
   plot
 })
 
@@ -161,7 +161,7 @@ test_that(getTestName("No recommendation given if now is after the adaptable dos
     add(Observations(seq(0,100,by=0.1)))
   
   options <- PlotDisplayOptions(timeref=Sys.time())
-  plot <- quickPlot(model=model, recommendation=recommendation, options=options, position_dodge_width=3600*12*0.9)
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options)
   plot
 })
 
@@ -200,7 +200,7 @@ test_that(getTestName("Test multiple targets"), {
     add(Observations(seq(0,100,by=0.1)))
   
   options <- PlotDisplayOptions(timeref=Sys.time())
-  plot <- quickPlot(model=model, recommendation=recommendation, options=options, position_dodge_width=3600*12*0.9)
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options)
   plot
 
 })

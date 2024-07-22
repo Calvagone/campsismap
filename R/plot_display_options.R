@@ -224,13 +224,13 @@ minValueInPlot <- function(plot, variable) {
 
 minMaxInPlot <- function(plot, variable, fun) {
   if (variable %in% colnames(plot$data)) {
-    value1 <- fun(plot$data %>% dplyr::pull(variable))
+    value1 <- suppressWarnings(fun(plot$data %>% dplyr::pull(variable)))
   } else {
     value1 <- NULL
   }
   value2 <- plot$layers %>% purrr::map(.f=function(layer) {
     if (variable %in% colnames(layer$data)) {
-      return(fun(layer$data %>% dplyr::pull(variable)))
+      return(suppressWarnings(fun(layer$data %>% dplyr::pull(variable))))
     } else {
       return(NULL)
     }
@@ -247,7 +247,7 @@ timeToPOSIXct <- function(x, timeref, constructor=NULL) {
       dplyr::mutate(TIME=timeref + lubridate::dhours(TIME))
     if (!is.null(constructor) && grepl(pattern="geom_col", x=constructor)) {
       if (length(unique(x$TIME)) == 1) {
-        print(sprintf("Duplicating rows in layer %s", constructor))
+        # print(sprintf("Duplicating rows in layer %s", constructor))
         x <- dplyr::bind_rows(x, x %>% dplyr::mutate(value=0, TIME=TIME + lubridate::dhours(24)))
       }
     }

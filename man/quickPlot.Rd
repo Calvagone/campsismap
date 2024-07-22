@@ -14,25 +14,9 @@ quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
 
 \S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_plot_type,plot_display_options}(model, dataset, etas, plot, options, recommendation)
 
-\S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_bar_plot_type,plot_display_options}(
-  model,
-  dataset,
-  etas,
-  plot,
-  options,
-  recommendation,
-  position_dodge_width = ifelse(is.na(options@timeref), 0.9, 3600 * 24 * 0.9)
-)
+\S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_bar_plot_type,plot_display_options}(model, dataset, etas, plot, options, recommendation)
 
-\S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_full_plot_type,plot_display_options}(
-  model,
-  dataset,
-  etas,
-  plot,
-  options,
-  recommendation,
-  position_dodge_width = ifelse(is.na(options@timeref), 0.9, 3600 * 24 * 0.9)
-)
+\S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_full_plot_type,plot_display_options}(model, dataset, etas, plot, options, recommendation)
 }
 \arguments{
 \item{model}{Campsismap or Campsis model}
@@ -48,8 +32,6 @@ quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
 \item{...}{extra arguments}
 
 \item{recommendation}{Campsismap recommendation}
-
-\item{position_dodge_width}{position dodge width}
 }
 \value{
 a ggplot2 object
