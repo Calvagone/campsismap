@@ -51,7 +51,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
   tableReact <- object@tableReact
 
   output[[getDateTimeTableOutputId(ns)]] <- DT::renderDT({
-    dt <- DT::datatable(tableReact(), filter="none", selection="single", options=list(dom='t', ordering=FALSE))
+    dt <- DT::datatable(tableReact(), filter="none", selection="single", options=list(pageLength=100, dom='t', ordering=FALSE))
     return(dt)
   })
 
