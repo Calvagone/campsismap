@@ -12,6 +12,8 @@ Plot options class.
 \describe{
 \item{\code{ylim}}{suggested Y-axis limit}
 
+\item{\code{ylim_bar_plot}}{suggested Y-axis limit in bar plot}
+
 \item{\code{timeref}}{POSIXct time corresponding to TIME=0}
 
 \item{\code{date_labels}}{label of datetime on X-axis}

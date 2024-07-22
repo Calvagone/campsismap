@@ -145,17 +145,15 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
     dplyr::rename(Original=ORIGINAL, Recommendation=RECOMMENDATION) %>%
     tidyr::pivot_longer(cols=c("Original", "Recommendation"), names_to="AMT")
   
-  # Data passed to geom_col due to bug with POSIXct if 1 bar
+  # Data passed to geom_col due to bug with POSIXct if 1 bar (and not in ggplot constructor)
   # See method plotToPOSIXct and timeToPOSIXct
-  retValue <- ggplot2::ggplot()
-  
-  if (nrow(summary) > 0) {
-    retValue <- retValue +
+  retValue <- ggplot2::ggplot() +
       ggplot2::geom_col(mapping=ggplot2::aes(x=TIME, y=value, fill=AMT), data=summary, position="dodge") +
       ggplot2::geom_text(ggplot2::aes(x=TIME, y=value, label=value, group=AMT), data=summary, vjust=1.6, color="white",
                          position = ggplot2::position_dodge(width=position_dodge_width), size=3.5, fontface="bold") +
       ggplot2::scale_fill_manual(values=c("Original"="#B90E1E", "Recommendation"="#B2B2B2"))
-  } else {
+    
+  if (nrow(summary) == 0) {
     # Otherwise, x-axis is shifted by 1 day (after conversion to POSIXct), seems a bug in ggplot2
     # If this point is there, it seems to work well
     retValue <- retValue +

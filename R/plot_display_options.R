@@ -5,6 +5,7 @@
 #' Plot options class.
 #' 
 #' @slot ylim suggested Y-axis limit
+#' @slot ylim_bar_plot suggested Y-axis limit in bar plot
 #' @slot timeref POSIXct time corresponding to TIME=0
 #' @slot date_labels label of datetime on X-axis
 #' @slot date_breaks data breaks, e.g. '1 day'
@@ -21,6 +22,7 @@ setClass(
   "plot_display_options",
   representation(
     ylim="numeric",
+    ylim_bar_plot="numeric",
     timeref="POSIXct",
     date_labels="character",
     date_breaks="character", # E.g. '1 day'
@@ -39,6 +41,7 @@ setClass(
 #' Plot display options.
 #' 
 #' @param ylim suggested Y-axis limit
+#' @param ylim_bar_plot suggested Y-axis limit in bar plot
 #' @param timeref POSIXct time corresponding to TIME=0 in simulation
 #' @param date_labels label of datetime on X-axis
 #' @param date_breaks data breaks, e.g. '1 day'
@@ -53,18 +56,22 @@ setClass(
 #' @param y_axis_bar_plot_label label
 #' @return an object
 #' @export
-PlotDisplayOptions <- function(ylim=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",
+PlotDisplayOptions <- function(ylim=NULL, ylim_bar_plot=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",
                                minor_breaks_interval=6, date_limits=.POSIXct(character(0)),
                                show_legend=FALSE, legend_title="Legend", legend_position="right",
                                x_axis_label="Time", y_axis_label="Concentration", x_axis_bar_plot_label="Time", y_axis_bar_plot_label="Dose") {
   if (is.null(ylim)) {
     ylim <- NA
   }
+  if (is.null(ylim_bar_plot)) {
+    ylim_bar_plot <- NA
+  }
   if (is.null(timeref)) {
     timeref <- NA
   }
-  return(new("plot_display_options", ylim=as.numeric(ylim), timeref=as.POSIXct(timeref), date_labels=date_labels,
-             date_breaks=date_breaks, minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits,
+  return(new("plot_display_options", ylim=as.numeric(ylim), ylim_bar_plot=as.numeric(ylim_bar_plot),
+             timeref=as.POSIXct(timeref), date_labels=date_labels, date_breaks=date_breaks,
+             minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits,
              show_legend=show_legend, legend_title=legend_title, legend_position=legend_position,
              x_axis_label=x_axis_label, y_axis_label=y_axis_label, x_axis_bar_plot_label=x_axis_bar_plot_label, y_axis_bar_plot_label=y_axis_bar_plot_label))
 }
@@ -86,7 +93,12 @@ setMethod("add", signature = c("ANY", "plot_display_options"), definition = func
   bar_plot <- isBarPlot(plot)
   
   # Use suggested Y limit
-  suggestedYLim <- options@ylim
+  if (bar_plot) {
+    suggestedYLim <- options@ylim_bar_plot
+  } else {
+    suggestedYLim <- options@ylim
+  }
+  
   
   maxYValue <- maxValueInPlot(plot=plot, variable=variable)
   

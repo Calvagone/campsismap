@@ -6,6 +6,7 @@
 \usage{
 PlotDisplayOptions(
   ylim = NULL,
+  ylim_bar_plot = NULL,
   timeref = NULL,
   date_labels = "\%b \%d",
   date_breaks = "1 day",
@@ -22,6 +23,8 @@ PlotDisplayOptions(
 }
 \arguments{
 \item{ylim}{suggested Y-axis limit}
+
+\item{ylim_bar_plot}{suggested Y-axis limit in bar plot}
 
 \item{timeref}{POSIXct time corresponding to TIME=0 in simulation}
 
