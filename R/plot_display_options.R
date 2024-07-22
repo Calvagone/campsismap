@@ -17,6 +17,7 @@
 #' @slot y_axis_label label
 #' @slot x_axis_bar_plot_label label
 #' @slot y_axis_bar_plot_label label
+#' @slot bar_plot_value_mode bar plot value mode: 'within' or 'above'
 #' @export
 setClass(
   "plot_display_options",
@@ -34,7 +35,8 @@ setClass(
     x_axis_label="character",
     y_axis_label="character",
     x_axis_bar_plot_label="character",
-    y_axis_bar_plot_label="character"
+    y_axis_bar_plot_label="character",
+    bar_plot_value_mode="character"
   )
 )
 
@@ -54,12 +56,14 @@ setClass(
 #' @param y_axis_label label
 #' @param x_axis_bar_plot_label label
 #' @param y_axis_bar_plot_label label
+#' @param bar_plot_value_mode bar plot value mode: 'within' or 'above'
 #' @return an object
 #' @export
 PlotDisplayOptions <- function(ylim=NULL, ylim_bar_plot=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",
                                minor_breaks_interval=6, date_limits=.POSIXct(character(0)),
                                show_legend=FALSE, legend_title="Legend", legend_position="right",
-                               x_axis_label="Time", y_axis_label="Concentration", x_axis_bar_plot_label="Time", y_axis_bar_plot_label="Dose") {
+                               x_axis_label="Time", y_axis_label="Concentration", x_axis_bar_plot_label="Time", y_axis_bar_plot_label="Dose",
+                               bar_plot_value_mode="within") {
   if (is.null(ylim)) {
     ylim <- NA
   }
@@ -73,7 +77,8 @@ PlotDisplayOptions <- function(ylim=NULL, ylim_bar_plot=NULL, timeref=NULL, date
              timeref=as.POSIXct(timeref), date_labels=date_labels, date_breaks=date_breaks,
              minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits,
              show_legend=show_legend, legend_title=legend_title, legend_position=legend_position,
-             x_axis_label=x_axis_label, y_axis_label=y_axis_label, x_axis_bar_plot_label=x_axis_bar_plot_label, y_axis_bar_plot_label=y_axis_bar_plot_label))
+             x_axis_label=x_axis_label, y_axis_label=y_axis_label, x_axis_bar_plot_label=x_axis_bar_plot_label, y_axis_bar_plot_label=y_axis_bar_plot_label,
+             bar_plot_value_mode=bar_plot_value_mode))
 }
 
 #_______________________________________________________________________________
@@ -98,13 +103,16 @@ setMethod("add", signature = c("ANY", "plot_display_options"), definition = func
   } else {
     suggestedYLim <- options@ylim
   }
-  
-  
+
   maxYValue <- maxValueInPlot(plot=plot, variable=variable)
   
   if (!is.na(suggestedYLim)) {
     if (is.finite(maxYValue) && maxYValue > suggestedYLim) {
       suggestedYLim <- maxYValue
+    }
+    # Special empirical handling when value is above
+    if (bar_plot && options@bar_plot_value_mode=="above") {
+      suggestedYLim <- suggestedYLim * (1 + 0.2)
     }
     plot <- plot + 
       ggplot2::ylim(limits=c(0, suggestedYLim))

@@ -35,5 +35,7 @@ Plot options class.
 \item{\code{x_axis_bar_plot_label}}{label}
 
 \item{\code{y_axis_bar_plot_label}}{label}
+
+\item{\code{bar_plot_value_mode}}{bar plot value mode: 'within' or 'above'}
 }}
 

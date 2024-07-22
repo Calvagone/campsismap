@@ -18,7 +18,8 @@ PlotDisplayOptions(
   x_axis_label = "Time",
   y_axis_label = "Concentration",
   x_axis_bar_plot_label = "Time",
-  y_axis_bar_plot_label = "Dose"
+  y_axis_bar_plot_label = "Dose",
+  bar_plot_value_mode = "within"
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ PlotDisplayOptions(
 \item{x_axis_bar_plot_label}{label}
 
 \item{y_axis_bar_plot_label}{label}
+
+\item{bar_plot_value_mode}{bar plot value mode: 'within' or 'above'}
 }
 \value{
 an object

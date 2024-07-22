@@ -42,6 +42,12 @@ test_that(getTestName("Test basic recommendation"), {
   plot <- quickPlot(model=model, recommendation=recommendation, options=options)
   plot
   
+  # Bar plot value above and in black
+  options@bar_plot_value_mode <- "above"
+  options@ylim_bar_plot <- as.numeric(1)
+  plot <- quickPlot(model=model, recommendation=recommendation, options=options)
+  plot
+  
   # Recommendation bar plot without options
   plot <- quickPlot(model=model, recommendation=recommendation)
   plot
