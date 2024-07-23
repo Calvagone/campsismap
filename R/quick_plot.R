@@ -125,7 +125,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   }
   
   retValue <- retValue +
-    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="hv", colour="palegreen1")
+    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="vh", colour="palegreen1")
   
   # Add display options
   retValue <- retValue %>% add(options, variable=model@variable)

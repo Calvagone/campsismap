@@ -13,6 +13,7 @@
 #' @slot date_limits date limits, vector of 2 POSIXct values with the limits
 #' @slot show_legend show a legend
 #' @slot legend_title legend title
+#' @slot legend_position legend position
 #' @slot x_axis_label label
 #' @slot y_axis_label label
 #' @slot x_axis_bar_plot_label label

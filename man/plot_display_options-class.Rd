@@ -28,6 +28,8 @@ Plot options class.
 
 \item{\code{legend_title}}{legend title}
 
+\item{\code{legend_position}}{legend position}
+
 \item{\code{x_axis_label}}{label}
 
 \item{\code{y_axis_label}}{label}
