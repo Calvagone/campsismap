@@ -12,9 +12,10 @@ setClass(
     outputs="list",
     default_ii="numeric",
     default_time="character",
-    default_value="numeric"
+    default_value="numeric",
+    grey_out_past="logical"
   ),
-  prototype=prototype(default_ii=24, default_time="08:00", default_value=100) # 24 hours by default
+  prototype=prototype(default_ii=24, default_time="08:00", default_value=100, grey_out_past=FALSE)
 )
 
 #_______________________________________________________________________________
@@ -44,14 +45,36 @@ setMethod("getUI", signature=c("datetime_table_editor"), definition=function(obj
 
 
 #' @param dateTime0React reference datetime
+#' @param nowReact now datetime
 #' @rdname server
 #' @importFrom DT datatable renderDT
-setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), definition=function(object, input, output, session, dateTime0React) {
+setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), definition=function(object, input, output, session, dateTime0React, nowReact=NULL) {
   ns <- object@ns
   tableReact <- object@tableReact
 
   output[[getDateTimeTableOutputId(ns)]] <- DT::renderDT({
     dt <- DT::datatable(tableReact(), filter="none", selection="single", options=list(pageLength=100, dom='t', ordering=FALSE))
+    if (is.null(nowReact)) {
+      now <- NULL
+    } else {
+      now <- nowReact()
+    }
+    # Grey out rows in past
+    if (object@grey_out_past && !is.null(now)) {
+      table <- tableReact() %>%
+        dplyr::mutate(Datetime=toDateTime(date=.data$Date, time=.data$Time)) %>%
+        dplyr::mutate(IN_PAST=Datetime < now, ROW_INDEX=dplyr::row_number()) %>%
+        dplyr::filter(IN_PAST)
+      indexes <- table %>%
+        dplyr::pull(ROW_INDEX)
+      if (length(indexes) > 0) {
+        dt <- dt %>% DT::formatStyle(
+          columns=0,
+          target='row',
+          backgroundColor=DT::styleEqual(indexes, rep("#E6E6E6", length(indexes)))
+        )
+      }
+    }
     return(dt)
   })
 

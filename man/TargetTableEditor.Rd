@@ -9,7 +9,8 @@ TargetTableEditor(
   ns = shiny::NS("target_table"),
   fun = NULL,
   initialTarget = 100,
-  initialTime = "00:00"
+  initialTime = "00:00",
+  greyOutPast = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ TargetTableEditor(
 \item{initialTarget}{first target value in table, only if tableReact is NULL}
 
 \item{initialTime}{first target time in table, only if tableReact is NULL}
+
+\item{greyOutPast}{grey out the rows in past, logical value}
 }
 \description{
 Target table editor.
