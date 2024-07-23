@@ -11,7 +11,7 @@ DosingTableEditor(
   initialDose = 100,
   initialTime = "08:00",
   greyOutPast = FALSE,
-  dateOnly = TRUE
+  dateOnly = FALSE
 )
 }
 \arguments{

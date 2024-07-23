@@ -11,7 +11,7 @@ ObservationsTableEditor(
   defaultObs = 100,
   defaultTime = "06:00",
   greyOutPast = FALSE,
-  dateOnly = TRUE
+  dateOnly = FALSE
 )
 }
 \arguments{
