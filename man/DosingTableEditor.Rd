@@ -10,7 +10,8 @@ DosingTableEditor(
   fun = NULL,
   initialDose = 100,
   initialTime = "08:00",
-  greyOutPast = FALSE
+  greyOutPast = FALSE,
+  dateOnly = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ DosingTableEditor(
 \item{initialTime}{first dose time in table, only if tableReact is NULL}
 
 \item{greyOutPast}{grey out the rows in past, logical value}
+
+\item{dateOnly}{show only date in editor, logical value}
 }
 \description{
 Dosing table editor.

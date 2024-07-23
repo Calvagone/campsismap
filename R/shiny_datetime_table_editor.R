@@ -13,9 +13,10 @@ setClass(
     default_ii="numeric",
     default_time="character",
     default_value="numeric",
-    grey_out_past="logical"
+    grey_out_past="logical",
+    date_only="logical"
   ),
-  prototype=prototype(default_ii=24, default_time="08:00", default_value=100, grey_out_past=FALSE)
+  prototype=prototype(default_ii=24, default_time="08:00", default_value=100, grey_out_past=FALSE, date_only=FALSE)
 )
 
 #_______________________________________________________________________________
@@ -53,19 +54,32 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
   tableReact <- object@tableReact
 
   output[[getDateTimeTableOutputId(ns)]] <- DT::renderDT({
-    dt <- DT::datatable(tableReact(), filter="none", selection="single", options=list(pageLength=100, dom='t', ordering=FALSE))
+    table <- tableReact()
+    
+    # Deal with argument date only
+    dtTable <- table
+    if (object@date_only) {
+      dtTable <- dtTable %>%
+        dplyr::select(-Time)
+    }
+    
+    # Initialise DT table
+    dt <- DT::datatable(dtTable, filter="none", selection="single", options=list(pageLength=100, dom='t', ordering=FALSE))
+    
+    # Process now reactive argument
     if (is.null(nowReact)) {
       now <- NULL
     } else {
       now <- nowReact()
     }
-    # Grey out rows in past
+    
+    # Grey out rows in past (on demand)
     if (object@grey_out_past && !is.null(now)) {
-      table <- tableReact() %>%
+      table_ <- table %>%
         dplyr::mutate(Datetime=toDateTime(date=.data$Date, time=.data$Time)) %>%
         dplyr::mutate(IN_PAST=Datetime < now, ROW_INDEX=dplyr::row_number()) %>%
         dplyr::filter(IN_PAST)
-      indexes <- table %>%
+      indexes <- table_ %>%
         dplyr::pull(ROW_INDEX)
       if (length(indexes) > 0) {
         dt <- dt %>% DT::formatStyle(
@@ -152,9 +166,11 @@ getReferenceDateTime <- function(table) {
 
 getRowAsTibble <- function(object, input) {
   ns <- object@ns
+  dateOnly <- object@date_only
+  
   retValue <- tibble::tibble(
     Date=as.character(input[[getDateTimeDialogDateId(ns)]]),
-    Time=posixToTimeStr(input[[getDateTimeDialogTimeId(ns)]]),
+    Time=ifelse(dateOnly, object@default_time, posixToTimeStr(input[[getDateTimeDialogTimeId(ns)]]))
   )
   for (variable in object@extra_variables) {
     retValue[[variable]] <- input[[getDateTimeDialogVariableId(ns, variable)]]
@@ -191,6 +207,7 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
   okButtonId <- ""
   extraVariables <- object@extra_variables
   ns <- object@ns
+  dateOnly <- object@date_only
 
   if (isTRUE(add)) {
     okLabel <- "Add entry"
@@ -244,12 +261,21 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
     uiElements[[index]] <- numericInput(inputId=getDateTimeDialogVariableId(ns, variable), label=paste0(variable, ":"), value=value)
   }
 
-  dialog <- modalDialog(
-    dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
-    shinyTime::timeInput(inputId=getDateTimeDialogTimeId(ns), label="Time:", value=time, seconds=FALSE),
-    uiElements,
-    actionButton(inputId=okButtonId, label=okLabel),
-    easyClose=TRUE, footer=NULL)
+  if (dateOnly) {
+    dialog <- modalDialog(
+      dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
+      uiElements,
+      actionButton(inputId=okButtonId, label=okLabel),
+      easyClose=TRUE, footer=NULL)
+  } else {
+    dialog <- modalDialog(
+      dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
+      shinyTime::timeInput(inputId=getDateTimeDialogTimeId(ns), label="Time:", value=time, seconds=FALSE),
+      uiElements,
+      actionButton(inputId=okButtonId, label=okLabel),
+      easyClose=TRUE, footer=NULL)
+  }
+  
   return(dialog)
 }
 

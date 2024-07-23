@@ -17,10 +17,13 @@ setClass(
 #' @param initialDose first dose in table, only if tableReact is NULL
 #' @param initialTime first dose time in table, only if tableReact is NULL
 #' @param greyOutPast grey out the rows in past, logical value
+#' @param dateOnly show only date in editor, logical value
 #' @export
 DosingTableEditor <- function(tableReact=NULL, ns=shiny::NS("dosing_table"), fun=NULL,
-                              initialDose=100, initialTime="08:00", greyOutPast=FALSE) {
-  editor <- new("dosing_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Dose"), grey_out_past=greyOutPast)
+                              initialDose=100, initialTime="08:00",
+                              greyOutPast=FALSE, dateOnly=FALSE) {
+  editor <- new("dosing_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Dose"),
+                grey_out_past=greyOutPast, date_only=dateOnly)
   if (is.null(tableReact)) {
     tableReact <- reactiveVal(editor %>% getInitialTable(init_dose=initialDose, init_time=initialTime))
     editor@tableReact <- tableReact

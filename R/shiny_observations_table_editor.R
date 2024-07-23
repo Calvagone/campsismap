@@ -17,10 +17,13 @@ setClass(
 #' @param defaultObs first observation in table, only if tableReact is NULL
 #' @param defaultTime first observation time in table, only if tableReact is NULL
 #' @param greyOutPast grey out the rows in past, logical value
+#' @param dateOnly show only date in editor, logical value
 #' @export
 ObservationsTableEditor <- function(tableReact=NULL, ns=shiny::NS("observations_table"), fun=NULL,
-                                    defaultObs=100, defaultTime="06:00", greyOutPast=FALSE) {
-  editor <- new("observations_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Observation"), grey_out_past=greyOutPast)
+                                    defaultObs=100, defaultTime="06:00",
+                                    greyOutPast=FALSE, dateOnly=FALSE) {
+  editor <- new("observations_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Observation"),
+                grey_out_past=greyOutPast, date_only=dateOnly)
   if (is.null(tableReact)) {
     tableReact <- reactiveVal(editor %>% getInitialTable())
     editor@tableReact <- tableReact

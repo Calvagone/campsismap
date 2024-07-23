@@ -10,7 +10,8 @@ TargetTableEditor(
   fun = NULL,
   initialTarget = 100,
   initialTime = "00:00",
-  greyOutPast = FALSE
+  greyOutPast = FALSE,
+  dateOnly = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ TargetTableEditor(
 \item{initialTime}{first target time in table, only if tableReact is NULL}
 
 \item{greyOutPast}{grey out the rows in past, logical value}
+
+\item{dateOnly}{show only date in editor, logical value}
 }
 \description{
 Target table editor.

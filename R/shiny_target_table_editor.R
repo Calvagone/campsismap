@@ -17,10 +17,13 @@ setClass(
 #' @param initialTarget first target value in table, only if tableReact is NULL
 #' @param initialTime first target time in table, only if tableReact is NULL
 #' @param greyOutPast grey out the rows in past, logical value
+#' @param dateOnly show only date in editor, logical value
 #' @export
 TargetTableEditor <- function(tableReact=NULL, ns=shiny::NS("target_table"), fun=NULL,
-                              initialTarget=100, initialTime="00:00", greyOutPast=FALSE) {
-  editor <- new("target_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Target"), grey_out_past=greyOutPast)
+                              initialTarget=100, initialTime="00:00",
+                              greyOutPast=FALSE, dateOnly=TRUE) {
+  editor <- new("target_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Target"),
+                grey_out_past=greyOutPast, date_only=dateOnly)
   if (is.null(tableReact)) {
     tableReact <- reactiveVal(editor %>% getInitialTable(init_target=initialTarget, init_time=initialTime))
     editor@tableReact <- tableReact
