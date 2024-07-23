@@ -77,7 +77,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
     if (object@grey_out_past && !is.null(now)) {
       table_ <- table %>%
         dplyr::mutate(Datetime=toDateTime(date=.data$Date, time=.data$Time)) %>%
-        dplyr::mutate(IN_PAST=Datetime < now, ROW_INDEX=dplyr::row_number()) %>%
+        dplyr::mutate(IN_PAST=Datetime <= now, ROW_INDEX=dplyr::row_number()) %>%
         dplyr::filter(IN_PAST)
       indexes <- table_ %>%
         dplyr::pull(ROW_INDEX)
