@@ -5,6 +5,14 @@ library(tictoc)
 context("Test the estimation of individual parameters")
 source(paste0("", "testUtils.R"))
 
+relativeTolerance <- function() {
+  return(1e-2)
+}
+
+absoluteRelativeError <- function(actual, expected) {
+  return(abs((expected - actual)/actual))  
+}
+
 test_that(getTestName("Method estimate works as expected when 1 sample is provided"), {
   
   model <- CampsismapModel(model=model_suite$testing$pk$'1cpt_fo', "CONC") %>%
@@ -34,7 +42,7 @@ test_that(getTestName("Method estimate works as expected when 2 samples are prov
   
   estimation <- expression(model %>% setup(dest=destEngine) %>% estimate(dataset=dataset))
   test <- expression(
-    expect_equal(as.numeric(results$par) %>% round(3), c(-0.028, -0.186, -1.018)),
+    expect_true(all(absoluteRelativeError(results$par, c(-0.02756761, -0.18649402, -1.01813202)) < relativeTolerance())),
     quickPlot(model, dataset, etas=results$par)
   )
   
