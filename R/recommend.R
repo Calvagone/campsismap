@@ -26,8 +26,9 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     warning("No rule detected for rounding the doses. Default rule will apply.")
   }
   
-  # Dataset copy
+  # Dataset copy and clear initial samples
   recommendedDataset <- dataset
+  recommendedDataset@arms@list[[1]]@protocol@observations@list <- list()
   
   for (index in seq_len(nrow(targetTbl))) {
     currentTarget <- targetTbl[index, ]

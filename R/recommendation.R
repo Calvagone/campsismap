@@ -9,8 +9,9 @@
 setClass(
   "recommendation",
   representation(
-    original_dataset = "dataset",
-    recommended_dataset = "dataset",
+    original_dataset = "dataset", # No samples
+    recommended_dataset = "dataset", # No samples
+    samples = "data.frame",
     original_target = "target_definition",
     effective_target = "target_definition_effective",
     rules = "dose_adaptation_rules",
@@ -28,18 +29,26 @@ setClass(
 #' @return recommendation object
 #' @export 
 Recommendation <- function(dataset, target, rules, now=0) {
+  # Collect samples
+  samples <- dataset %>%
+    getSamples()
   
+  # Clear samples from dataset
+  dataset@arms@list[[1]]@protocol@observations@list <- list()
+  
+  # Export dosing
   datasetTbl <- dataset %>%
     export(dest="RxODE", seed=1, model=NULL)
   
   dosing <- datasetTbl %>% 
     dplyr::filter(EVID==1) %>%
     dplyr::select(TIME, AMT)
-  
+
+  # Compute target effective
   targetEffective <- target %>%
     export(dest=TargetDefinitionEffective(), dosing=dosing, rules=rules)
   
-  return(new("recommendation", original_dataset=dataset, original_target=target, effective_target=targetEffective, rules=rules, now=now))
+  return(new("recommendation", original_dataset=dataset, samples=samples, original_target=target, effective_target=targetEffective, rules=rules, now=now))
 }
 
 #_______________________________________________________________________________

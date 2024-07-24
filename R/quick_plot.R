@@ -95,8 +95,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
     ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"="#B90E1E", "Recommendation"="#B2B2B2"))
   
   # Retrieve DV
-  dv <- dataset %>%
-    getSamples()
+  dv <- recommendation@samples
   
   # Add the observations
   if (nrow(dv) > 0) {
