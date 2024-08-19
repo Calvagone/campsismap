@@ -91,9 +91,17 @@ setMethod("export", signature("recommendation", "character"), function(object, d
   summaryRecommendation <- recommendedDataset@arms@list[[1]]@protocol@treatment@list %>%
     purrr::map_df(~tibble::tibble(DOSENO=.x@dose_number, RECOMMENDATION=.x@amount))
   
-  summary <- summaryOriginal %>%
-    dplyr::left_join(summaryRecommendation, by=c("DOSENO")) %>%
-    dplyr::filter(TIME > object@now)
+  retValue <- summaryOriginal %>%
+    dplyr::left_join(summaryRecommendation, by=c("DOSENO"))
+  
+  if (dest == "summary") {
+    retValue <- retValue %>%
+      dplyr::filter(TIME > object@now)
+  } else if (dest=="summary_all") {
+    # do nothing
+  } else {
+    stop("dest must be 'summary' or 'summary_all'")
+  }
 
-  return(summary)
+  return(retValue)
 })
