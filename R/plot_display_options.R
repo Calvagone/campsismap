@@ -24,7 +24,7 @@
 #' @slot recommendation_profile_colour colour of recommendation profile
 #' @slot individual_fit_bar_colour colour of individual fit bar
 #' @slot recommendation_bar_colour colour of recommendation bar
-#' @slot target_profile_colour=colour of target profile
+#' @slot target_profile_colour colour of target profile
 #' @export
 setClass(
   "plot_display_options",
@@ -75,7 +75,7 @@ setClass(
 #' @param recommendation_profile_colour colour of recommendation profile
 #' @param individual_fit_bar_colour colour of individual fit bar
 #' @param recommendation_bar_colour colour of recommendation bar
-#' @param target_profile_colour=colour of target profile
+#' @param target_profile_colour colour of target profile
 #' @return an object
 #' @export
 PlotDisplayOptions <- function(ylim=NULL, ylim_bar_plot=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",

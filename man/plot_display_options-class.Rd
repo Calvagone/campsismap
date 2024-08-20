@@ -50,6 +50,6 @@ Plot options class.
 
 \item{\code{recommendation_bar_colour}}{colour of recommendation bar}
 
-\item{\code{target_profile_colour=colour}}{of target profile}
+\item{\code{target_profile_colour}}{colour of target profile}
 }}
 

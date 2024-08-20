@@ -69,7 +69,7 @@ PlotDisplayOptions(
 
 \item{recommendation_bar_colour}{colour of recommendation bar}
 
-\item{target_profile_colour=colour}{of target profile}
+\item{target_profile_colour}{colour of target profile}
 }
 \value{
 an object
