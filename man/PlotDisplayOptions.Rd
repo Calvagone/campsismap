@@ -19,7 +19,13 @@ PlotDisplayOptions(
   y_axis_label = "Concentration",
   x_axis_bar_plot_label = "Time",
   y_axis_bar_plot_label = "Dose",
-  bar_plot_value_mode = "within"
+  bar_plot_value_mode = "within",
+  typical_profile_colour = "#6196B4",
+  individual_fit_profile_colour = "#B90E1E",
+  recommendation_profile_colour = "#B2B2B2",
+  individual_fit_bar_colour = "#B90E1E",
+  recommendation_bar_colour = "#B2B2B2",
+  target_profile_colour = "palegreen1"
 )
 }
 \arguments{
@@ -52,6 +58,18 @@ PlotDisplayOptions(
 \item{y_axis_bar_plot_label}{label}
 
 \item{bar_plot_value_mode}{bar plot value mode: 'within' or 'above'}
+
+\item{typical_profile_colour}{colour of typical profile}
+
+\item{individual_fit_profile_colour}{colour of individual fit profile}
+
+\item{recommendation_profile_colour}{colour of recommendation profile}
+
+\item{individual_fit_bar_colour}{colour of individual fit bar}
+
+\item{recommendation_bar_colour}{colour of recommendation bar}
+
+\item{target_profile_colour=colour}{of target profile}
 }
 \value{
 an object

@@ -38,7 +38,8 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "indi
   
   # Scale color manual to add a defaut legend
   retValue <- retValue +
-    ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"="#B90E1E", "Typical profile"="#6196B4"))
+    ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"=options@individual_fit_profile_colour,
+                                                                    "Typical profile"=options@typical_profile_colour))
   
   # Retrieve DV
   dv <- dataset %>%
@@ -92,7 +93,8 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
 
   # Scale color manual to add a defaut legend
   retValue <- retValue +
-    ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"="#B90E1E", "Recommendation"="#B2B2B2"))
+    ggplot2::scale_color_manual(name=options@legend_title, values=c("Individual fit"=options@individual_fit_profile_colour,
+                                                                    "Recommendation"=options@recommendation_profile_colour))
   
   # Retrieve DV
   dv <- recommendation@samples
@@ -124,7 +126,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   }
   
   retValue <- retValue +
-    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="vh", colour="palegreen1")
+    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="vh", colour=options@target_profile_colour)
   
   # Add display options
   retValue <- retValue %>% add(options, variable=model@variable)
@@ -173,7 +175,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   }
   
   retValue <- retValue + 
-    ggplot2::scale_fill_manual(values=c("Original"="#B90E1E", "Recommendation"="#B2B2B2"))
+    ggplot2::scale_fill_manual(values=c("Original"=options@individual_fit_bar_colour, "Recommendation"=options@recommendation_bar_colour))
     
   if (nrow(summary) == 0) {
     # Otherwise, x-axis is shifted by 1 day (after conversion to POSIXct), seems a bug in ggplot2

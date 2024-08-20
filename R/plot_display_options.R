@@ -19,6 +19,12 @@
 #' @slot x_axis_bar_plot_label label
 #' @slot y_axis_bar_plot_label label
 #' @slot bar_plot_value_mode bar plot value mode: 'within' or 'above'
+#' @slot typical_profile_colour colour of typical profile
+#' @slot individual_fit_profile_colour colour of individual fit profile
+#' @slot recommendation_profile_colour colour of recommendation profile
+#' @slot individual_fit_bar_colour colour of individual fit bar
+#' @slot recommendation_bar_colour colour of recommendation bar
+#' @slot target_profile_colour=colour of target profile
 #' @export
 setClass(
   "plot_display_options",
@@ -37,7 +43,13 @@ setClass(
     y_axis_label="character",
     x_axis_bar_plot_label="character",
     y_axis_bar_plot_label="character",
-    bar_plot_value_mode="character"
+    bar_plot_value_mode="character",
+    typical_profile_colour="character",
+    individual_fit_profile_colour="character",
+    recommendation_profile_colour="character",
+    individual_fit_bar_colour="character",
+    recommendation_bar_colour="character",
+    target_profile_colour="character"
   )
 )
 
@@ -58,13 +70,21 @@ setClass(
 #' @param x_axis_bar_plot_label label
 #' @param y_axis_bar_plot_label label
 #' @param bar_plot_value_mode bar plot value mode: 'within' or 'above'
+#' @param typical_profile_colour colour of typical profile
+#' @param individual_fit_profile_colour colour of individual fit profile
+#' @param recommendation_profile_colour colour of recommendation profile
+#' @param individual_fit_bar_colour colour of individual fit bar
+#' @param recommendation_bar_colour colour of recommendation bar
+#' @param target_profile_colour=colour of target profile
 #' @return an object
 #' @export
 PlotDisplayOptions <- function(ylim=NULL, ylim_bar_plot=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",
                                minor_breaks_interval=6, date_limits=.POSIXct(character(0)),
                                show_legend=FALSE, legend_title="Legend", legend_position="right",
                                x_axis_label="Time", y_axis_label="Concentration", x_axis_bar_plot_label="Time", y_axis_bar_plot_label="Dose",
-                               bar_plot_value_mode="within") {
+                               bar_plot_value_mode="within",
+                               typical_profile_colour="#6196B4", individual_fit_profile_colour="#B90E1E", recommendation_profile_colour="#B2B2B2",
+                               individual_fit_bar_colour="#B90E1E", recommendation_bar_colour="#B2B2B2", target_profile_colour="palegreen1") {
   if (is.null(ylim)) {
     ylim <- NA
   }
@@ -79,7 +99,9 @@ PlotDisplayOptions <- function(ylim=NULL, ylim_bar_plot=NULL, timeref=NULL, date
              minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits,
              show_legend=show_legend, legend_title=legend_title, legend_position=legend_position,
              x_axis_label=x_axis_label, y_axis_label=y_axis_label, x_axis_bar_plot_label=x_axis_bar_plot_label, y_axis_bar_plot_label=y_axis_bar_plot_label,
-             bar_plot_value_mode=bar_plot_value_mode))
+             bar_plot_value_mode=bar_plot_value_mode, 
+             typical_profile_colour=typical_profile_colour, individual_fit_profile_colour=individual_fit_profile_colour, recommendation_profile_colour=recommendation_profile_colour,
+             individual_fit_bar_colour=individual_fit_bar_colour, recommendation_bar_colour=recommendation_bar_colour, target_profile_colour=target_profile_colour))
 }
 
 #_______________________________________________________________________________

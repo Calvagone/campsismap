@@ -39,5 +39,17 @@ Plot options class.
 \item{\code{y_axis_bar_plot_label}}{label}
 
 \item{\code{bar_plot_value_mode}}{bar plot value mode: 'within' or 'above'}
+
+\item{\code{typical_profile_colour}}{colour of typical profile}
+
+\item{\code{individual_fit_profile_colour}}{colour of individual fit profile}
+
+\item{\code{recommendation_profile_colour}}{colour of recommendation profile}
+
+\item{\code{individual_fit_bar_colour}}{colour of individual fit bar}
+
+\item{\code{recommendation_bar_colour}}{colour of recommendation bar}
+
+\item{\code{target_profile_colour=colour}}{of target profile}
 }}
 
