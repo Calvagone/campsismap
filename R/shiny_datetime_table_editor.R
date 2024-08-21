@@ -139,7 +139,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
       if (is.na(dateTime0)) {
         dateTime0 <- getReferenceDateTime(table=table)
       }
-      tableOutputReact(toCampsis(tableReact(), fun=object@fun, dateTime0=dateTime0))
+      tableOutputReact(exportDatetimeTable(tableReact(), fun=object@fun, dateTime0=dateTime0))
     } else {
       tableOutputReact(list())
     }
@@ -310,7 +310,13 @@ toDateTime <- function(date, time) {
   return(lubridate::ymd_hm(paste(date, time), tz=Sys.timezone()))
 }
 
+#' Add relative time column to the datetime table.
+#' 
+#' @param table table content (see slot tableReact)
+#' @param dateTime0 reference datetime
+#' @return table with relative time column (column 'TIME')
 #' @importFrom lubridate as.duration interval
+#' @export
 toRelativeTimeTable <- function(table, dateTime0) {
   if (!"Datetime" %in% colnames(table)) {
     table <- toDateTimeTable(table=table)
@@ -325,7 +331,14 @@ toRelativeTimeTable <- function(table, dateTime0) {
   return(table)
 }
 
-toCampsis <- function(table, fun, dateTime0) {
+#' Export datetime table according to given function.
+#' 
+#' @param table table content (see slot tableReact)
+#' @param fun any user given function
+#' @param dateTime0 reference datetime
+#' @return a list, each element is the result of the function applied to a row of the table
+#' @export
+exportDatetimeTable <- function(table, fun, dateTime0) {
   table <- toRelativeTimeTable(table=table, dateTime0=dateTime0)
   retValue <- list()
 
