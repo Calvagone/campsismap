@@ -2,7 +2,7 @@
 # setwd("C:/prj/campsismap/")
 # roxygen2::roxygenise()
 # setwd("C:/prj/campsismap/tests/")
-# testFolder <<- "C:/prj/campsismap/tests/testthat/"
+# testFolder <- "C:/prj/campsismap/tests/testthat/"
 
 testFolder <- ""
 overwriteNonRegressionFiles <- FALSE
@@ -18,17 +18,19 @@ noEngineInstalled <- function() {
   return(!(cond1 || cond2))
 }
 
-campsismapTest <- function(x, test, env) {
+campsismapTest <- function(x, test, env, output_name="results") {
   # Iteration over all test engines to be tested
   for (testEngine in testEngines) {
     env$destEngine <-  testEngine
     # Check if package exists (as test engines are suggested packages)
     # This is needed for CRAN when package is tested with `_R_CHECK_DEPENDS_ONLY_`=TRUE
     if (engineInstalled(testEngine)) {
-      env$results <- eval(x, envir=env)
-      eval(test, envir=env)
+      env[[output_name]] <- eval(x, envir=env)
+      retValue <- eval(test, envir=env)
     }
   }
+  # Return last evaluation such that other tests can be performed on output
+  return(retValue)
 }
 
 getTestName <- function(name) {

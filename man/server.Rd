@@ -8,7 +8,7 @@
 \usage{
 server(object, input, output, session, ...)
 
-\S4method{server}{datetime_table_editor}(object, input, output, session, dateTime0React)
+\S4method{server}{datetime_table_editor}(object, input, output, session, dateTime0React, nowReact = NULL)
 }
 \arguments{
 \item{object}{generic object}
@@ -22,6 +22,8 @@ server(object, input, output, session, ...)
 \item{...}{extra arguments}
 
 \item{dateTime0React}{reference datetime}
+
+\item{nowReact}{now datetime}
 }
 \value{
 this is up to the implementation

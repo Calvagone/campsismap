@@ -15,7 +15,7 @@ test_that(getTestName("Method predict works as expected"), {
   env <- environment()
   prediction <- expression(
     model %>%
-      setup(dest=destEngine) %>%
+      campsismap::setup(dest=destEngine) %>%
       predict(dataset=dataset, etas=c(0,0,-0.4))
   )
   test <- expression(

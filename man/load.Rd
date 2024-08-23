@@ -10,15 +10,20 @@ load(object, file, ...)
 \S4method{load}{datetime_table_editor,character}(object, file, ...)
 }
 \arguments{
-\item{object}{object to load with something}
+\item{object}{datetime table editor}
 
-\item{file}{path to the file or folder to be read}
+\item{file}{path to csv file that contains 'Date' and 'Time' information}
 
-\item{...}{extra arguments}
+\item{...}{extra arguments, unused}
 }
 \value{
 the loaded object
+
+TRUE
 }
 \description{
 Generic load method to load data from a file or a folder.
+
+Read 'Datetime' csv file and load the editor.
+See method 'read.datetimecsv'.
 }

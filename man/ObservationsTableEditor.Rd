@@ -9,7 +9,9 @@ ObservationsTableEditor(
   ns = shiny::NS("observations_table"),
   fun = NULL,
   defaultObs = 100,
-  defaultTime = "06:00"
+  defaultTime = "06:00",
+  greyOutPast = FALSE,
+  dateOnly = FALSE
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ ObservationsTableEditor(
 \item{defaultObs}{first observation in table, only if tableReact is NULL}
 
 \item{defaultTime}{first observation time in table, only if tableReact is NULL}
+
+\item{greyOutPast}{grey out the rows in past, logical value}
+
+\item{dateOnly}{show only date in editor, logical value}
 }
 \description{
 Observations table editor.

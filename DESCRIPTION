@@ -1,7 +1,7 @@
 Type: Package
 Package: campsismap
 Title: Maximum a posteriori bayesian estimation with Campsis
-Version: 0.1.0
+Version: 0.5.0
 Authors@R: 
     person("Nicolas", "Luyckx", , "nicolas.luyckx@calvagone.com", role = c("aut", "cre"))
 Description: Performs maximum a posteriori bayesian estimation of
@@ -20,17 +20,20 @@ Imports:
     digest,
     dplyr,
     DT,
+    ggplot2,
     lubridate,
     methods,
     mvtnorm,
     optimx,
+    patchwork,
     purrr,
     readr,
     rlang,
     RJSONIO,
     shiny,
     shinyTime,
-    tibble
+    tibble,
+    tidyr
 Suggests: 
     devtools,
     knitr,
@@ -48,7 +51,7 @@ VignetteBuilder:
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Collate:
     'global.R'
     'utilities.R'
@@ -56,10 +59,18 @@ Collate:
     'error_model.R'
     'dataset.R'
     'model_cache.R'
+    'dose_adaptation_rule.R'
+    'dose_adaptation_rules.R'
+    'trough_time_rule.R'
+    'dose_rounding_rule.R'
+    'target_definition.R'
     'campsismap_model.R'
     'likelihood_formula.R'
     'map_estimation.R'
-    'plot_options.R'
+    'recommendation.R'
+    'recommend.R'
+    'plot_display_options.R'
+    'quick_plot_type.R'
     'quick_plot.R'
     'shiny_generic.R'
     'shiny_input.R'
@@ -67,3 +78,4 @@ Collate:
     'shiny_datetime_table_editor.R'
     'shiny_dosing_table_editor.R'
     'shiny_observations_table_editor.R'
+    'shiny_target_table_editor.R'

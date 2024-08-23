@@ -108,24 +108,33 @@ setGeneric("getSimulationTimes", function(object, ...) {
 #' @param model Campsismap or Campsis model
 #' @param dataset Campsis dataset
 #' @param etas individual parameters
-#' @param pop add population reference
+#' @param plot plot type
 #' @param options plot options
 #' @param ... extra arguments
 #' @return a ggplot2 object
 #' @export
 #' @rdname quickPlot
-quickPlot <- function(model, dataset, etas, pop, options, ...) {
+quickPlot <- function(model, dataset, etas, plot, options, ...) {
   stop("No default function is provided")
 }
 
-setGeneric("quickPlot", function(model, dataset, etas=NULL, pop=NULL, options=NULL, ...) {
-  if (is.null(pop)) pop <- TRUE
+setGeneric("quickPlot", function(model, dataset=NULL, etas=NULL, plot=NULL, options=NULL, ...) {
   if (is.null(etas)) {
-    pop <- FALSE
     etas <- numeric()
   }
   if (is.null(options)) {
-    options <- PlotOptions()
+    options <- PlotDisplayOptions()
+  }
+  args <- list(...)
+  if (is.null(dataset) && !is.null(args$recommendation)) {
+    dataset <- args$recommendation@original_dataset
+  }
+  if (is.null(plot)) {
+    if (is.null(args$recommendation)) {
+      plot <- IndividualFitPlotType()
+    } else {
+      plot <- RecommendationFullPlotType()
+    }
   } 
   standardGeneric("quickPlot")
 })
@@ -214,4 +223,76 @@ setGeneric("predict", function(object, dataset, etas=NULL, settings=NULL, ...) {
   if (is.null(etas)) etas <- numeric()
   if (is.null(settings) && is(object, "campsismap_model")) settings <- object@settings
   standardGeneric("predict")
+})
+
+#_______________________________________________________________________________
+#----                             recommend                                 ----
+#_______________________________________________________________________________
+
+#' Recommend.
+#' 
+#' @param object campsismap object or model cache
+#' @param dataset dataset
+#' @param etas individual parameters to simulate
+#' @param target target definition
+#' @param now defines what the future or the past is, default is 0 (all doses adapted)
+#' @param rules dose adaptation rules
+#' @param settings simulation settings
+#' @param ... extra arguments
+#' @return recommendations
+#' @export
+#' @rdname recommend
+recommend <- function(object, dataset, etas, target, now, rules, settings, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("recommend", function(object, dataset, etas=NULL, target=NULL, now=NULL, rules=NULL, settings=NULL, ...) {
+  if (is.null(etas)) etas <- numeric()
+  if (is.null(rules)) rules <- Rules()
+  if (is.null(settings) && is(object, "campsismap_model")) settings <- object@settings
+  if (is.null(now)) now <- as.numeric(0)
+  standardGeneric("recommend")
+})
+
+#_______________________________________________________________________________
+#----                       updateDoseAmount                                ----
+#_______________________________________________________________________________
+
+#' Update dose amount.
+#' 
+#' @param object generic object (e.g. dataset)
+#' @param amount updated dose amount
+#' @param dose_number corresponding dose number
+#' @param ... extra arguments
+#' @return updated object
+#' @export
+#' @rdname updateDoseAmount
+updateDoseAmount <- function(object, amount, dose_number, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("updateDoseAmount", function(object, amount, dose_number, ...) {
+  dose_number <- as.integer(dose_number)
+  standardGeneric("updateDoseAmount")
+})
+
+#_______________________________________________________________________________
+#----                     retrieveDoseAmount                                ----
+#_______________________________________________________________________________
+
+#' Retrieve dose amount.
+#' 
+#' @param object generic object (e.g. dataset)
+#' @param dose_number corresponding dose number
+#' @param ... extra arguments
+#' @return updated object
+#' @export
+#' @rdname retrieveDoseAmount
+retrieveDoseAmount <- function(object, dose_number, ...) {
+  stop("No default function is provided")
+}
+
+setGeneric("retrieveDoseAmount", function(object, dose_number, ...) {
+  dose_number <- as.integer(dose_number)
+  standardGeneric("retrieveDoseAmount")
 })

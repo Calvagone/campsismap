@@ -65,3 +65,48 @@ setMethod("getSimulationTimes", signature("dataset"), function(object) {
     purrr::flatten_dbl()
   return(retValue)
 })
+
+#_______________________________________________________________________________
+#----                     retrieveDoseAmount                                ----
+#_______________________________________________________________________________
+
+#' @rdname retrieveDoseAmount
+setMethod("retrieveDoseAmount", signature("dataset", "integer"), function(object, dose_number) {
+  object <- checkAssignedDoseNumbers(object)
+  retValue <- object@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::keep(~.x@dose_number==dose_number) %>%
+    purrr::map_dbl(~.x@amount)
+  return(retValue)
+})
+
+#_______________________________________________________________________________
+#----                       updateDoseAmount                                ----
+#_______________________________________________________________________________
+
+checkAssignedDoseNumbers <- function(dataset) {
+  doseNumbers <- dataset@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::map_int(~.x@dose_number)
+  
+  if (any(is.na(doseNumbers))) {
+    # Call to internal method assignDoseNumber in Campsis
+    dataset@arms@list[[1]]@protocol@treatment <- dataset@arms@list[[1]]@protocol@treatment %>%
+      campsis:::assignDoseNumber()
+  } else {
+    # Don't do anything
+  }
+  
+  return(dataset)
+}
+
+#' @rdname updateDoseAmount
+setMethod("updateDoseAmount", signature("dataset", "numeric", "integer"), function(object, amount, dose_number) {
+  object <- checkAssignedDoseNumbers(object)
+  object@arms@list[[1]]@protocol@treatment@list <- object@arms@list[[1]]@protocol@treatment@list %>%
+    purrr::map(.f=function(admin) {
+      if (admin@dose_number==dose_number) {
+        admin@amount <- amount
+      }
+      return(admin)
+    })
+  return(object)
+})

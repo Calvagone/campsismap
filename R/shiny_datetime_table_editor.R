@@ -12,9 +12,11 @@ setClass(
     outputs="list",
     default_ii="numeric",
     default_time="character",
-    default_value="numeric"
+    default_value="numeric",
+    grey_out_past="logical",
+    date_only="logical"
   ),
-  prototype=prototype(default_ii=24, default_time="08:00", default_value=100) # 24 hours by default
+  prototype=prototype(default_ii=24, default_time="08:00", default_value=100, grey_out_past=FALSE, date_only=FALSE)
 )
 
 #_______________________________________________________________________________
@@ -44,14 +46,49 @@ setMethod("getUI", signature=c("datetime_table_editor"), definition=function(obj
 
 
 #' @param dateTime0React reference datetime
+#' @param nowReact now datetime
 #' @rdname server
 #' @importFrom DT datatable renderDT
-setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), definition=function(object, input, output, session, dateTime0React) {
+setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), definition=function(object, input, output, session, dateTime0React, nowReact=NULL) {
   ns <- object@ns
   tableReact <- object@tableReact
 
   output[[getDateTimeTableOutputId(ns)]] <- DT::renderDT({
-    dt <- DT::datatable(tableReact(), filter="none", selection="single", options=list(dom='t', ordering=FALSE))
+    table <- tableReact()
+    
+    # Deal with argument date only
+    dtTable <- table
+    if (object@date_only) {
+      dtTable <- dtTable %>%
+        dplyr::select(-Time)
+    }
+    
+    # Initialise DT table
+    dt <- DT::datatable(dtTable, filter="none", selection="single", options=list(pageLength=100, dom='t', ordering=FALSE))
+    
+    # Process now reactive argument
+    if (is.null(nowReact)) {
+      now <- NULL
+    } else {
+      now <- nowReact()
+    }
+    
+    # Grey out rows in past (on demand)
+    if (object@grey_out_past && !is.null(now)) {
+      table_ <- table %>%
+        dplyr::mutate(Datetime=toDateTime(date=.data$Date, time=.data$Time)) %>%
+        dplyr::mutate(IN_PAST=Datetime <= now, ROW_INDEX=dplyr::row_number()) %>%
+        dplyr::filter(IN_PAST)
+      indexes <- table_ %>%
+        dplyr::pull(ROW_INDEX)
+      if (length(indexes) > 0) {
+        dt <- dt %>% DT::formatStyle(
+          columns=0,
+          target='row',
+          backgroundColor=DT::styleEqual(indexes, rep("#E6E6E6", length(indexes)))
+        )
+      }
+    }
     return(dt)
   })
 
@@ -77,7 +114,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
   observeEvent(input[[getDateTimeDialogAddConfirmButtonId(ns)]], {
     table <- rbind(tableReact(), getRowAsTibble(object, input))
     table <- table %>%
-      toDateTimeTable() %>%
+      toDateTimeTable(preserve_columns=TRUE) %>%
       dplyr::select(-Datetime)
     tableReact(table)
     removeModal()
@@ -87,7 +124,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
     index <- input[[paste0(getDateTimeTableOutputId(ns), "_rows_selected")]]
     table <- rbind(tableReact()[-index, ], getRowAsTibble(object, input))
     table <- table %>%
-      toDateTimeTable() %>%
+      toDateTimeTable(preserve_columns=TRUE) %>%
       dplyr::select(-Datetime)
     tableReact(table)
     removeModal()
@@ -102,7 +139,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
       if (is.na(dateTime0)) {
         dateTime0 <- getReferenceDateTime(table=table)
       }
-      tableOutputReact(toCampsis(tableReact(), fun=object@fun, dateTime0=dateTime0))
+      tableOutputReact(exportDatetimeTable(tableReact(), fun=object@fun, dateTime0=dateTime0))
     } else {
       tableOutputReact(list())
     }
@@ -129,9 +166,11 @@ getReferenceDateTime <- function(table) {
 
 getRowAsTibble <- function(object, input) {
   ns <- object@ns
+  dateOnly <- object@date_only
+  
   retValue <- tibble::tibble(
     Date=as.character(input[[getDateTimeDialogDateId(ns)]]),
-    Time=posixToTimeStr(input[[getDateTimeDialogTimeId(ns)]]),
+    Time=ifelse(dateOnly, object@default_time, posixToTimeStr(input[[getDateTimeDialogTimeId(ns)]]))
   )
   for (variable in object@extra_variables) {
     retValue[[variable]] <- input[[getDateTimeDialogVariableId(ns, variable)]]
@@ -139,10 +178,21 @@ getRowAsTibble <- function(object, input) {
   return(retValue)
 }
 
+#' Posix to date string.
+#' 
+#' @param x POSIXct date
+#' @return date, string form '%Y-%m-%d'
+#' @export
 posixToDateStr <- function(x) {
   return(strftime(x, "%Y-%m-%d"))
 }
 
+#' Posix to time string.
+#' 
+#' @param x POSIXct time
+#' @param seconds export seconds, logical value
+#' @return time, string form '%H:%M:%S' or '%H:%M' depending on argument 'seconds'
+#' @export
 posixToTimeStr <- function(x, seconds=FALSE) {
   if (seconds) {
     return(strftime(x, "%H:%M:%S"))
@@ -157,6 +207,7 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
   okButtonId <- ""
   extraVariables <- object@extra_variables
   ns <- object@ns
+  dateOnly <- object@date_only
 
   if (isTRUE(add)) {
     okLabel <- "Add entry"
@@ -210,33 +261,62 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
     uiElements[[index]] <- numericInput(inputId=getDateTimeDialogVariableId(ns, variable), label=paste0(variable, ":"), value=value)
   }
 
-  dialog <- modalDialog(
-    dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
-    shinyTime::timeInput(inputId=getDateTimeDialogTimeId(ns), label="Time:", value=time, seconds=FALSE),
-    uiElements,
-    actionButton(inputId=okButtonId, label=okLabel),
-    easyClose=TRUE, footer=NULL)
+  if (dateOnly) {
+    dialog <- modalDialog(
+      dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
+      uiElements,
+      actionButton(inputId=okButtonId, label=okLabel),
+      easyClose=TRUE, footer=NULL)
+  } else {
+    dialog <- modalDialog(
+      dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
+      shinyTime::timeInput(inputId=getDateTimeDialogTimeId(ns), label="Time:", value=time, seconds=FALSE),
+      uiElements,
+      actionButton(inputId=okButtonId, label=okLabel),
+      easyClose=TRUE, footer=NULL)
+  }
+  
   return(dialog)
 }
 
-toDateTimeTable <- function(table, sort=TRUE) {
+toDateTimeTable <- function(table, sort=TRUE, preserve_columns=FALSE) {
   table <- table %>%
     dplyr::mutate(Datetime=toDateTime(date=.data$Date, time=.data$Time))
+  
+  table <- table %>%
+    dplyr::relocate(Datetime)
 
   if (sort) {
     table <- table %>%
       dplyr::arrange(Datetime)
   }
+  
+  if (!preserve_columns) {
+    table <- table %>%
+      dplyr::select(-dplyr::any_of(c("Date", "Time")))
+  }
 
   return(table)
 }
 
+#' To date time.
+#' 
+#' @param date date, 'ymd' formatted string
+#' @param time time, 'hm' formatted string
 #' @importFrom lubridate ymd_hm
+#' @return POSIXct value
+#' @export
 toDateTime <- function(date, time) {
   return(lubridate::ymd_hm(paste(date, time), tz=Sys.timezone()))
 }
 
+#' Add relative time column to the datetime table.
+#' 
+#' @param table table content (see slot tableReact)
+#' @param dateTime0 reference datetime
+#' @return table with relative time column (column 'TIME')
 #' @importFrom lubridate as.duration interval
+#' @export
 toRelativeTimeTable <- function(table, dateTime0) {
   if (!"Datetime" %in% colnames(table)) {
     table <- toDateTimeTable(table=table)
@@ -246,12 +326,19 @@ toRelativeTimeTable <- function(table, dateTime0) {
     dplyr::mutate(Datetime0=dateTime0) %>%
     dplyr::mutate(TIME=(lubridate::interval(Datetime0, Datetime, tzone=Sys.timezone()) %>%
                           lubridate::as.duration() %>% as.numeric())/3600) %>%
-    dplyr::select(-dplyr::any_of(c("Date", "Time", "Datetime0")))
+    dplyr::select(-dplyr::any_of(c("Datetime0")))
 
   return(table)
 }
 
-toCampsis <- function(table, fun, dateTime0) {
+#' Export datetime table according to given function.
+#' 
+#' @param table table content (see slot tableReact)
+#' @param fun any user given function
+#' @param dateTime0 reference datetime
+#' @return a list, each element is the result of the function applied to a row of the table
+#' @export
+exportDatetimeTable <- function(table, fun, dateTime0) {
   table <- toRelativeTimeTable(table=table, dateTime0=dateTime0)
   retValue <- list()
 
@@ -299,13 +386,17 @@ setGeneric("getInitialTable", function(object, ...) {
 #----                                 load                                  ----
 #_______________________________________________________________________________
 
-
-#' @importFrom readr cols read_csv
+#' Read 'Datetime' csv file and load the editor.
+#' See method 'read.datetimecsv'.
+#' 
+#' @param object datetime table editor
+#' @param file path to csv file that contains 'Date' and 'Time' information
+#' @param ... extra arguments, unused
+#' @return TRUE
 #' @rdname load
 setMethod("load", signature=c("datetime_table_editor", "character"), definition=function(object, file, ...) {
-  table <- 
-    tryCatch(
-      readr::read_csv(file=file, col_types=readr::cols(.default="n", Date="c", Time="c")),
+  table <- tryCatch(
+    read.datetimecsv(file=file, dateTime=FALSE),
       error=function(cond) {
         print("Error reading the table")
         print(cond$message)
@@ -316,6 +407,45 @@ setMethod("load", signature=c("datetime_table_editor", "character"), definition=
   }
   return(TRUE)
 })
+
+#' Read 'Datetime' csv file.
+#' This csv file must contain at least a column 'Date' and a column 'Time'.
+#' Date column must be formatted as 'ymd'.
+#' Time column must be formatted as 'hm'.
+#' @param file path to csv file
+#' @param dateTime if TRUE, the 'Date' and 'Time' columns will be converted into 'Datetime'
+#' @param sort by default, rows will be sorted (only if datetime is TRUE)
+#' @param relative Datetime replaced by relative TIME column (based on provided dateTime0)
+#' @param dateTime0 reference date if relative argument is used, otherwise first datetime found in table is used as reference datetime
+#' @importFrom readr cols read_csv
+#' @export
+read.datetimecsv <- function(file, dateTime=TRUE, sort=TRUE, relative=FALSE, dateTime0=NULL) {
+  table <- readr::read_csv(file=file, col_types=readr::cols(.default="n", Date="c", Time="c"))
+  
+  if (dateTime) {
+    table <- toDateTimeTable(table=table, sort=sort)
+    
+    if (relative) {
+      if (is.null(dateTime0)) {
+        if (nrow(table)==0) {
+          stop("Can't provide relative time since no data in table")
+        } else {
+          dateTime0 <- table$Datetime[1]
+        }
+      } else {
+        # Use provided dateTime0
+      }
+      
+      table <- table %>%
+        toRelativeTimeTable(dateTime0=dateTime0) %>%
+        dplyr::select(-dplyr::any_of("Datetime")) %>%
+        dplyr::relocate(TIME)
+
+    }
+  }
+  
+  return(table)
+}
 
 #_______________________________________________________________________________
 #----                                write                                 ----

@@ -9,7 +9,9 @@ DosingTableEditor(
   ns = shiny::NS("dosing_table"),
   fun = NULL,
   initialDose = 100,
-  initialTime = "08:00"
+  initialTime = "08:00",
+  greyOutPast = FALSE,
+  dateOnly = FALSE
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ DosingTableEditor(
 \item{initialDose}{first dose in table, only if tableReact is NULL}
 
 \item{initialTime}{first dose time in table, only if tableReact is NULL}
+
+\item{greyOutPast}{grey out the rows in past, logical value}
+
+\item{dateOnly}{show only date in editor, logical value}
 }
 \description{
 Dosing table editor.

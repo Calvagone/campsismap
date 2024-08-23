@@ -69,6 +69,10 @@ CampsismapModel <- function(model, variable) {
 #----                           add                                   ----
 #_______________________________________________________________________________
 
+#' Add error model to Campsismap model.
+#' @param object Campsismap model
+#' @param x error model
+#' @return updated Campsismap model
 setMethod("add", signature = c("campsismap_model", "error_model"), definition = function(object, x) {
   object@error <- x 
   return(object)
@@ -112,16 +116,3 @@ setMethod("predict", signature("campsismap_model", "dataset", "numeric", "simula
   
   return(predict(object=object@model_cache, dataset=datasetTbl, etas=etas, settings=settings, ...))
 })
-
-
-checkModelReady <- function(object, raise_error=TRUE) {
-  if (is.null(object@model_cache@mod)) {
-    if (raise_error) {
-      stop("Please setup your model first. See ?setup.")
-    } else {
-      return(FALSE)
-    }
-  }
-  return(TRUE)
-}
-
