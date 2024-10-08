@@ -4,8 +4,9 @@
 #_______________________________________________________________________________
 
 #' @rdname quickPlot
+#' @param target effective target to draw, if provided. NULL by default.
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "individual_fit_plot_type", "plot_display_options"),
-          function(model, dataset, etas, plot, options) {
+          function(model, dataset, etas, plot, options, target=NULL) {
 
   # Check model is ready
   if (!checkModelReady(model, check_error_model=FALSE, raise_error=FALSE)) {
@@ -50,7 +51,12 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "indi
     retValue <- retValue +
       ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="black")
   }
-
+  
+  # Draw target profile if provided
+  if (!is.null(target)) {
+    retValue <- drawTarget(x=retValue, target=target, colour=options@target_profile_colour)
+  }
+  
   # Add display options
   retValue <- retValue %>% add(options, variable=model@variable)
 
