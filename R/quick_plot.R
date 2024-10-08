@@ -110,9 +110,33 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   retValue <- retValue +
     ggplot2::geom_vline(mapping=ggplot2::aes(xintercept=TIME), data=tibble::tibble(TIME=now), color="black", linetype="dotted")
   
-  # Draw target
-  target <- recommendation@effective_target
+  # Draw target profile
+  retValue <- drawTarget(x=retValue, target=recommendation@effective_target, colour=options@target_profile_colour)
   
+  # Add display options
+  retValue <- retValue %>% add(options, variable=model@variable)
+  
+  return(retValue)
+})
+
+#'
+#' Draw target profile.
+#' 
+#' @param x ggplot object
+#' @param target target effective definition, an object of class 'target_definition_effective'
+#' @param colour colour of the target profile
+#' @param linetype linetype of the target profile, default is 'dashed'
+#' @return updated ggplot object
+#' @importFrom ggplot2 geom_step
+#' @importFrom dplyr bind_rows
+#' @importFrom tibble tibble
+#' @export
+#' 
+drawTarget <- function(x, target, colour, linetype="dashed") {
+  if (!is(target, "target_definition_effective")) {
+    stop("target must be an object of class 'target_definition_effective'")
+  }
+
   # Fill in target profile on the right-hand side
   table <- target@table
   lastValue <- table$VALUE[length(table$VALUE)]
@@ -125,14 +149,11 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
     table_ <- dplyr::bind_rows(tibble::tibble(TIME=0, VALUE=firstValue), table_)
   }
   
-  retValue <- retValue +
-    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="vh", colour=options@target_profile_colour, linetype="dashed")
+  x <- x +
+    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="vh", colour=colour, linetype=linetype)
   
-  # Add display options
-  retValue <- retValue %>% add(options, variable=model@variable)
-  
-  return(retValue)
-})
+  return(x)
+}
 
 #' @param recommendation Campsismap recommendation
 #' @importFrom ggplot2 geom_col geom_text geom_vline guides scale_fill_manual theme_bw
