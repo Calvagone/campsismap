@@ -140,7 +140,8 @@ drawTarget <- function(x, target, colour, linetype="dashed") {
   # Fill in target profile on the right-hand side
   table <- target@table
   lastValue <- table$VALUE[length(table$VALUE)]
-  table_ <- dplyr::bind_rows(table, tibble::tibble(TIME=max(results$TIME), VALUE=lastValue))
+  maxTime <- maxValueInPlot(plot=x, variable="TIME")
+  table_ <- dplyr::bind_rows(table, tibble::tibble(TIME=maxTime, VALUE=lastValue))
   
   # Fill in target profile on the left-hand side
   firstValue <- table$VALUE[1]
