@@ -4,8 +4,9 @@
 #_______________________________________________________________________________
 
 #' @rdname quickPlot
+#' @param target effective target to draw, if provided. NULL by default.
 setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "individual_fit_plot_type", "plot_display_options"),
-          function(model, dataset, etas, plot, options) {
+          function(model, dataset, etas, plot, options, target=NULL) {
 
   # Check model is ready
   if (!checkModelReady(model, check_error_model=FALSE, raise_error=FALSE)) {
@@ -50,7 +51,12 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "indi
     retValue <- retValue +
       ggplot2::geom_point(mapping=ggplot2::aes(x=TIME, y=DV, group=NULL), data=dv, color="black")
   }
-
+  
+  # Draw target profile if provided
+  if (!is.null(target)) {
+    retValue <- drawTarget(x=retValue, target=target, colour=options@target_profile_colour)
+  }
+  
   # Add display options
   retValue <- retValue %>% add(options, variable=model@variable)
 
@@ -110,13 +116,38 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   retValue <- retValue +
     ggplot2::geom_vline(mapping=ggplot2::aes(xintercept=TIME), data=tibble::tibble(TIME=now), color="black", linetype="dotted")
   
-  # Draw target
-  target <- recommendation@effective_target
+  # Draw target profile
+  retValue <- drawTarget(x=retValue, target=recommendation@effective_target, colour=options@target_profile_colour)
   
+  # Add display options
+  retValue <- retValue %>% add(options, variable=model@variable)
+  
+  return(retValue)
+})
+
+#'
+#' Draw target profile.
+#' 
+#' @param x ggplot object
+#' @param target target effective definition, an object of class 'target_definition_effective'
+#' @param colour colour of the target profile
+#' @param linetype linetype of the target profile, default is 'dashed'
+#' @return updated ggplot object
+#' @importFrom ggplot2 geom_step
+#' @importFrom dplyr bind_rows
+#' @importFrom tibble tibble
+#' @export
+#' 
+drawTarget <- function(x, target, colour, linetype="dashed") {
+  if (!is(target, "target_definition_effective")) {
+    stop("target must be an object of class 'target_definition_effective'")
+  }
+
   # Fill in target profile on the right-hand side
   table <- target@table
   lastValue <- table$VALUE[length(table$VALUE)]
-  table_ <- dplyr::bind_rows(table, tibble::tibble(TIME=max(results$TIME), VALUE=lastValue))
+  maxTime <- maxValueInPlot(plot=x, variable="TIME")
+  table_ <- dplyr::bind_rows(table, tibble::tibble(TIME=maxTime, VALUE=lastValue))
   
   # Fill in target profile on the left-hand side
   firstValue <- table$VALUE[1]
@@ -125,14 +156,11 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
     table_ <- dplyr::bind_rows(tibble::tibble(TIME=0, VALUE=firstValue), table_)
   }
   
-  retValue <- retValue +
-    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="vh", colour=options@target_profile_colour, linetype="dashed")
+  x <- x +
+    ggplot2::geom_step(data=table_, mapping=ggplot2::aes(x=TIME, y=VALUE), direction="vh", colour=colour, linetype=linetype)
   
-  # Add display options
-  retValue <- retValue %>% add(options, variable=model@variable)
-  
-  return(retValue)
-})
+  return(x)
+}
 
 #' @param recommendation Campsismap recommendation
 #' @importFrom ggplot2 geom_col geom_text geom_vline guides scale_fill_manual theme_bw

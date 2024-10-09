@@ -12,6 +12,7 @@ PlotDisplayOptions(
   date_breaks = "1 day",
   minor_breaks_interval = 6,
   date_limits = .POSIXct(character(0)),
+  date_n_dodge = 1L,
   show_legend = FALSE,
   legend_title = "Legend",
   legend_position = "right",
@@ -42,6 +43,8 @@ PlotDisplayOptions(
 \item{minor_breaks_interval}{minor breaks interval in hours}
 
 \item{date_limits}{date limits, vector of 2 POSIXct values with the limits}
+
+\item{date_n_dodge}{number of dodges for date}
 
 \item{show_legend}{show a legend}
 

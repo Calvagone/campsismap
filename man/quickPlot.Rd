@@ -10,7 +10,7 @@
 \usage{
 quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
 
-\S4method{quickPlot}{campsismap_model,dataset,numeric,individual_fit_plot_type,plot_display_options}(model, dataset, etas, plot, options)
+\S4method{quickPlot}{campsismap_model,dataset,numeric,individual_fit_plot_type,plot_display_options}(model, dataset, etas, plot, options, target = NULL)
 
 \S4method{quickPlot}{campsismap_model,dataset,numeric,recommendation_plot_type,plot_display_options}(model, dataset, etas, plot, options, recommendation)
 
@@ -30,6 +30,8 @@ quickPlot(model, dataset = NULL, etas = NULL, plot = NULL, options = NULL, ...)
 \item{options}{plot options}
 
 \item{...}{extra arguments}
+
+\item{target}{effective target to draw, if provided. NULL by default.}
 
 \item{recommendation}{Campsismap recommendation}
 }

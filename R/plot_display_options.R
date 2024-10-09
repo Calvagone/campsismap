@@ -11,6 +11,7 @@
 #' @slot date_breaks data breaks, e.g. '1 day'
 #' @slot minor_breaks_interval minor breaks interval in hours
 #' @slot date_limits date limits, vector of 2 POSIXct values with the limits
+#' @slot date_n_dodge number of dodges for date
 #' @slot show_legend show a legend
 #' @slot legend_title legend title
 #' @slot legend_position legend position
@@ -36,6 +37,7 @@ setClass(
     date_breaks="character", # E.g. '1 day'
     minor_breaks_interval="integer", # E.g. 6
     date_limits="POSIXct",
+    date_n_dodge="integer", # E.g. 2L
     show_legend="logical",
     legend_title="character",
     legend_position="character",
@@ -62,6 +64,7 @@ setClass(
 #' @param date_breaks data breaks, e.g. '1 day'
 #' @param minor_breaks_interval minor breaks interval in hours
 #' @param date_limits date limits, vector of 2 POSIXct values with the limits
+#' @param date_n_dodge number of dodges for date
 #' @param show_legend show a legend
 #' @param legend_title legend title
 #' @param legend_position legend position
@@ -79,7 +82,7 @@ setClass(
 #' @return an object
 #' @export
 PlotDisplayOptions <- function(ylim=NULL, ylim_bar_plot=NULL, timeref=NULL, date_labels="%b %d", date_breaks="1 day",
-                               minor_breaks_interval=6, date_limits=.POSIXct(character(0)),
+                               minor_breaks_interval=6, date_limits=.POSIXct(character(0)), date_n_dodge=1L,
                                show_legend=FALSE, legend_title="Legend", legend_position="right",
                                x_axis_label="Time", y_axis_label="Concentration", x_axis_bar_plot_label="Time", y_axis_bar_plot_label="Dose",
                                bar_plot_value_mode="within",
@@ -96,7 +99,7 @@ PlotDisplayOptions <- function(ylim=NULL, ylim_bar_plot=NULL, timeref=NULL, date
   }
   return(new("plot_display_options", ylim=as.numeric(ylim), ylim_bar_plot=as.numeric(ylim_bar_plot),
              timeref=as.POSIXct(timeref), date_labels=date_labels, date_breaks=date_breaks,
-             minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits,
+             minor_breaks_interval=as.integer(minor_breaks_interval), date_limits=date_limits, date_n_dodge=as.integer(date_n_dodge),
              show_legend=show_legend, legend_title=legend_title, legend_position=legend_position,
              x_axis_label=x_axis_label, y_axis_label=y_axis_label, x_axis_bar_plot_label=x_axis_bar_plot_label, y_axis_bar_plot_label=y_axis_bar_plot_label,
              bar_plot_value_mode=bar_plot_value_mode, 
@@ -155,12 +158,16 @@ setMethod("add", signature = c("ANY", "plot_display_options"), definition = func
     
     if (length(options@date_limits) > 0) {
       plot <- plot +
-        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels, limits=options@date_limits) 
+        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun,
+                                  date_labels=options@date_labels, limits=options@date_limits,
+                                  guide=ggplot2::guide_axis(n.dodge=options@date_n_dodge))
     } else {
       min <- as.POSIXct(minValueInPlot(plot, "TIME"))
       max <- as.POSIXct(maxValueInPlot(plot, "TIME"))
       plot <- plot +
-        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun, date_labels=options@date_labels, limits=c(min, max))
+        ggplot2::scale_x_datetime(date_breaks=options@date_breaks, minor_breaks=fun,
+                                  date_labels=options@date_labels, limits=c(min, max),
+                                  guide=ggplot2::guide_axis(n.dodge=options@date_n_dodge))
     }
   }
   

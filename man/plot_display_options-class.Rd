@@ -24,6 +24,8 @@ Plot options class.
 
 \item{\code{date_limits}}{date limits, vector of 2 POSIXct values with the limits}
 
+\item{\code{date_n_dodge}}{number of dodges for date}
+
 \item{\code{show_legend}}{show a legend}
 
 \item{\code{legend_title}}{legend title}
