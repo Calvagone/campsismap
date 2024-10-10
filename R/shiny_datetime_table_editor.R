@@ -25,14 +25,14 @@ setClass(
 
 #' @rdname getUI
 #' @importFrom DT DTOutput
-#' @importFrom shiny fluidRow column actionButton
+#' @importFrom shiny br fluidRow column actionButton
 setMethod("getUI", signature=c("datetime_table_editor"), definition=function(object) {
   ns <- object@ns
   ui <- shiny::fluidRow(
     shiny::column(
       12,
       DT::DTOutput(outputId=getDateTimeTableOutputId(ns)),
-      br(),
+      shiny::br(),
       shiny::actionButton(inputId=getDateTimeTableDeleteButtonId(ns), label="Delete"),
       shiny::actionButton(inputId=getDateTimeTableEditButtonId(ns), label="Edit"),
       shiny::actionButton(inputId=getDateTimeTableAddButtonId(ns), label="Add")
