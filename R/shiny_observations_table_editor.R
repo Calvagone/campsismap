@@ -25,7 +25,7 @@ ObservationsTableEditor <- function(tableReact=NULL, ns=shiny::NS("observations_
   editor <- new("observations_table_editor", tableReact=NA, ns=ns, fun=preprocessFun(fun), extra_variables=c("Observation"),
                 grey_out_past=greyOutPast, date_only=dateOnly)
   if (is.null(tableReact)) {
-    tableReact <- reactiveVal(editor %>% getInitialTable())
+    tableReact <- shiny::reactiveVal(editor %>% getInitialTable())
     editor@tableReact <- tableReact
   }
   editor@default_time <- defaultTime
