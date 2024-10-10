@@ -25,16 +25,17 @@ setClass(
 
 #' @rdname getUI
 #' @importFrom DT DTOutput
+#' @importFrom shiny fluidRow column actionButton
 setMethod("getUI", signature=c("datetime_table_editor"), definition=function(object) {
   ns <- object@ns
-  ui <- fluidRow(
-    column(
+  ui <- shiny::fluidRow(
+    shiny::column(
       12,
       DT::DTOutput(outputId=getDateTimeTableOutputId(ns)),
       br(),
-      actionButton(inputId=getDateTimeTableDeleteButtonId(ns), label="Delete"),
-      actionButton(inputId=getDateTimeTableEditButtonId(ns), label="Edit"),
-      actionButton(inputId=getDateTimeTableAddButtonId(ns), label="Add")
+      shiny::actionButton(inputId=getDateTimeTableDeleteButtonId(ns), label="Delete"),
+      shiny::actionButton(inputId=getDateTimeTableEditButtonId(ns), label="Edit"),
+      shiny::actionButton(inputId=getDateTimeTableAddButtonId(ns), label="Add")
     )
   )
   return(ui)
@@ -48,6 +49,7 @@ setMethod("getUI", signature=c("datetime_table_editor"), definition=function(obj
 #' @param dateTime0React reference datetime
 #' @param nowReact now datetime
 #' @rdname server
+#' @importFrom shiny showModal reactiveVal removeModal
 #' @importFrom DT datatable renderDT
 setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), definition=function(object, input, output, session, dateTime0React, nowReact=NULL) {
   ns <- object@ns
@@ -100,14 +102,14 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
   })
 
   observeEvent(input[[getDateTimeTableAddButtonId(ns)]], {
-    showModal(dateTimeEditorDialog(object=object, add=TRUE))
+    shiny::showModal(dateTimeEditorDialog(object=object, add=TRUE))
   })
 
   observeEvent(input[[getDateTimeTableEditButtonId(ns)]], {
     index <- input[[paste0(getDateTimeTableOutputId(ns), "_rows_selected")]]
     if (!is.null(index)) {
       row <- tableReact()[index, ]
-      showModal(dateTimeEditorDialog(object=object, data=row, edit=TRUE))
+      shiny::showModal(dateTimeEditorDialog(object=object, data=row, edit=TRUE))
     }
   })
 
@@ -117,7 +119,7 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
       toDateTimeTable(preserve_columns=TRUE) %>%
       dplyr::select(-Datetime)
     tableReact(table)
-    removeModal()
+    shiny::removeModal()
   })
 
   observeEvent(input[[getDateTimeDialogEditConfirmButtonId(ns)]], {
@@ -127,10 +129,10 @@ setMethod("server", signature=c("datetime_table_editor", "ANY", "ANY", "ANY"), d
       toDateTimeTable(preserve_columns=TRUE) %>%
       dplyr::select(-Datetime)
     tableReact(table)
-    removeModal()
+    shiny::removeModal()
   })
 
-  tableOutputReact <- reactiveVal(list())
+  tableOutputReact <- shiny::reactiveVal(list())
 
   observeEvent(list(tableReact(), dateTime0React()), {
     table <- tableReact()
@@ -202,6 +204,7 @@ posixToTimeStr <- function(x, seconds=FALSE) {
 }
 
 #' @importFrom shinyTime timeInput
+#' @importFrom shiny dateInput modalDialog numericInput actionButton
 dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
   okLabel <- ""
   okButtonId <- ""
@@ -258,21 +261,21 @@ dateTimeEditorDialog <- function(object, data=NULL, add=NULL, edit=NULL) {
       # Edit mode
       value <- data[[variable]]
     }
-    uiElements[[index]] <- numericInput(inputId=getDateTimeDialogVariableId(ns, variable), label=paste0(variable, ":"), value=value)
+    uiElements[[index]] <- shiny::numericInput(inputId=getDateTimeDialogVariableId(ns, variable), label=paste0(variable, ":"), value=value)
   }
 
   if (dateOnly) {
-    dialog <- modalDialog(
-      dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
+    dialog <- shiny::modalDialog(
+      shiny::dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
       uiElements,
-      actionButton(inputId=okButtonId, label=okLabel),
+      shiny::actionButton(inputId=okButtonId, label=okLabel),
       easyClose=TRUE, footer=NULL)
   } else {
-    dialog <- modalDialog(
-      dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
+    dialog <- shiny::modalDialog(
+      shiny::dateInput(inputId=getDateTimeDialogDateId(ns), label="Date:", value=date),
       shinyTime::timeInput(inputId=getDateTimeDialogTimeId(ns), label="Time:", value=time, seconds=FALSE),
       uiElements,
-      actionButton(inputId=okButtonId, label=okLabel),
+      shiny::actionButton(inputId=okButtonId, label=okLabel),
       easyClose=TRUE, footer=NULL)
   }
   
