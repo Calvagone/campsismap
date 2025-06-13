@@ -38,7 +38,7 @@ setMethod("recommend", signature("campsismap_model", "dataset", "numeric", "targ
     dataset_ <- recommendedDataset %>%
       addSamples(targetValue)
     datasetTbl_ <- dataset_ %>%
-      export(dest=model@dest, seed=1, model=NULL, settings=model@settings)
+      export(dest=model@dest, seed=1, model=model@model, settings=model@settings)
     
     doseIndex <- which(datasetTbl_$EVID==1 & datasetTbl_$DOSENO==doseno)
     initDose <- datasetTbl_$AMT[doseIndex]

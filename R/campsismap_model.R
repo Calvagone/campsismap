@@ -112,7 +112,7 @@ setMethod("setup", signature=c("campsismap_model", "character", "simulation_sett
 #' @rdname predict
 setMethod("predict", signature("campsismap_model", "dataset", "numeric", "simulation_settings"), function(object, dataset, etas, settings, ...) {
   datasetTbl <- dataset %>%
-    export(dest=object@dest, seed=1, model=NULL, settings=settings)
+    export(dest=object@dest, seed=1, model=object@model, settings=settings)
   
   return(predict(object=object@model_cache, dataset=datasetTbl, etas=etas, settings=settings, ...))
 })

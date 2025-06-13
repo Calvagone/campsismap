@@ -21,7 +21,7 @@ test_that("Individual likelihood calculation works as expected", {
   dataset <- Dataset() %>%
     add(Bolus(time=0, amount=1000)) %>%
     addSamples(tibble(TIME=20, DV=10)) %>%
-    export(dest="mrgsolve")
+    export(dest="mrgsolve", model=model@model)
   
   # Optimum
   expect_equal(individualLikelihood(model=model, dataset=dataset, samples=tibble(TIME=20, DV=10),

@@ -96,13 +96,21 @@ $CAPTURE DV CL
     add(Bolus(time=0, amount=1000)) %>%
     addSamples(tibble(TIME=20, DV=10))
   
-  results1 <- mapbayr::mapbayest(model, data=dataset1 %>% export(dest="mrgsolve"))
+  table1 <- dataset1 %>%
+    export(dest="mrgsolve") %>%
+    dplyr::mutate(CMT=as.integer(CMT))
+  
+  results1 <- mapbayr::mapbayest(model, data=table1)
   expect_equal(getMapbayrEstimates(results1) %>% round(3), c(-0.022, -0.140, -0.392))
   
   dataset2 <- Dataset() %>%
     add(Bolus(time=0, amount=1000)) %>%
     addSamples(tibble(TIME=c(20,30), DV=c(10,14)))
   
-  results2 <- mapbayr::mapbayest(model, data=dataset2 %>% export(dest="mrgsolve"))
+  table2 <- dataset2 %>%
+    export(dest="mrgsolve") %>%
+    dplyr::mutate(CMT=as.integer(CMT))
+  
+  results2 <- mapbayr::mapbayest(model, data=table2)
   expect_equal(getMapbayrEstimates(results2) %>% round(3), c(-0.028, -0.186, -1.018))
 })

@@ -11,7 +11,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "indi
   # Check model is ready
   if (!checkModelReady(model, check_error_model=FALSE, raise_error=FALSE)) {
     model <- model %>%
-      setup(dest="mrgsolve")
+      setup(dest="mrgsolve", settings=model@settings)
   }
   
   # If etas not provided, they are all 0
@@ -71,7 +71,7 @@ setMethod("quickPlot", signature("campsismap_model", "dataset", "numeric", "reco
   # Check model is ready
   if (!checkModelReady(model, check_error_model=FALSE, raise_error=FALSE)) {
     model <- model %>%
-      setup(dest="mrgsolve")
+      setup(dest="mrgsolve", settings=model@settings)
   }
   
   # If etas not provided, they are all 0
